@@ -1,8 +1,8 @@
-module com.example.tour_planner {
+module at.tw.tourplanner {
     requires javafx.controls;
     requires javafx.fxml;
 
 
-    opens com.example.tour_planner to javafx.fxml;
-    exports com.example.tour_planner;
+    opens at.tw.tourplanner to javafx.fxml;
+    exports at.tw.tourplanner;
 }

@@ -1,4 +1,4 @@
-package com.example.tour_planner;
+package at.tw.tourplanner;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
