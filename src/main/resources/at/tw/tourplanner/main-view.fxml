@@ -20,8 +20,8 @@
                 <MenuItem text="Exit" onAction="#onExitFile"/>
             </Menu>
             <Menu text="Reports">
-                <MenuItem text="Generate Tour Report" onAction="#onAddTour"/>
-                <MenuItem text="Generate Summary Report" onAction="#onAddTour"/>
+                <MenuItem text="Generate Tour Report" onAction="#onGenTourReport"/>
+                <MenuItem text="Generate Summary Report" onAction="#onGenSummaryReport"/>
             </Menu>
         </MenuBar>
     </top>
