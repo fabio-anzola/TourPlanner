@@ -1,5 +1,8 @@
 package at.tw.tourplanner;
 
+import at.tw.tourplanner.object.Tour;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +21,7 @@ import java.nio.file.Paths;
 
 public class MainController {
     public TextField tourSearchField;
-    public ListView tourList;
+    public ListView<Tour> tourList;
     public TextField tourName;
     public TextArea tourDescription;
     public TextField fromLocation;
@@ -35,16 +38,56 @@ public class MainController {
     public TableColumn logDistance;
     public TableColumn logTime;
     public TableColumn logRating;
+
+    private ObservableList<Tour> observableTourList = FXCollections.observableArrayList();
+
+    private MainModel model;
+
+    /**
+     * This method is called after scene has initialized!
+     */
     @FXML
-    private Label welcomeText;
+    public void initialize() {
+        // Initialize the model
+        model = new MainModel();
+
+        // Bind observable list to tour list
+        tourList.setItems(model.getTours());
+
+        tourList.setCellFactory(listView -> new ListCell<Tour>() {
+            @Override
+            protected void updateItem(Tour tour, boolean empty) {
+                super.updateItem(tour, empty);
+                setText(empty || tour == null ? null : tour.getName());
+            }
+        });
+    }
 
     public void onAddTour(ActionEvent actionEvent) {
+        Tour newTour = new Tour("New Tour", "A new tour description", "Start Location", "End Location");
+        model.addTour(newTour);
     }
 
     public void onEditTour(ActionEvent actionEvent) {
+        Tour selectedTourName = tourList.getSelectionModel().getSelectedItem();
+        if (selectedTourName != null) {
+            // TODO: Get data from UI Fields
+            Tour updatedTour = new Tour(selectedTourName.getName(), "Updated description", "Updated from", "Updated to");
+            int code = model.editTour(updatedTour);
+            if (code != 0) {
+                // TODO: Display error message
+            }
+        }
     }
 
     public void onDeleteTour(ActionEvent actionEvent) {
+        Tour selectedTourName = tourList.getSelectionModel().getSelectedItem();
+        if (selectedTourName != null) {
+            int code = model.deleteTour(selectedTourName.getName());
+            if (code != 0) {
+                // TODO: Display error message
+            }
+        }
     }
 
     public void onCalculateRoute(ActionEvent actionEvent) {
