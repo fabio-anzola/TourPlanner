@@ -48,6 +48,12 @@ public class MainController {
      */
     @FXML
     public void initialize() {
+        // Disable text fields by default
+        tourName.setDisable(true);
+        tourDescription.setDisable(true);
+        fromLocation.setDisable(true);
+        toLocation.setDisable(true);
+
         // Initialize the model
         model = new MainModel();
 
@@ -61,6 +67,16 @@ public class MainController {
                 setText(empty || tour == null ? null : tour.getName());
             }
         });
+
+        tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
+            if (newTour != null) {
+                tourName.setText(newTour.getName());
+                tourDescription.setText(newTour.getDescription());
+                fromLocation.setText(newTour.getFromLocation());
+                toLocation.setText(newTour.getToLocation());
+            }
+        });
+
     }
 
     public void onAddTour(ActionEvent actionEvent) {
@@ -69,13 +85,28 @@ public class MainController {
     }
 
     public void onEditTour(ActionEvent actionEvent) {
-        Tour selectedTourName = tourList.getSelectionModel().getSelectedItem();
-        if (selectedTourName != null) {
-            // TODO: Get data from UI Fields
-            Tour updatedTour = new Tour(selectedTourName.getName(), "Updated description", "Updated from", "Updated to");
-            int code = model.editTour(updatedTour);
-            if (code != 0) {
-                // TODO: Display error message
+        if (((Button)actionEvent.getSource()).getText().contains("Edit")) {
+            // tourName.setDisable(false); // name cannot be changed
+            tourDescription.setDisable(false);
+            fromLocation.setDisable(false);
+            toLocation.setDisable(false);
+
+            ((Button)actionEvent.getSource()).setText("Apply");
+        } else if (((Button) actionEvent.getSource()).getText().contains("Apply")) {
+            tourName.setDisable(true);
+            tourDescription.setDisable(true);
+            fromLocation.setDisable(true);
+            toLocation.setDisable(true);
+
+            ((Button)actionEvent.getSource()).setText("Edit");
+
+            Tour selectedTourName = tourList.getSelectionModel().getSelectedItem();
+            if (selectedTourName != null) {
+                Tour updatedTour = new Tour(selectedTourName.getName(), tourDescription.getText(), fromLocation.getText(), toLocation.getText());
+                int code = model.editTour(updatedTour);
+                if (code != 0) {
+                    // TODO: Display error message
+                }
             }
         }
     }
