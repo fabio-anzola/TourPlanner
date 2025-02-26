@@ -74,31 +74,66 @@ public class MainController {
                 tourDescription.setText(newTour.getDescription());
                 fromLocation.setText(newTour.getFromLocation());
                 toLocation.setText(newTour.getToLocation());
+            } else {
+                tourName.setText("");
+                tourDescription.setText("");
+                fromLocation.setText("");
+                toLocation.setText("");
             }
         });
 
     }
 
     public void onAddTour(ActionEvent actionEvent) {
-        Tour newTour = new Tour("New Tour", "A new tour description", "Start Location", "End Location");
-        model.addTour(newTour);
-    }
+        Button srcButton = (Button) actionEvent.getSource();
+        if (srcButton.getText().equals("Add")) {
+            // Clear selection and fields
+            tourList.getSelectionModel().clearSelection();
+            tourName.clear();
+            tourDescription.clear();
+            fromLocation.clear();
+            toLocation.clear();
 
-    public void onEditTour(ActionEvent actionEvent) {
-        if (((Button)actionEvent.getSource()).getText().contains("Edit")) {
-            // tourName.setDisable(false); // name cannot be changed
+            // Enable the fields for input
+            tourName.setDisable(false);
             tourDescription.setDisable(false);
             fromLocation.setDisable(false);
             toLocation.setDisable(false);
 
-            ((Button)actionEvent.getSource()).setText("Apply");
-        } else if (((Button) actionEvent.getSource()).getText().contains("Apply")) {
+            // Change button label to "Confirm"
+            srcButton.setText("Confirm");
+        } else if (srcButton.getText().equals("Confirm")) {
+            // Create a new Tour from the input values
+            Tour newTour = new Tour(tourName.getText(), tourDescription.getText(), fromLocation.getText(), toLocation.getText());
+            model.addTour(newTour);
+
+            // Disable fields again
             tourName.setDisable(true);
             tourDescription.setDisable(true);
             fromLocation.setDisable(true);
             toLocation.setDisable(true);
 
-            ((Button)actionEvent.getSource()).setText("Edit");
+            // Reset button label back to "Add"
+            srcButton.setText("Add");
+        }
+    }
+
+    public void onEditTour(ActionEvent actionEvent) {
+        Button srcButton = (Button) actionEvent.getSource();
+        if (srcButton.getText().equals("Edit")) {
+            // tourName.setDisable(false); // name cannot be changed
+            tourDescription.setDisable(false);
+            fromLocation.setDisable(false);
+            toLocation.setDisable(false);
+
+            srcButton.setText("Apply");
+        } else if (srcButton.getText().equals("Apply")) {
+            tourName.setDisable(true);
+            tourDescription.setDisable(true);
+            fromLocation.setDisable(true);
+            toLocation.setDisable(true);
+
+            srcButton.setText("Edit");
 
             Tour selectedTourName = tourList.getSelectionModel().getSelectedItem();
             if (selectedTourName != null) {
