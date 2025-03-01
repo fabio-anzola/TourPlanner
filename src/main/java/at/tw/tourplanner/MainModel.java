@@ -33,6 +33,12 @@ public class MainModel {
         return removed ? 0 : 1; // Error code
     }
 
+    //falls du diese Methode bevorzugst, nenn sie um zu deleteTour und lösch die alte deleteTour
+    /*
+    public int deleteTourObject(Tour tour) {
+        return tours.remove(tour) ? 0 : -1; // Return 0 if removed, -1 otherwise
+    }*/
+
     public int editTour(Tour updatedTour) {
         return tours.stream()
                 .filter(t -> t.getName().equals(updatedTour.getName()))

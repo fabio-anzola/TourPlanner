@@ -18,6 +18,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class MainController {
     public TextField tourSearchField;
@@ -104,15 +106,42 @@ public class MainController {
             srcButton.setText("Confirm");
         } else if (srcButton.getText().equals("Confirm")) {
             // Create a new Tour from the input values
-            Tour newTour = new Tour(tourName.getText(), tourDescription.getText(), fromLocation.getText(), toLocation.getText());
-            model.addTour(newTour);
 
+            // store input fields as Map
+            Map<TextInputControl, String> fields = Map.of(
+                tourName, tourName.getText(),
+                tourDescription, tourDescription.getText(),
+                fromLocation, fromLocation.getText(),
+                toLocation, toLocation.getText()
+            );
+
+            if (fields.values().stream().allMatch(String::isBlank)) {
+                // If all fields are empty skip all checks
+            } else if (fields.values().stream().noneMatch(String::isBlank)) { //check if all fields are filled
+                // get all tours
+                ObservableList<Tour> tours = model.getTours();
+                // check if user-given name already exists as a tour. if yes do not add tour.
+                if(tours.stream().anyMatch(tour -> tour.getName().equalsIgnoreCase(tourName.getText()))){
+                    tourName.setText(""); // Clear any previous text
+                    tourName.setPromptText("tour already exists");
+                    return;
+                }
+                // Add tour
+                Tour newTour = new Tour(tourName.getText(), tourDescription.getText(), fromLocation.getText(), toLocation.getText());
+                model.addTour(newTour);
+            } else {
+                fields.forEach((field, text) -> {
+                    if (text.isBlank()) field.setPromptText("field must be filled");
+                });
+                return;
+            }
+            // Clear the prompt text since the action was successful
+            fields.keySet().forEach(field -> field.setPromptText(""));
             // Disable fields again
             tourName.setDisable(true);
             tourDescription.setDisable(true);
             fromLocation.setDisable(true);
             toLocation.setDisable(true);
-
             // Reset button label back to "Add"
             srcButton.setText("Add");
         }
@@ -120,7 +149,7 @@ public class MainController {
 
     public void onEditTour(ActionEvent actionEvent) {
         Button srcButton = (Button) actionEvent.getSource();
-        if (srcButton.getText().equals("Edit")) {
+        if (srcButton.getText().equals("Edit") && tourList.getSelectionModel().getSelectedItem() != null) { //ein item muss ausgewählt sein damit man edit verwenden kann
             // tourName.setDisable(false); // name cannot be changed
             tourDescription.setDisable(false);
             fromLocation.setDisable(false);
@@ -155,6 +184,20 @@ public class MainController {
             }
         }
     }
+    // ATTENZIONE
+    // wenn tours den selben namen haben aus welchem grund auch immer dann werden beide gelöscht (ich habe eh geändert dass das nicht geht, aber trotzdem)
+    // Alternative Lösung:? - habs getestet, löscht nicht mehr alle einträge mit dem selben namen aber dir könnte ja trotzdem was auffallen
+    // WICHTIG - ich rufe deleteTourObject() auf, falls du meine onDeleteTour methode bevorzugst kannst du das model.deleteTourObject -> model.deleteTour machen
+    /*
+    public void onDeleteTour(ActionEvent actionEvent) {
+        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
+        if (selectedTour != null) {
+            int code = model.deleteTourObject(selectedTour);
+            if (code != 0) {
+                // TODO: Display error message
+            }
+        }
+    }*/
 
     public void onCalculateRoute(ActionEvent actionEvent) {
     }
@@ -232,6 +275,7 @@ public class MainController {
     }
 
     public void onTourSearch(ActionEvent actionEvent) {
+
     }
 
     public void onGenTourReport(ActionEvent actionEvent) {
