@@ -9,8 +9,6 @@ public class MainModel {
 
     private final ObservableList<Tour> tours = FXCollections.observableArrayList();
 
-    private final ObjectProperty<Tour> currentTour = new SimpleObjectProperty<>();
-
     private final Tour fieldTour = new Tour("", "", "", "");
 
     public ObservableList<Tour> getTours() {
@@ -31,7 +29,7 @@ public class MainModel {
     }
 
     public boolean deleteTour() {
-        String name = currentTour.get().getName();
+        String name = fieldTour.getName();
         return tours.removeIf(t -> t.getName().equals(name));
     }
 
@@ -42,7 +40,7 @@ public class MainModel {
     }*/
 
     public boolean editTour() {
-        Tour edited = getCurrentTour();
+        Tour edited = getFieldTour();
         if (edited == null) {
             return false;
         }
@@ -58,18 +56,6 @@ public class MainModel {
             }
         }
         return false;
-    }
-
-    public Tour getCurrentTour() {
-        return currentTour.get();
-    }
-
-    public ObjectProperty<Tour> currentTourProperty() {
-        return currentTour;
-    }
-
-    public void setCurrentTour(Tour tour) {
-        currentTour.set(tour);
     }
 
     public Tour getFieldTour() {

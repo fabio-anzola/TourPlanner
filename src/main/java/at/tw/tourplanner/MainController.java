@@ -63,33 +63,21 @@ public class MainController {
             }
         });
 
-
-
-        // When tour gets selected, update currentTour in model
         tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
-            model.setCurrentTour(newTour);
+            if (null == newTour) {
+                model.getFieldTour().setName(null);
+                model.getFieldTour().setDescription(null);
+                model.getFieldTour().setFromLocation(null);
+                model.getFieldTour().setToLocation(null);
+                return;
+            }
+            model.getFieldTour().setName(null == newTour.getName() ? null : newTour.getName());
+            model.getFieldTour().setDescription(null == newTour.getDescription() ? null : newTour.getDescription());
+            model.getFieldTour().setFromLocation(null == newTour.getFromLocation() ? null : newTour.getFromLocation());
+            model.getFieldTour().setToLocation(null == newTour.getToLocation() ? null : newTour.getToLocation());
         });
 
-        // Bind the text fields bidirectionally to the currentTour properties
-        model.currentTourProperty().addListener((obs, oldTour, newTour) -> {
-            if (oldTour != null) {
-                tourName.textProperty().unbindBidirectional(oldTour.nameProperty());
-                tourDescription.textProperty().unbindBidirectional(oldTour.descriptionProperty());
-                fromLocation.textProperty().unbindBidirectional(oldTour.fromLocationProperty());
-                toLocation.textProperty().unbindBidirectional(oldTour.toLocationProperty());
-            }
-            if (newTour != null) {
-                tourName.textProperty().bindBidirectional(newTour.nameProperty());
-                tourDescription.textProperty().bindBidirectional(newTour.descriptionProperty());
-                fromLocation.textProperty().bindBidirectional(newTour.fromLocationProperty());
-                toLocation.textProperty().bindBidirectional(newTour.toLocationProperty());
-            } else {
-                tourName.clear();
-                tourDescription.clear();
-                fromLocation.clear();
-                toLocation.clear();
-            }
-        });
+
     }
 
     private void disableTourFields(boolean b) {
