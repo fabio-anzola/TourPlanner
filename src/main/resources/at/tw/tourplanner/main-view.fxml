@@ -35,7 +35,7 @@
                     <Label text="Tours"/>
                     <TextField fx:id="tourSearchField" onAction="#onTourSearch" promptText="Search tour..." HBox.hgrow="ALWAYS"/>
                 </HBox>
-                <ListView fx:id="tourList" VBox.vgrow="ALWAYS" onMouseClicked=""/> <!--probably needs an event listener to chose tours-->
+                <ListView fx:id="tourList" VBox.vgrow="ALWAYS"/> <!--probably needs an event listener to chose tours-->
                 <HBox spacing="5">
                     <Button text="Add" onAction="#onAddTour" minWidth="60"/>
                     <Button text="Edit" onAction="#onEditTour" minWidth="60"/>
