@@ -1,8 +1,6 @@
 package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,8 +16,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.stream.Stream;
 
 public class MainController {
     public TextField tourSearchField;
@@ -41,9 +37,7 @@ public class MainController {
     public TableColumn logTime;
     public TableColumn logRating;
 
-    private ObservableList<Tour> observableTourList = FXCollections.observableArrayList();
-
-    private MainModel model;
+    private final MainModel model = new MainModel();
 
     /**
      * This method is called after scene has initialized!
@@ -51,18 +45,17 @@ public class MainController {
     @FXML
     public void initialize() {
         // Disable text fields by default
-        tourName.setDisable(true);
-        tourDescription.setDisable(true);
-        fromLocation.setDisable(true);
-        toLocation.setDisable(true);
+        disableTourFields(true);
 
-        // Initialize the model
-        model = new MainModel();
+        // Bind the text fiends to a model class
+        tourName.textProperty().bindBidirectional(model.getFieldTour().nameProperty());
+        tourDescription.textProperty().bindBidirectional(model.getFieldTour().descriptionProperty());
+        fromLocation.textProperty().bindBidirectional(model.getFieldTour().fromLocationProperty());
+        toLocation.textProperty().bindBidirectional(model.getFieldTour().toLocationProperty());
 
-        // Bind observable list to tour list
+        // Bind observable list to model tour list
         tourList.setItems(model.getTours());
-
-        tourList.setCellFactory(listView -> new ListCell<Tour>() {
+        tourList.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(Tour tour, boolean empty) {
                 super.updateItem(tour, empty);
@@ -70,20 +63,40 @@ public class MainController {
             }
         });
 
+
+
+        // When tour gets selected, update currentTour in model
         tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
-            if (newTour != null) {
-                tourName.setText(newTour.getName());
-                tourDescription.setText(newTour.getDescription());
-                fromLocation.setText(newTour.getFromLocation());
-                toLocation.setText(newTour.getToLocation());
-            } else {
-                tourName.setText("");
-                tourDescription.setText("");
-                fromLocation.setText("");
-                toLocation.setText("");
-            }
+            model.setCurrentTour(newTour);
         });
 
+        // Bind the text fields bidirectionally to the currentTour properties
+        model.currentTourProperty().addListener((obs, oldTour, newTour) -> {
+            if (oldTour != null) {
+                tourName.textProperty().unbindBidirectional(oldTour.nameProperty());
+                tourDescription.textProperty().unbindBidirectional(oldTour.descriptionProperty());
+                fromLocation.textProperty().unbindBidirectional(oldTour.fromLocationProperty());
+                toLocation.textProperty().unbindBidirectional(oldTour.toLocationProperty());
+            }
+            if (newTour != null) {
+                tourName.textProperty().bindBidirectional(newTour.nameProperty());
+                tourDescription.textProperty().bindBidirectional(newTour.descriptionProperty());
+                fromLocation.textProperty().bindBidirectional(newTour.fromLocationProperty());
+                toLocation.textProperty().bindBidirectional(newTour.toLocationProperty());
+            } else {
+                tourName.clear();
+                tourDescription.clear();
+                fromLocation.clear();
+                toLocation.clear();
+            }
+        });
+    }
+
+    private void disableTourFields(boolean b) {
+        tourName.setDisable(b);
+        tourDescription.setDisable(b);
+        fromLocation.setDisable(b);
+        toLocation.setDisable(b);
     }
 
     public void onAddTour(ActionEvent actionEvent) {
@@ -91,21 +104,14 @@ public class MainController {
         if (srcButton.getText().equals("Add")) {
             // Clear selection and fields
             tourList.getSelectionModel().clearSelection();
-            tourName.clear();
-            tourDescription.clear();
-            fromLocation.clear();
-            toLocation.clear();
 
             // Enable the fields for input
-            tourName.setDisable(false);
-            tourDescription.setDisable(false);
-            fromLocation.setDisable(false);
-            toLocation.setDisable(false);
+            disableTourFields(false);
 
             // Change button label to "Confirm"
             srcButton.setText("Confirm");
         } else if (srcButton.getText().equals("Confirm")) {
-            // Create a new Tour from the input values
+            /*
 
             // store input fields as Map
             Map<TextInputControl, String> fields = Map.of(
@@ -128,7 +134,9 @@ public class MainController {
                 }
                 // Add tour
                 Tour newTour = new Tour(tourName.getText(), tourDescription.getText(), fromLocation.getText(), toLocation.getText());
-                model.addTour(newTour);
+                if (!model.addTour(newTour)) {
+                    // TODO: show error!
+                }
             } else {
                 fields.forEach((field, text) -> {
                     if (text.isBlank()) field.setPromptText("field must be filled");
@@ -136,12 +144,15 @@ public class MainController {
                 return;
             }
             // Clear the prompt text since the action was successful
-            fields.keySet().forEach(field -> field.setPromptText(""));
+            fields.keySet().forEach(field -> field.setPromptText(""));*/
+
+            // Add tour
+            if (!model.addTour()) {
+                // TODO: show error!
+            }
+
             // Disable fields again
-            tourName.setDisable(true);
-            tourDescription.setDisable(true);
-            fromLocation.setDisable(true);
-            toLocation.setDisable(true);
+            disableTourFields(true);
             // Reset button label back to "Add"
             srcButton.setText("Add");
         }
@@ -150,54 +161,25 @@ public class MainController {
     public void onEditTour(ActionEvent actionEvent) {
         Button srcButton = (Button) actionEvent.getSource();
         if (srcButton.getText().equals("Edit") && tourList.getSelectionModel().getSelectedItem() != null) { //ein item muss ausgewählt sein damit man edit verwenden kann
-            // tourName.setDisable(false); // name cannot be changed
-            tourDescription.setDisable(false);
-            fromLocation.setDisable(false);
-            toLocation.setDisable(false);
+            disableTourFields(false);
 
             srcButton.setText("Apply");
         } else if (srcButton.getText().equals("Apply")) {
-            tourName.setDisable(true);
-            tourDescription.setDisable(true);
-            fromLocation.setDisable(true);
-            toLocation.setDisable(true);
 
+            if (!model.editTour()) {
+                // TODO: Display error message
+            }
+
+            disableTourFields(true);
             srcButton.setText("Edit");
-
-            Tour selectedTourName = tourList.getSelectionModel().getSelectedItem();
-            if (selectedTourName != null) {
-                Tour updatedTour = new Tour(selectedTourName.getName(), tourDescription.getText(), fromLocation.getText(), toLocation.getText());
-                int code = model.editTour(updatedTour);
-                if (code != 0) {
-                    // TODO: Display error message
-                }
-            }
         }
     }
 
     public void onDeleteTour(ActionEvent actionEvent) {
-        Tour selectedTourName = tourList.getSelectionModel().getSelectedItem();
-        if (selectedTourName != null) {
-            int code = model.deleteTour(selectedTourName.getName());
-            if (code != 0) {
-                // TODO: Display error message
-            }
+        if (!model.deleteTour()) {
+            // TODO: Display error message
         }
     }
-    // ATTENZIONE
-    // wenn tours den selben namen haben aus welchem grund auch immer dann werden beide gelöscht (ich habe eh geändert dass das nicht geht, aber trotzdem)
-    // Alternative Lösung:? - habs getestet, löscht nicht mehr alle einträge mit dem selben namen aber dir könnte ja trotzdem was auffallen
-    // WICHTIG - ich rufe deleteTourObject() auf, falls du meine onDeleteTour methode bevorzugst kannst du das model.deleteTourObject -> model.deleteTour machen
-    /*
-    public void onDeleteTour(ActionEvent actionEvent) {
-        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
-        if (selectedTour != null) {
-            int code = model.deleteTourObject(selectedTour);
-            if (code != 0) {
-                // TODO: Display error message
-            }
-        }
-    }*/
 
     public void onCalculateRoute(ActionEvent actionEvent) {
     }
@@ -271,11 +253,10 @@ public class MainController {
         }
     }
 
-    public void onExitFile(ActionEvent actionEvent) {
+    public void onExitWindow(ActionEvent actionEvent) {
     }
 
     public void onTourSearch(ActionEvent actionEvent) {
-
     }
 
     public void onGenTourReport(ActionEvent actionEvent) {

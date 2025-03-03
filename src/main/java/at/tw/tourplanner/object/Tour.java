@@ -16,6 +16,13 @@ public class Tour {
         this.toLocation = new SimpleStringProperty(toLocation);
     }
 
+    public void clearProperties() {
+        setName("");
+        setDescription("");
+        setFromLocation("");
+        setToLocation("");
+    }
+
     // Getters and setters for each property
     public String getName() {
         return name.get();
