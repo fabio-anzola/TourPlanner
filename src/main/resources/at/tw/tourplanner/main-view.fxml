@@ -66,15 +66,7 @@
                     <TextField fx:id="toLocation" GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"/>
 
                     <Label text="Transport Type:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                    <ComboBox fx:id="transportType" GridPane.rowIndex="5" GridPane.columnIndex="1">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Car"/>
-                                <String fx:value="Bike"/>
-                                <String fx:value="Walk"/>
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
+                    <ComboBox fx:id="transportType" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
                     <Label text="Distance:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
                     <Label fx:id="tourDistance" GridPane.rowIndex="6" GridPane.columnIndex="1"/>

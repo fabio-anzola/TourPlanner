@@ -1,6 +1,7 @@
 package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
+import at.tw.tourplanner.object.TransportType;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,7 +10,9 @@ public class MainModel {
 
     private final ObservableList<Tour> tours = FXCollections.observableArrayList();
 
-    private final Tour fieldTour = new Tour("", "", "", "");
+    private final TransportType defaultTransportType = TransportType.CAR;
+
+    private final Tour fieldTour = new Tour(defaultTransportType, "", "", "", "", "CAR");
 
     public ObservableList<Tour> getTours() {
         // TODO: Implement REST GET
@@ -23,7 +26,7 @@ public class MainModel {
         if (tours.stream().anyMatch(t -> t.getName().equalsIgnoreCase(fieldTour.getName()))) {
             return false;
         }
-        boolean msg = tours.add(new Tour(fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation()));
+        boolean msg = tours.add(new Tour(defaultTransportType, fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation(), fieldTour.getTransportType()));
         fieldTour.clearProperties();
         return msg;
     }

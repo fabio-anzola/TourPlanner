@@ -1,6 +1,8 @@
 package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
+import at.tw.tourplanner.object.TransportType;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -77,7 +79,11 @@ public class MainController {
             model.getFieldTour().setToLocation(null == newTour.getToLocation() ? null : newTour.getToLocation());
         });
 
+        // Populate the combo box with the enum values
+        transportType.setItems(FXCollections.observableArrayList(TransportType.values()));
 
+        // Bind the combo box's value property to the model's transportType property
+        transportType.valueProperty().bindBidirectional(model.getFieldTour().transportTypeProperty());
     }
 
     private void disableTourFields(boolean b) {

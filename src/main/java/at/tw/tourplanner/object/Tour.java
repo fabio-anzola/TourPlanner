@@ -1,5 +1,7 @@
 package at.tw.tourplanner.object;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -8,12 +10,17 @@ public class Tour {
     private final StringProperty description;
     private final StringProperty fromLocation;
     private final StringProperty toLocation;
+    private final ObjectProperty<TransportType> transportType;
 
-    public Tour(String name, String description, String fromLocation, String toLocation) {
+    private TransportType defaultTransportType;
+
+    public Tour(TransportType defaultTransportType, String name, String description, String fromLocation, String toLocation, String transportType) {
+        this.defaultTransportType = defaultTransportType;
         this.name = new SimpleStringProperty(name);
         this.description = new SimpleStringProperty(description);
         this.fromLocation = new SimpleStringProperty(fromLocation);
         this.toLocation = new SimpleStringProperty(toLocation);
+        this.transportType = new SimpleObjectProperty<>(TransportType.valueOf(transportType));
     }
 
     public void clearProperties() {
@@ -21,6 +28,7 @@ public class Tour {
         setDescription("");
         setFromLocation("");
         setToLocation("");
+        setTransportType(String.valueOf(defaultTransportType));
     }
 
     // Getters and setters for each property
@@ -70,5 +78,17 @@ public class Tour {
 
     public StringProperty toLocationProperty() {
         return toLocation;
+    }
+
+    public String getTransportType() {
+        return transportType.get().name();
+    }
+
+    public ObjectProperty<TransportType> transportTypeProperty() {
+        return transportType;
+    }
+
+    public void setTransportType(String value) {
+        transportType.set(TransportType.valueOf(value));
     }
 }
