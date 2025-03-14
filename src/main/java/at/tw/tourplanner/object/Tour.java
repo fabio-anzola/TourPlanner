@@ -1,26 +1,20 @@
 package at.tw.tourplanner.object;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 public class Tour {
     private final StringProperty name;
     private final StringProperty description;
     private final StringProperty fromLocation;
     private final StringProperty toLocation;
-    private final ObjectProperty<TransportType> transportType;
+    private final SimpleObjectProperty<TransportType> transportType;
 
-    private TransportType defaultTransportType;
-
-    public Tour(TransportType defaultTransportType, String name, String description, String fromLocation, String toLocation, String transportType) {
-        this.defaultTransportType = defaultTransportType;
+    public Tour(TransportType transportType, String name, String description, String fromLocation, String toLocation) {
         this.name = new SimpleStringProperty(name);
         this.description = new SimpleStringProperty(description);
         this.fromLocation = new SimpleStringProperty(fromLocation);
         this.toLocation = new SimpleStringProperty(toLocation);
-        this.transportType = new SimpleObjectProperty<>(TransportType.valueOf(transportType));
+        this.transportType  = new SimpleObjectProperty<TransportType>(transportType);
     }
 
     public void clearProperties() {
@@ -28,7 +22,7 @@ public class Tour {
         setDescription("");
         setFromLocation("");
         setToLocation("");
-        setTransportType(String.valueOf(defaultTransportType));
+        setTransportType(TransportType.DEFAULT);
     }
 
     // Getters and setters for each property
@@ -80,15 +74,15 @@ public class Tour {
         return toLocation;
     }
 
-    public String getTransportType() {
-        return transportType.get().name();
-    }
-
-    public ObjectProperty<TransportType> transportTypeProperty() {
+    public Property<TransportType> transportTypeProperty() {
         return transportType;
     }
 
-    public void setTransportType(String value) {
-        transportType.set(TransportType.valueOf(value));
+    public void setTransportType(TransportType transportType) {
+        this.transportType.set(transportType);
+    }
+
+    public TransportType getTransportType() {
+        return this.transportType.get();
     }
 }
