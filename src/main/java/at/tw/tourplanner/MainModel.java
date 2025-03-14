@@ -10,9 +10,8 @@ public class MainModel {
 
     private final ObservableList<Tour> tours = FXCollections.observableArrayList();
 
-    private final TransportType defaultTransportType = TransportType.CAR;
 
-    private final Tour fieldTour = new Tour(defaultTransportType, "", "", "", "", "CAR");
+    private final Tour fieldTour = new Tour(TransportType.DEFAULT, "", "", "", "");
 
     public ObservableList<Tour> getTours() {
         // TODO: Implement REST GET
@@ -26,7 +25,7 @@ public class MainModel {
         if (tours.stream().anyMatch(t -> t.getName().equalsIgnoreCase(fieldTour.getName()))) {
             return false;
         }
-        boolean msg = tours.add(new Tour(defaultTransportType, fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation(), fieldTour.getTransportType()));
+        boolean msg = tours.add(new Tour(fieldTour.getTransportType() ,fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation()));
         fieldTour.clearProperties();
         return msg;
     }
@@ -55,6 +54,7 @@ public class MainModel {
                 t.setDescription(edited.getDescription());
                 t.setFromLocation(edited.getFromLocation());
                 t.setToLocation(edited.getToLocation());
+                t.setTransportType(edited.getTransportType());
                 return true;
             }
         }

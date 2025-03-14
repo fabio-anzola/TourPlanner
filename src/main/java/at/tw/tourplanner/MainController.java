@@ -26,7 +26,7 @@ public class MainController {
     public TextArea tourDescription;
     public TextField fromLocation;
     public TextField toLocation;
-    public ComboBox transportType;
+    public ComboBox<TransportType> transportType;
     public Label tourDistance;
     public Label estimatedTime;
     public ImageView routeImage;
@@ -71,19 +71,22 @@ public class MainController {
                 model.getFieldTour().setDescription(null);
                 model.getFieldTour().setFromLocation(null);
                 model.getFieldTour().setToLocation(null);
+                model.getFieldTour().setTransportType(TransportType.DEFAULT);
                 return;
             }
             model.getFieldTour().setName(null == newTour.getName() ? null : newTour.getName());
             model.getFieldTour().setDescription(null == newTour.getDescription() ? null : newTour.getDescription());
             model.getFieldTour().setFromLocation(null == newTour.getFromLocation() ? null : newTour.getFromLocation());
             model.getFieldTour().setToLocation(null == newTour.getToLocation() ? null : newTour.getToLocation());
+            model.getFieldTour().setTransportType(null == newTour.getTransportType() ? TransportType.DEFAULT : newTour.getTransportType());
         });
 
         // Populate the combo box with the enum values
-        transportType.setItems(FXCollections.observableArrayList(TransportType.values()));
+        this.transportType.getItems().addAll(TransportType.values());
+        this.transportType.setValue(TransportType.CAR);
 
         // Bind the combo box's value property to the model's transportType property
-        transportType.valueProperty().bindBidirectional(model.getFieldTour().transportTypeProperty());
+        this.transportType.valueProperty().bindBidirectional(this.model.getFieldTour().transportTypeProperty());
     }
 
     private void disableTourFields(boolean b) {
