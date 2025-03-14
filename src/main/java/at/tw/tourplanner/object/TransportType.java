@@ -5,4 +5,5 @@ public enum TransportType {
     BICYCLE,
     WALK,
     PUBLIC_TRANSPORT,
+    DEFAULT
 }
