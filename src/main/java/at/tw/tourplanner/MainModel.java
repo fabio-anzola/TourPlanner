@@ -10,6 +10,10 @@ public class MainModel {
 
     private final ObservableList<Tour> tours = FXCollections.observableArrayList();
 
+    //Ugly Hard code attack
+    public  MainModel() {
+        tours.add(new Tour(TransportType.WALK, "Gym House", "Meet us at the Bicep Bunker", "Zero", "Swole"));
+    }
 
     private final Tour fieldTour = new Tour(TransportType.DEFAULT, "", "", "", "");
 
