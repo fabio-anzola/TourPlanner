@@ -94,6 +94,7 @@ public class MainController {
         tourDescription.setDisable(b);
         fromLocation.setDisable(b);
         toLocation.setDisable(b);
+        transportType.setDisable(b);
     }
 
     public void onAddTour(ActionEvent actionEvent) {
