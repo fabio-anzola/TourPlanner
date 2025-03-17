@@ -106,6 +106,7 @@ public class MainController {
 
         // Populate the combo box with the enum values
         this.transportType.getItems().addAll(TransportType.values());
+        this.transportType.getItems().remove(TransportType.DEFAULT);
 
         // Bind the combo box's value property to the model's transportType property
         this.transportType.valueProperty().bindBidirectional(this.model.getFieldTour().transportTypeProperty());
