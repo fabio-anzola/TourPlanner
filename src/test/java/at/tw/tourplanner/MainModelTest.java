@@ -90,7 +90,7 @@ class MainModelTest {
         mainModel.getFieldTour().setFromLocation(testTour.getFromLocation());
         mainModel.getFieldTour().setToLocation(testTour.getToLocation());
 
-        boolean result = mainModel.editTour(initialName);
+        boolean result = mainModel.editTour(testTour.getName());
         var tourListSize = mainModel.getTours().size();
 
         assertTrue(result, "Tour should be edited successfully");
