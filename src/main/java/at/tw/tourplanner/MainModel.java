@@ -1,20 +1,33 @@
 package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
+import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
+import com.sun.jdi.connect.Transport;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.Image;
 import lombok.Getter;
 
+import java.security.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Date;
 
 public class MainModel {
 
+    @Getter
     private final ObservableList<Tour> tours = FXCollections.observableArrayList();
+    @Getter
+    private final ObservableList<TourLog> tourLogs = FXCollections.observableArrayList();
+
     private final StringProperty errorField = new SimpleStringProperty();
+
     @Getter
     private final Tour fieldTour = new Tour(TransportType.DEFAULT, null, "", "", "", "");
 
@@ -28,11 +41,7 @@ public class MainModel {
                 "Zero",
                 "Swole"
         ));
-    }
-
-    public ObservableList<Tour> getTours() {
-        // TODO: Implement REST GET
-        return tours;
+        tourLogs.add(new TourLog(LocalDate.now(), "tolle tour!", 5, 10, 1900, 1, "Gym House"));
     }
 
     public boolean addTour() {
