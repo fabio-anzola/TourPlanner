@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -18,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 public class MainController {
     public TextField tourSearchField;
@@ -69,6 +71,9 @@ public class MainController {
             }
         });
 
+        // Bind Images
+        routeImage.imageProperty().bindBidirectional(model.getFieldTour().routeImageProperty());
+
         tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
             if (null == newTour) {
                 model.getFieldTour().setName(null);
@@ -76,6 +81,7 @@ public class MainController {
                 model.getFieldTour().setFromLocation(null);
                 model.getFieldTour().setToLocation(null);
                 model.getFieldTour().setTransportType(TransportType.DEFAULT);
+                model.getFieldTour().setRouteImage(null);
                 return;
             }
             model.getFieldTour().setName(null == newTour.getName() ? null : newTour.getName());
@@ -83,6 +89,7 @@ public class MainController {
             model.getFieldTour().setFromLocation(null == newTour.getFromLocation() ? null : newTour.getFromLocation());
             model.getFieldTour().setToLocation(null == newTour.getToLocation() ? null : newTour.getToLocation());
             model.getFieldTour().setTransportType(null == newTour.getTransportType() ? TransportType.DEFAULT : newTour.getTransportType());
+            model.getFieldTour().setRouteImage(null == newTour.getRouteImage() ? null : newTour.getRouteImage());
         });
 
         // Populate the combo box with the enum values

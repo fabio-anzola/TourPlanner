@@ -5,20 +5,29 @@ import at.tw.tourplanner.object.TransportType;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class MainModel {
 
     private final ObservableList<Tour> tours = FXCollections.observableArrayList();
     private final StringProperty errorField = new SimpleStringProperty();
     @Getter
-    private final Tour fieldTour = new Tour(TransportType.DEFAULT, "", "", "", "");
+    private final Tour fieldTour = new Tour(TransportType.DEFAULT, null, "", "", "", "");
 
     //Ugly Hard code attack
     public  MainModel() {
-        tours.add(new Tour(TransportType.WALK, "Gym House", "Meet us at the Bicep Bunker", "Zero", "Swole"));
+        tours.add(new Tour(
+                TransportType.WALK,
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
+                "Gym House",
+                "Meet us at the Bicep Bunker",
+                "Zero",
+                "Swole"
+        ));
     }
 
     public ObservableList<Tour> getTours() {
@@ -31,7 +40,7 @@ public class MainModel {
             return false;
         }
 
-        boolean msg = tours.add(new Tour(fieldTour.getTransportType() ,fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation()));
+        boolean msg = tours.add(new Tour(fieldTour.getTransportType(), fieldTour.getRouteImage() ,fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation()));
 
         // Clean up
         fieldTour.clearProperties();

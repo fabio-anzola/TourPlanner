@@ -1,6 +1,7 @@
 package at.tw.tourplanner.object;
 
 import javafx.beans.property.*;
+import javafx.scene.image.Image;
 
 public class Tour {
     private final StringProperty name;
@@ -8,13 +9,15 @@ public class Tour {
     private final StringProperty fromLocation;
     private final StringProperty toLocation;
     private final SimpleObjectProperty<TransportType> transportType;
+    private final SimpleObjectProperty<Image> routeImage;
 
-    public Tour(TransportType transportType, String name, String description, String fromLocation, String toLocation) {
+    public Tour(TransportType transportType, Image routeImage, String name, String description, String fromLocation, String toLocation) {
         this.name = new SimpleStringProperty(name);
         this.description = new SimpleStringProperty(description);
         this.fromLocation = new SimpleStringProperty(fromLocation);
         this.toLocation = new SimpleStringProperty(toLocation);
         this.transportType  = new SimpleObjectProperty<TransportType>(transportType);
+        this.routeImage = new SimpleObjectProperty<Image>(routeImage);
     }
 
     public void clearProperties() {
@@ -23,6 +26,7 @@ public class Tour {
         setFromLocation("");
         setToLocation("");
         setTransportType(TransportType.DEFAULT);
+        setRouteImage(null);
     }
 
     // Getters and setters for each property
@@ -74,9 +78,7 @@ public class Tour {
         return toLocation;
     }
 
-    public Property<TransportType> transportTypeProperty() {
-        return transportType;
-    }
+    public Property<TransportType> transportTypeProperty() { return transportType; }
 
     public void setTransportType(TransportType transportType) {
         this.transportType.set(transportType);
@@ -85,4 +87,13 @@ public class Tour {
     public TransportType getTransportType() {
         return this.transportType.get();
     }
+
+    public Image getRouteImage() { return this.routeImage.get(); }
+
+    public void setRouteImage(Image routeImage) { this.routeImage.set(routeImage); }
+
+    public Property<Image> routeImageProperty() {
+        return routeImage;
+    }
+
 }

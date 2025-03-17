@@ -2,15 +2,32 @@ package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TransportType;
+import javafx.application.Platform;
 import javafx.scene.Parent;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.Start;
+
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainModelTest {
     private Parent root = null;
+
+    /**
+     * Initializes JavaFX before running any tests.
+     */
+    @BeforeAll
+    static void initJavaFX() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        Platform.startup(latch::countDown);  // Initialize JavaFX
+        latch.await();  // Wait until JavaFX is fully initialized
+    }
+
     /**
      * Will be called with {@code @Before} semantics, i.e. before each test method.
      *
@@ -26,9 +43,17 @@ class MainModelTest {
     void test_add_tour(){
         MainModel mainModel = new MainModel();
         var initialSize = mainModel.getTours().size();
-        Tour testTour = new Tour(TransportType.WALK, "Test Tour", "Meet Fabio and Niki at the Museum", "Start", "End");
+        Tour testTour = new Tour(
+                TransportType.WALK,
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
+                "Test Tour",
+                "Meet Fabio and Niki at the Museum",
+                "Start",
+                "End"
+        );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
+        mainModel.getFieldTour().setRouteImage(testTour.getRouteImage());
         mainModel.getFieldTour().setName(testTour.getName());
         mainModel.getFieldTour().setDescription(testTour.getDescription());
         mainModel.getFieldTour().setFromLocation(testTour.getFromLocation());
@@ -45,9 +70,17 @@ class MainModelTest {
     void test_add_tour_fail_for_name_already_exists(){
         MainModel mainModel = new MainModel();
         var initialSize = mainModel.getTours().size();
-        Tour testTour = new Tour(TransportType.WALK, "Gym House", "Meet Fabio and Niki at the Museum", "Start", "End");
+        Tour testTour = new Tour(
+                TransportType.WALK,
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
+                "Gym House",
+                "Meet Fabio and Niki at the Museum",
+                "Start",
+                "End"
+        );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
+        mainModel.getFieldTour().setRouteImage(testTour.getRouteImage());
         mainModel.getFieldTour().setName(testTour.getName());
         mainModel.getFieldTour().setDescription(testTour.getDescription());
         mainModel.getFieldTour().setFromLocation(testTour.getFromLocation());
@@ -64,9 +97,17 @@ class MainModelTest {
     void test_delete_tour(){
         MainModel mainModel = new MainModel();
         var initialSize = mainModel.getTours().size();
-        Tour testTour = new Tour(TransportType.WALK, "Gym House", "Meet us at the Bicep Bunker", "Zero", "Swole");
+        Tour testTour = new Tour(
+                TransportType.WALK,
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
+                "Gym House",
+                "Meet us at the Bicep Bunker",
+                "Zero",
+                "Swole"
+        );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
+        mainModel.getFieldTour().setRouteImage(testTour.getRouteImage());
         mainModel.getFieldTour().setName(testTour.getName());
         mainModel.getFieldTour().setDescription(testTour.getDescription());
         mainModel.getFieldTour().setFromLocation(testTour.getFromLocation());
@@ -82,9 +123,17 @@ class MainModelTest {
     @Test
     void test_edit_tour(){
         MainModel mainModel = new MainModel();
-        Tour testTour = new Tour(TransportType.CAR, "Gym House", "Fabio and Niki are not at the Gym House anymore", "Swole", "Zero");
+        Tour testTour = new Tour(
+                TransportType.CAR,
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
+                "Gym House",
+                "Fabio and Niki are not at the Gym House anymore",
+                "Swole",
+                "Zero"
+        );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
+        mainModel.getFieldTour().setRouteImage(testTour.getRouteImage());
         mainModel.getFieldTour().setName(testTour.getName());
         mainModel.getFieldTour().setDescription(testTour.getDescription());
         mainModel.getFieldTour().setFromLocation(testTour.getFromLocation());
