@@ -45,7 +45,7 @@ class MainModelTest {
         var initialSize = mainModel.getTours().size();
         Tour testTour = new Tour(
                 TransportType.WALK,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
                 "Test Tour",
                 "Meet Fabio and Niki at the Museum",
                 "Start",
@@ -72,7 +72,7 @@ class MainModelTest {
         var initialSize = mainModel.getTours().size();
         Tour testTour = new Tour(
                 TransportType.WALK,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
                 "Gym House",
                 "Meet Fabio and Niki at the Museum",
                 "Start",
@@ -99,7 +99,7 @@ class MainModelTest {
         var initialSize = mainModel.getTours().size();
         Tour testTour = new Tour(
                 TransportType.WALK,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
                 "Gym House",
                 "Meet us at the Bicep Bunker",
                 "Zero",
@@ -125,7 +125,7 @@ class MainModelTest {
         MainModel mainModel = new MainModel();
         Tour testTour = new Tour(
                 TransportType.CAR,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
                 "Gym House",
                 "Fabio and Niki are not at the Gym House anymore",
                 "Swole",

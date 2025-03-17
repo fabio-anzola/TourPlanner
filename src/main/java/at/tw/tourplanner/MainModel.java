@@ -35,13 +35,13 @@ public class MainModel {
     public  MainModel() {
         tours.add(new Tour(
                 TransportType.WALK,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/Dummy_Tour_IMG.png")).toExternalForm()),
-                "Gym House",
-                "Meet us at the Bicep Bunker",
-                "Zero",
-                "Swole"
+                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
+                "Hiking Tour #1",
+                "Sunday Family Hiking Tour",
+                "Wien",
+                "Burgenland"
         ));
-        tourLogs.add(new TourLog(LocalDate.now(), "tolle tour!", 5, 10, 1900, 1, "Gym House"));
+        tourLogs.add(new TourLog(LocalDate.now(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour #1"));
     }
 
     public boolean addTour() {
