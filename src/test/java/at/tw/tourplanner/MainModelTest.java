@@ -73,7 +73,7 @@ class MainModelTest {
         Tour testTour = new Tour(
                 TransportType.WALK,
                 new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
-                "Gym House",
+                "Hiking Tour #1",
                 "Meet Fabio and Niki at the Museum",
                 "Start",
                 "End"
@@ -100,10 +100,10 @@ class MainModelTest {
         Tour testTour = new Tour(
                 TransportType.WALK,
                 new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
-                "Gym House",
-                "Meet us at the Bicep Bunker",
-                "Zero",
-                "Swole"
+                "Hiking Tour #1",
+                "Sunday Family Hiking Tour",
+                "Wien",
+                "Burgenland"
         );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
@@ -126,10 +126,10 @@ class MainModelTest {
         Tour testTour = new Tour(
                 TransportType.CAR,
                 new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
-                "Gym House",
-                "Fabio and Niki are not at the Gym House anymore",
-                "Swole",
-                "Zero"
+                "Hiking Tour #1",
+                "Monday Family Hiking Tour",
+                "Burgenland",
+                "Wien"
         );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
@@ -143,9 +143,9 @@ class MainModelTest {
         var tourListSize = mainModel.getTours().size();
 
         assertTrue(result, "Tour should be edited successfully");
-        assertEquals("Swole", mainModel.getTours().get(tourListSize - 1).getFromLocation(),  "From location should be equal to Swole");
-        assertEquals("Zero", mainModel.getTours().get(tourListSize - 1).getToLocation(),  "To location should be equal to Zero");
-        assertEquals("Fabio and Niki are not at the Gym House anymore", mainModel.getTours().get(tourListSize - 1).getDescription(),  "Description should be equal to Fabio and Niki are not at the Gym House anymore");
+        assertEquals("Burgenland", mainModel.getTours().get(tourListSize - 1).getFromLocation(),  "From location should be equal to Burgenland");
+        assertEquals("Wien", mainModel.getTours().get(tourListSize - 1).getToLocation(),  "To location should be equal to Wien");
+        assertEquals("Monday Family Hiking Tour", mainModel.getTours().get(tourListSize - 1).getDescription(),  "Description should be equal to Monday Family Hiking Tour");
         assertEquals(TransportType.CAR, mainModel.getTours().get(tourListSize - 1).getTransportType(),  "TransportType should be equal to Car");
     }
 }
