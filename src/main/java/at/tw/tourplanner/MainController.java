@@ -2,7 +2,6 @@ package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TransportType;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -92,9 +92,17 @@ public class MainController {
             model.getFieldTour().setRouteImage(null == newTour.getRouteImage() ? null : newTour.getRouteImage());
         });
 
+        // Bind observable list to model tour logs list
+        logDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        logComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
+        logDifficulty.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
+        logDistance.setCellValueFactory(new PropertyValueFactory<>("totalDistance"));
+        logTime.setCellValueFactory(new PropertyValueFactory<>("totalTime"));
+        logRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
+        tourLogs.setItems(this.model.getTourLogs());
+
         // Populate the combo box with the enum values
         this.transportType.getItems().addAll(TransportType.values());
-        this.transportType.setValue(TransportType.CAR);
 
         // Bind the combo box's value property to the model's transportType property
         this.transportType.valueProperty().bindBidirectional(this.model.getFieldTour().transportTypeProperty());
