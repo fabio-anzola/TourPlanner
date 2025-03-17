@@ -1,7 +1,9 @@
 package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
+import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -74,6 +76,15 @@ public class MainController {
         // Bind Images
         routeImage.imageProperty().bindBidirectional(model.getFieldTour().routeImageProperty());
 
+        // Bind observable list to model tour logs list
+        logDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        logComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
+        logDifficulty.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
+        logDistance.setCellValueFactory(new PropertyValueFactory<>("totalDistance"));
+        logTime.setCellValueFactory(new PropertyValueFactory<>("totalTime"));
+        logRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
+        //tourLogs.setItems(this.model.getTourLogs());
+
         tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
             if (null == newTour) {
                 model.getFieldTour().setName(null);
@@ -90,16 +101,8 @@ public class MainController {
             model.getFieldTour().setToLocation(null == newTour.getToLocation() ? null : newTour.getToLocation());
             model.getFieldTour().setTransportType(null == newTour.getTransportType() ? TransportType.DEFAULT : newTour.getTransportType());
             model.getFieldTour().setRouteImage(null == newTour.getRouteImage() ? null : newTour.getRouteImage());
+            tourLogs.setItems(new FilteredList<TourLog>(this.model.getTourLogs(), log -> log.getTourName().equalsIgnoreCase(newTour.getName())));
         });
-
-        // Bind observable list to model tour logs list
-        logDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        logComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
-        logDifficulty.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
-        logDistance.setCellValueFactory(new PropertyValueFactory<>("totalDistance"));
-        logTime.setCellValueFactory(new PropertyValueFactory<>("totalTime"));
-        logRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
-        tourLogs.setItems(this.model.getTourLogs());
 
         // Populate the combo box with the enum values
         this.transportType.getItems().addAll(TransportType.values());
