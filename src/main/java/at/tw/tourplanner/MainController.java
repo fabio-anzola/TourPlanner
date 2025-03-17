@@ -38,6 +38,7 @@ public class MainController {
     public TableColumn logDistance;
     public TableColumn logTime;
     public TableColumn logRating;
+    public Label errorLabel;
 
     private final MainModel model = new MainModel();
 
@@ -48,6 +49,9 @@ public class MainController {
     public void initialize() {
         // Disable text fields by default
         disableTourFields(true);
+
+        // Bind error label
+        errorLabel.textProperty().bind(model.errorFieldProperty());
 
         // Bind the text fiends to a model class
         tourName.textProperty().bindBidirectional(model.getFieldTour().nameProperty());
@@ -109,67 +113,38 @@ public class MainController {
             // Change button label to "Confirm"
             srcButton.setText("Confirm");
         } else if (srcButton.getText().equals("Confirm")) {
-            /*
-
-            // store input fields as Map
-            Map<TextInputControl, String> fields = Map.of(
-                tourName, tourName.getText(),
-                tourDescription, tourDescription.getText(),
-                fromLocation, fromLocation.getText(),
-                toLocation, toLocation.getText()
-            );
-
-            if (fields.values().stream().allMatch(String::isBlank)) {
-                // If all fields are empty skip all checks
-            } else if (fields.values().stream().noneMatch(String::isBlank)) { //check if all fields are filled
-                // get all tours
-                ObservableList<Tour> tours = model.getTours();
-                // check if user-given name already exists as a tour. if yes do not add tour.
-                if(tours.stream().anyMatch(tour -> tour.getName().equalsIgnoreCase(tourName.getText()))){
-                    tourName.setText(""); // Clear any previous text
-                    tourName.setPromptText("tour already exists");
-                    return;
-                }
-                // Add tour
-                Tour newTour = new Tour(tourName.getText(), tourDescription.getText(), fromLocation.getText(), toLocation.getText());
-                if (!model.addTour(newTour)) {
-                    // TODO: show error!
-                }
-            } else {
-                fields.forEach((field, text) -> {
-                    if (text.isBlank()) field.setPromptText("field must be filled");
-                });
-                return;
-            }
-            // Clear the prompt text since the action was successful
-            fields.keySet().forEach(field -> field.setPromptText(""));*/
-
             // Add tour
             if (!model.addTour()) {
                 // TODO: show error!
-            }
+            } else {
+                // Yuhu - confirm!
 
-            // Disable fields again
-            disableTourFields(true);
-            // Reset button label back to "Add"
-            srcButton.setText("Add");
+                // Disable fields again
+                disableTourFields(true);
+                // Reset button label back to "Add"
+                srcButton.setText("Add");
+            }
         }
     }
 
     public void onEditTour(ActionEvent actionEvent) {
         Button srcButton = (Button) actionEvent.getSource();
         if (srcButton.getText().equals("Edit") && tourList.getSelectionModel().getSelectedItem() != null) { //ein item muss ausgewählt sein damit man edit verwenden kann
+
             disableTourFields(false);
+            tourName.setDisable(true);
 
             srcButton.setText("Apply");
         } else if (srcButton.getText().equals("Apply")) {
 
-            if (!model.editTour()) {
+            if (!model.editTour(tourList.getSelectionModel().getSelectedItem().getName())) { // get currently selected (under edit) tour name
                 // TODO: Display error message
-            }
+            } else {
+                // Yuhu - confirm!
 
-            disableTourFields(true);
-            srcButton.setText("Edit");
+                disableTourFields(true);
+                srcButton.setText("Edit");
+            }
         }
     }
 
