@@ -292,7 +292,6 @@ public class MainController {
 
     public void onEditLog(ActionEvent actionEvent) {
         if (noCurrentAction()){
-
             // Disable choosing tours
             tourList.setDisable(true);
 
@@ -426,22 +425,21 @@ public class MainController {
     public void onCancelLog(ActionEvent actionEvent) {
         if (addLogButton.getText().equals("Confirm")) {
             this.model.getTourLogs().remove(this.model.getTourLogs().size() - 1);
-            tourLogs.refresh();
-
-            tourLogs.setEditable(false);
 
             addLogButton.setText("Add Log");
         }
-        if (editLogButton.getText().equals("Confirm")) {editLogButton.setText("Edit Log");}
+        if (editLogButton.getText().equals("Confirm")) { editLogButton.setText("Edit Log"); }
         // TODO: dis select or clear fields!
 
-        //clean error outputs
+        tourLogs.setEditable(false);
+
+        // Clean error outputs
         model.setErrorField("");
 
         // Enable choosing tours
         tourList.setDisable(false);
 
-        // hide button
+        // Hide button
         cancelLogButton.setVisible(false);
     }
 }
