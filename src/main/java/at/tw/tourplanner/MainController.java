@@ -94,10 +94,10 @@ public class MainController {
 
         logDate.setCellFactory(TextFieldTableCell.forTableColumn());
         logComment.setCellFactory(TextFieldTableCell.forTableColumn());
-        logDifficulty.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        logDistance.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        logTime.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        logRating.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        logDifficulty.setCellFactory(TextFieldTableCell.forTableColumn());
+        logDistance.setCellFactory(TextFieldTableCell.forTableColumn());
+        logTime.setCellFactory(TextFieldTableCell.forTableColumn());
+        logRating.setCellFactory(TextFieldTableCell.forTableColumn());
 
         tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
             if (newTour == null) {
@@ -205,8 +205,6 @@ public class MainController {
     public void onAddLog(ActionEvent actionEvent) {
         Button srcButton = (Button) actionEvent.getSource();
         if (srcButton.getText().equals("Add Log")) {
-            System.out.println("tourList.getSelectionModel().getSelectedItem().getName() = " + tourList.getSelectionModel().getSelectedItem().getName());
-
             /*
             // Values set here are overwritten by bind
             TourLog tourLog = new TourLog(LocalDate.now().toString(), "Enter comment", 0, 0, 0, 0, "");
