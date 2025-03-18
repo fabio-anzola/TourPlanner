@@ -11,19 +11,19 @@ import java.util.Date;
 public class TourLog {
     private final SimpleStringProperty date;
     private final SimpleStringProperty comment;
-    private final SimpleIntegerProperty difficulty; // 1-5
-    private final SimpleIntegerProperty totalDistance;
-    private final SimpleIntegerProperty totalTime;
-    private final SimpleIntegerProperty rating; // 1-5
+    private final SimpleStringProperty difficulty; // 1-5
+    private final SimpleStringProperty totalDistance;
+    private final SimpleStringProperty totalTime;
+    private final SimpleStringProperty rating; // 1-5
     private final SimpleStringProperty tourName;
 
     public TourLog(String date, String comment, int difficulty, int totalDistance, int totalTime, int rating, String tourName) {
         this.date = new SimpleStringProperty(date);
         this.comment = new SimpleStringProperty(comment);
-        this.difficulty = new SimpleIntegerProperty(difficulty);
-        this.totalDistance = new SimpleIntegerProperty(totalDistance);
-        this.totalTime = new SimpleIntegerProperty(totalTime);
-        this.rating = new SimpleIntegerProperty(rating);
+        this.difficulty = new SimpleStringProperty(Integer.toString(difficulty));
+        this.totalDistance = new SimpleStringProperty(Integer.toString(totalDistance));
+        this.totalTime = new SimpleStringProperty(Integer.toString(totalTime));
+        this.rating = new SimpleStringProperty(Integer.toString(rating));
         this.tourName = new SimpleStringProperty(tourName);
     }
 
@@ -35,35 +35,51 @@ public class TourLog {
         return comment;
     }
 
-    public int getDifficulty() {
+    public String getDifficulty() {
         return difficulty.get();
     }
 
-    public SimpleIntegerProperty difficultyProperty() {
+    public int getParsedDifficulty() {
+        return Integer.parseInt(difficulty.get());
+    }
+
+    public SimpleStringProperty difficultyProperty() {
         return difficulty;
     }
 
-    public int getTotalDistance() {
+    public String getTotalDistance() {
         return totalDistance.get();
     }
 
-    public SimpleIntegerProperty totalDistanceProperty() {
+    public int getParsedTotalDistance() {
+        return Integer.parseInt(totalDistance.get());
+    }
+
+    public SimpleStringProperty totalDistanceProperty() {
         return totalDistance;
     }
 
-    public int getTotalTime() {
+    public String getTotalTime() {
         return totalTime.get();
     }
 
-    public SimpleIntegerProperty totalTimeProperty() {
+    public int getParsedTotalTime() {
+        return Integer.parseInt(totalTime.get());
+    }
+
+    public SimpleStringProperty totalTimeProperty() {
         return totalTime;
     }
 
-    public int getRating() {
+    public String getRating() {
         return rating.get();
     }
 
-    public SimpleIntegerProperty ratingProperty() {
+    public int getParsedRating() {
+        return Integer.parseInt(rating.get());
+    }
+
+    public SimpleStringProperty ratingProperty() {
         return rating;
     }
 
