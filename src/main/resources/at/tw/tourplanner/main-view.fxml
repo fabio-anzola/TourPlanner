@@ -37,10 +37,11 @@
                 </HBox>
                 <ListView fx:id="tourList" VBox.vgrow="ALWAYS"/> <!--probably needs an event listener to chose tours-->
                 <HBox spacing="5">
+                    <Pane HBox.hgrow="ALWAYS"/>  <!-- Pushes buttons to the right -->
                     <Button text="Add" onAction="#onAddTour" minWidth="60" fx:id="addTourButton"/>
                     <Button text="Edit" onAction="#onEditTour" minWidth="60" fx:id="editTourButton"/>
                     <Button text="Delete" onAction="#onDeleteTour" minWidth="60" fx:id="deleteTourButton"/>
-                    <Button text="Cancel" onAction="#onCancelTour" minWidth="60" fx:id="cancelTourButton" visible="false"/>
+                    <Button style="-fx-text-fill: red" text="Cancel" onAction="#onCancelTour" minWidth="60" fx:id="cancelTourButton" visible="false"/>
                 </HBox>
             </VBox>
 
@@ -97,7 +98,7 @@
                 <Label text="Tour Logs"/>
                 <TextField fx:id="logSearchField" promptText="Search logs..." HBox.hgrow="ALWAYS"/>
                 <Pane HBox.hgrow="ALWAYS"/>  <!-- Pushes buttons to the right -->
-                <Button text="Cancel" onAction="#onCancelLog" minWidth="80" fx:id="cancelLogButton" visible="false"/>
+                <Button style="-fx-text-fill: red" text="Cancel" onAction="#onCancelLog" minWidth="80" fx:id="cancelLogButton" visible="false"/>
                 <Button text="Add Log" onAction="#onAddLog" minWidth="80" fx:id="addLogButton"/>
                 <Button text="Edit Log" onAction="#onEditLog" minWidth="80" fx:id="editLogButton"/>
                 <Button text="Delete Log" onAction="#onDeleteLog" minWidth="80" fx:id="deleteLogButton"/>

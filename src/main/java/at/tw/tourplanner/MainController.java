@@ -164,7 +164,7 @@ public class MainController {
             // Clear selection and fields
             tourList.getSelectionModel().clearSelection();
 
-            // Disable choosing tours while adding new one
+            // Disable choosing tours
             tourList.setDisable(true);
 
             // Enable the fields for input
@@ -197,7 +197,7 @@ public class MainController {
 
             disableTourFields(false);
             tourName.setDisable(true);
-            // Disable choosing tours while adding new one
+            // Disable choosing tours
             tourList.setDisable(true);
 
             editTourButton.setText("Apply");
@@ -231,7 +231,7 @@ public class MainController {
     }
 
     public void onAddLog(ActionEvent actionEvent) {
-        if (noCurrentAction()) {
+        if (noCurrentAction() && tourList.getSelectionModel().getSelectedItem() != null) {
             /*
             // Values set here are overwritten by bind
             TourLog tourLog = new TourLog(LocalDate.now().toString(), "Enter comment", 0, 0, 0, 0, "");
@@ -246,7 +246,7 @@ public class MainController {
             this.model.getTourLogs().add(tourLog);
             */
 
-            // Disable choosing tours while adding new one
+            // Disable choosing tours
             tourList.setDisable(true);
 
             this.model.getTourLogs().add(this.model.getCurrentTourLog());
@@ -292,7 +292,7 @@ public class MainController {
     public void onEditLog(ActionEvent actionEvent) {
         if (noCurrentAction()){
 
-            // Disable choosing tours while adding new one
+            // Disable choosing tours
             tourList.setDisable(true);
 
             editLogButton.setText("Confirm");
@@ -409,19 +409,30 @@ public class MainController {
         if (addTourButton.getText().equals("Confirm")) {addTourButton.setText("Add");}
         if (editTourButton.getText().equals("Apply")) {editTourButton.setText("Edit");}
         // TODO: unselect or clear fields!
-        cancelTourButton.setVisible(false);
 
         // Enable choosing tours
         tourList.setDisable(false);
+
+        // hide button
+        cancelTourButton.setVisible(false);
     }
 
     public void onCancelLog(ActionEvent actionEvent) {
-        if (addLogButton.getText().equals("Confirm")) {addLogButton.setText("Add Log");}
+        if (addLogButton.getText().equals("Confirm")) {
+            this.model.getTourLogs().remove(this.model.getTourLogs().size() - 1);
+            tourLogs.refresh();
+
+            tourLogs.setEditable(false);
+
+            addLogButton.setText("Add Log");
+        }
         if (editLogButton.getText().equals("Confirm")) {editLogButton.setText("Edit Log");}
         // TODO: dis select or clear fields!
-        cancelLogButton.setVisible(false);
 
         // Enable choosing tours
         tourList.setDisable(false);
+
+        // hide button
+        cancelLogButton.setVisible(false);
     }
 }
