@@ -410,6 +410,9 @@ public class MainController {
         if (editTourButton.getText().equals("Apply")) {editTourButton.setText("Edit");}
         // TODO: unselect or clear fields!
 
+        //clean error outputs
+        model.setErrorField("");
+
         // Enable choosing tours
         tourList.setDisable(false);
 
@@ -428,6 +431,9 @@ public class MainController {
         }
         if (editLogButton.getText().equals("Confirm")) {editLogButton.setText("Edit Log");}
         // TODO: dis select or clear fields!
+
+        //clean error outputs
+        model.setErrorField("");
 
         // Enable choosing tours
         tourList.setDisable(false);

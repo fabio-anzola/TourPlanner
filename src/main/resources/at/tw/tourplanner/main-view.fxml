@@ -37,7 +37,6 @@
                 </HBox>
                 <ListView fx:id="tourList" VBox.vgrow="ALWAYS"/> <!--probably needs an event listener to chose tours-->
                 <HBox spacing="5">
-                    <Pane HBox.hgrow="ALWAYS"/>  <!-- Pushes buttons to the right -->
                     <Button text="Add" onAction="#onAddTour" minWidth="60" fx:id="addTourButton"/>
                     <Button text="Edit" onAction="#onEditTour" minWidth="60" fx:id="editTourButton"/>
                     <Button text="Delete" onAction="#onDeleteTour" minWidth="60" fx:id="deleteTourButton"/>
