@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class MainModel {
@@ -55,7 +56,7 @@ public class MainModel {
     }
 
     public boolean addTourLog() {
-        if (!validateTourLog(getCurrentTourLog())) {
+        if (!validateTourLog()) {
             return false;
         }
 
@@ -142,8 +143,86 @@ public class MainModel {
         return true;
     }
 
-    private boolean validateTourLog(TourLog tourLog) {
-        //TODO: validate!
+    private boolean validateTourLog() {
+        // Check date
+        if (getCurrentTourLog().getDate() == null || getCurrentTourLog().getDate().isBlank()) {
+            setErrorField("Please enter a tour date");
+            return false;
+        }
+        try {
+            LocalDate ld = LocalDate.parse(getCurrentTourLog().getDate());
+        } catch (DateTimeParseException e) {
+            setErrorField("Please enter a valid tour date (YYYY-MM-DD)");
+            return false;
+        }
+
+        // Check Comment
+        if (getCurrentTourLog().getComment() == null || getCurrentTourLog().getComment().isBlank()) {
+            setErrorField("Please enter a comment");
+            return false;
+        }
+
+        // Check difficulty
+        if (getCurrentTourLog().getDifficulty() == null || getCurrentTourLog().getDifficulty().isBlank()) {
+            setErrorField("Please enter a difficulty");
+            return false;
+        }
+        try {
+            if (getCurrentTourLog().getParsedDifficulty() < 0 || getCurrentTourLog().getParsedDifficulty() > 5) {
+                setErrorField("Please enter a valid difficulty (range from 0 to 5 where 5 is the most difficult)");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            setErrorField("Difficulty must be an integer");
+            return false;
+        }
+
+        // Check Total Distance
+        if (getCurrentTourLog().getTotalDistance() == null || getCurrentTourLog().getTotalDistance().isBlank()) {
+            setErrorField("Please enter a total distance in meters");
+            return false;
+        }
+        try {
+            if (getCurrentTourLog().getParsedTotalDistance() < 0) {
+                setErrorField("Please enter a valid total distance (> 0m)");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            setErrorField("Total distance must be an integer");
+            return false;
+        }
+
+        // Check Total Time
+        if (getCurrentTourLog().getTotalTime() == null || getCurrentTourLog().getTotalTime().isBlank()) {
+            setErrorField("Please enter a total time in minutes");
+            return false;
+        }
+        try {
+            if (getCurrentTourLog().getParsedTotalTime() < 0) {
+                setErrorField("Please enter a valid total time (> 0 minutes)");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            setErrorField("Total Time must be an integer");
+            return false;
+        }
+
+        // Check Rating
+        if (getCurrentTourLog().getRating() == null || getCurrentTourLog().getRating().isBlank()) {
+            setErrorField("Please enter a difficulty");
+            return false;
+        }
+        try {
+            if (getCurrentTourLog().getParsedRating() < 0 || getCurrentTourLog().getParsedRating() > 5) {
+                setErrorField("Please enter a valid difficulty (range from 0 to 5 where 5 is the most difficult)");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            setErrorField("Rating must be an integer");
+            return false;
+        }
+
+
         return true;
     }
 }
