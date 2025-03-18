@@ -411,13 +411,15 @@ public class MainController {
         if (editTourButton.getText().equals("Apply")) {editTourButton.setText("Edit");}
         // TODO: unselect or clear fields!
 
-        //clean error outputs
+        disableTourFields(true);
+
+        // Clean error outputs
         model.setErrorField("");
 
         // Enable choosing tours
         tourList.setDisable(false);
 
-        // hide button
+        // Hide button
         cancelTourButton.setVisible(false);
     }
 
