@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class TourLog {
-    private final SimpleObjectProperty<LocalDate> date;
+    private final SimpleStringProperty date;
     private final SimpleStringProperty comment;
     private final SimpleIntegerProperty difficulty; // 1-5
     private final SimpleIntegerProperty totalDistance;
@@ -17,8 +17,8 @@ public class TourLog {
     private final SimpleIntegerProperty rating; // 1-5
     private final SimpleStringProperty tourName;
 
-    public TourLog(LocalDate date, String comment, int difficulty, int totalDistance, int totalTime, int rating, String tourName) {
-        this.date = new SimpleObjectProperty<>(date);
+    public TourLog(String date, String comment, int difficulty, int totalDistance, int totalTime, int rating, String tourName) {
+        this.date = new SimpleStringProperty(date);
         this.comment = new SimpleStringProperty(comment);
         this.difficulty = new SimpleIntegerProperty(difficulty);
         this.totalDistance = new SimpleIntegerProperty(totalDistance);
@@ -75,11 +75,24 @@ public class TourLog {
         return tourName;
     }
 
-    public LocalDate getDate() {
+    public void setTourName(String name) {
+        this.tourName.set(name);
+    }
+
+    public String getDate() {
         return date.get();
     }
 
-    public SimpleObjectProperty<LocalDate> dateProperty() {
+    public SimpleStringProperty dateProperty() {
         return date;
+    }
+
+    @Override
+    public String toString() {
+        return "TourLog{" +
+                "date=" + date +
+                ", comment=" + comment +
+                ", tourName=" + tourName +
+                '}';
     }
 }
