@@ -246,17 +246,18 @@ public class MainController {
             this.model.getTourLogs().add(tourLog);
             */
 
-            // Disable choosing tours
-            tourList.setDisable(true);
+            if (this.model.addTourLogPreCheck()) {
+                // Disable choosing tours
+                tourList.setDisable(true);
 
-            this.model.getTourLogs().add(this.model.getCurrentTourLog());
-            tourLogs.refresh();
+                tourLogs.refresh();
 
-            tourLogs.setEditable(true);
+                tourLogs.setEditable(true);
 
-            // Change button label to "Confirm"
-            addLogButton.setText("Confirm");
-            cancelLogButton.setVisible(true);
+                // Change button label to "Confirm"
+                addLogButton.setText("Confirm");
+                cancelLogButton.setVisible(true);
+            }
         } else if (addLogButton.getText().equals("Confirm")) {
             // Add tour log
             if (!model.addTourLog()) {

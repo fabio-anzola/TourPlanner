@@ -225,4 +225,17 @@ public class MainModel {
 
         return true;
     }
+
+    public boolean addTourLogPreCheck() {
+        // TODO: check if a tour is selected
+        if (fieldTour.getName() == null || fieldTour.getName().isBlank()) {
+            return false;
+        } else {
+            this.currentTourLog = new TourLog(LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
+            this.tourLogs.add(this.currentTourLog);
+            return true;
+        }
+
+
+    }
 }
