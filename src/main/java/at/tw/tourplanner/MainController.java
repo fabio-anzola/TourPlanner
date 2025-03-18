@@ -3,6 +3,7 @@ package at.tw.tourplanner;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
+import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,17 +11,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class MainController {
@@ -77,13 +83,29 @@ public class MainController {
         routeImage.imageProperty().bindBidirectional(model.getFieldTour().routeImageProperty());
 
         // Bind observable list to model tour logs list
+        tourLogs.setItems(this.model.getTourLogs());
+
         logDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         logComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
         logDifficulty.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
         logDistance.setCellValueFactory(new PropertyValueFactory<>("totalDistance"));
         logTime.setCellValueFactory(new PropertyValueFactory<>("totalTime"));
         logRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
-        //tourLogs.setItems(this.model.getTourLogs());
+
+        logDate.setCellFactory(TextFieldTableCell.forTableColumn());
+        logComment.setCellFactory(TextFieldTableCell.forTableColumn());
+        logDifficulty.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        logDistance.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        logTime.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        logRating.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+
+        tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
+            if (newTour == null) {
+                tourLogs.setItems(FXCollections.observableArrayList()); // Show empty list if no tour is selected
+            } else {
+                tourLogs.setItems(new FilteredList<>(model.getTourLogs(), log -> log.getTourName().equalsIgnoreCase(newTour.getName())));
+            }
+        });
 
         tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
             if (null == newTour) {
@@ -93,15 +115,19 @@ public class MainController {
                 model.getFieldTour().setToLocation(null);
                 model.getFieldTour().setTransportType(TransportType.DEFAULT);
                 model.getFieldTour().setRouteImage(null);
+
+                model.getCurrentTourLog().setTourName("");
                 return;
             }
-            model.getFieldTour().setName(null == newTour.getName() ? null : newTour.getName());
-            model.getFieldTour().setDescription(null == newTour.getDescription() ? null : newTour.getDescription());
-            model.getFieldTour().setFromLocation(null == newTour.getFromLocation() ? null : newTour.getFromLocation());
-            model.getFieldTour().setToLocation(null == newTour.getToLocation() ? null : newTour.getToLocation());
-            model.getFieldTour().setTransportType(null == newTour.getTransportType() ? TransportType.DEFAULT : newTour.getTransportType());
-            model.getFieldTour().setRouteImage(null == newTour.getRouteImage() ? null : newTour.getRouteImage());
-            tourLogs.setItems(new FilteredList<TourLog>(this.model.getTourLogs(), log -> log.getTourName().equalsIgnoreCase(newTour.getName())));
+            model.getFieldTour().setName(newTour.getName());
+            model.getFieldTour().setDescription(newTour.getDescription());
+            model.getFieldTour().setFromLocation(newTour.getFromLocation());
+            model.getFieldTour().setToLocation(newTour.getToLocation());
+            model.getFieldTour().setTransportType(newTour.getTransportType());
+            model.getFieldTour().setRouteImage(newTour.getRouteImage());
+
+            model.getCurrentTourLog().setTourName(newTour.getName());
+            //tourLogs.setItems(new FilteredList<TourLog>(this.model.getTourLogs(), log -> log.getTourName().equalsIgnoreCase(newTour.getName())));
         });
 
         // Populate the combo box with the enum values
@@ -177,6 +203,57 @@ public class MainController {
     }
 
     public void onAddLog(ActionEvent actionEvent) {
+        Button srcButton = (Button) actionEvent.getSource();
+        if (srcButton.getText().equals("Add Log")) {
+            System.out.println("tourList.getSelectionModel().getSelectedItem().getName() = " + tourList.getSelectionModel().getSelectedItem().getName());
+
+            /*
+            // Values set here are overwritten by bind
+            TourLog tourLog = new TourLog(LocalDate.now().toString(), "Enter comment", 0, 0, 0, 0, "");
+
+            tourLog.dateProperty().bindBidirectional(this.model.getCurrentTourLog().dateProperty());
+            tourLog.commentProperty().bindBidirectional(this.model.getCurrentTourLog().commentProperty());
+            tourLog.difficultyProperty().bindBidirectional(this.model.getCurrentTourLog().difficultyProperty());
+            tourLog.totalDistanceProperty().bindBidirectional(this.model.getCurrentTourLog().totalDistanceProperty());
+            tourLog.totalTimeProperty().bindBidirectional(this.model.getCurrentTourLog().totalTimeProperty());
+            tourLog.ratingProperty().bindBidirectional(this.model.getCurrentTourLog().ratingProperty());
+            tourLog.tourNameProperty().bindBidirectional(this.model.getCurrentTourLog().tourNameProperty());
+            this.model.getTourLogs().add(tourLog);
+            */
+
+            this.model.getTourLogs().add(this.model.getCurrentTourLog());
+            tourLogs.refresh();
+
+            tourLogs.setEditable(true);
+
+            // Change button label to "Confirm"
+            srcButton.setText("Confirm");
+        } else if (srcButton.getText().equals("Confirm")) {
+            // Add tour log
+            if (!model.addTourLog()) {
+                // TODO: show error!
+            } else {
+                // Yuhu - confirm!
+
+                /*
+                this.model.getCurrentTourLog().dateProperty().unbind();
+                this.model.getCurrentTourLog().commentProperty().unbind();
+                this.model.getCurrentTourLog().difficultyProperty().unbind();
+                this.model.getCurrentTourLog().totalDistanceProperty().unbind();
+                this.model.getCurrentTourLog().totalTimeProperty().unbind();
+                this.model.getCurrentTourLog().ratingProperty().unbind();
+                this.model.getCurrentTourLog().tourNameProperty().unbind();
+
+                this.model.getTourLogs().get(this.model.getTourLogs().size() - 1).tourNameProperty().unbind();
+                */
+
+                tourLogs.setEditable(false);
+
+                // Reset button label back to "Add"
+                srcButton.setText("Add Log");
+                System.out.println(Arrays.deepToString(this.model.getTourLogs().toArray()));
+            }
+        }
     }
 
     public void onEditLog(ActionEvent actionEvent) {
