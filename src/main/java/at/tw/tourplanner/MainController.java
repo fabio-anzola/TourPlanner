@@ -158,18 +158,21 @@ public class MainController {
                 editLogButton.getText().equals("Edit Log");
     }
 
-
     public void onAddTour(ActionEvent actionEvent) {
         if (noCurrentAction()) {
 
             // Clear selection and fields
             tourList.getSelectionModel().clearSelection();
 
+            // Disable choosing tours while adding new one
+            tourList.setDisable(true);
+
             // Enable the fields for input
             disableTourFields(false);
 
             // Change button label to "Confirm"
             addTourButton.setText("Confirm");
+            cancelTourButton.setVisible(true);
         } else if (addTourButton.getText().equals("Confirm")) {
             // Add tour
             if (!model.addTour()) {
@@ -177,10 +180,14 @@ public class MainController {
             } else {
                 // Yuhu - confirm!
 
+                // Enable choosing tours
+                tourList.setDisable(false);
+
                 // Disable fields again
                 disableTourFields(true);
                 // Reset button label back to "Add"
                 addTourButton.setText("Add");
+                cancelTourButton.setVisible(false);
             }
         }
     }
@@ -190,8 +197,11 @@ public class MainController {
 
             disableTourFields(false);
             tourName.setDisable(true);
+            // Disable choosing tours while adding new one
+            tourList.setDisable(true);
 
             editTourButton.setText("Apply");
+            cancelTourButton.setVisible(true);
         } else if (editTourButton.getText().equals("Apply")) {
 
             if (!model.editTour(tourList.getSelectionModel().getSelectedItem().getName())) { // get currently selected (under edit) tour name
@@ -199,8 +209,12 @@ public class MainController {
             } else {
                 // Yuhu - confirm!
 
+                // Enable choosing tours
+                tourList.setDisable(false);
+
                 disableTourFields(true);
                 editTourButton.setText("Edit");
+                cancelTourButton.setVisible(false);
             }
         }
     }
@@ -232,6 +246,9 @@ public class MainController {
             this.model.getTourLogs().add(tourLog);
             */
 
+            // Disable choosing tours while adding new one
+            tourList.setDisable(true);
+
             this.model.getTourLogs().add(this.model.getCurrentTourLog());
             tourLogs.refresh();
 
@@ -239,6 +256,7 @@ public class MainController {
 
             // Change button label to "Confirm"
             addLogButton.setText("Confirm");
+            cancelLogButton.setVisible(true);
         } else if (addLogButton.getText().equals("Confirm")) {
             // Add tour log
             if (!model.addTourLog()) {
@@ -258,11 +276,15 @@ public class MainController {
                 this.model.getTourLogs().get(this.model.getTourLogs().size() - 1).tourNameProperty().unbind();
                 */
 
+                // Enable choosing tours
+                tourList.setDisable(false);
+
                 tourLogs.setEditable(false);
 
                 // Reset button label back to "Add"
                 addLogButton.setText("Add Log");
                 System.out.println(Arrays.deepToString(this.model.getTourLogs().toArray()));
+                cancelLogButton.setVisible(false);
             }
         }
     }
@@ -270,9 +292,18 @@ public class MainController {
     public void onEditLog(ActionEvent actionEvent) {
         if (noCurrentAction()){
 
+            // Disable choosing tours while adding new one
+            tourList.setDisable(true);
+
+            editLogButton.setText("Confirm");
+            cancelLogButton.setVisible(true);
         } else if (editLogButton.getText().equals("Confirm")) {
 
+            // Enable choosing tours
+            tourList.setDisable(false);
 
+            editLogButton.setText("Edit Log");
+            cancelLogButton.setVisible(false);
         }
     }
 
@@ -375,10 +406,22 @@ public class MainController {
     }
 
     public void onCancelTour(ActionEvent actionEvent) {
+        if (addTourButton.getText().equals("Confirm")) {addTourButton.setText("Add");}
+        if (editTourButton.getText().equals("Apply")) {editTourButton.setText("Edit");}
+        // TODO: unselect or clear fields!
+        cancelTourButton.setVisible(false);
 
+        // Enable choosing tours
+        tourList.setDisable(false);
     }
 
     public void onCancelLog(ActionEvent actionEvent) {
+        if (addLogButton.getText().equals("Confirm")) {addLogButton.setText("Add Log");}
+        if (editLogButton.getText().equals("Confirm")) {editLogButton.setText("Edit Log");}
+        // TODO: dis select or clear fields!
+        cancelLogButton.setVisible(false);
 
+        // Enable choosing tours
+        tourList.setDisable(false);
     }
 }
