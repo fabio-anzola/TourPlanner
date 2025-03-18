@@ -40,8 +40,8 @@
                     <Button text="Add" onAction="#onAddTour" minWidth="60" fx:id="addTourButton"/>
                     <Button text="Edit" onAction="#onEditTour" minWidth="60" fx:id="editTourButton"/>
                     <Button text="Delete" onAction="#onDeleteTour" minWidth="60" fx:id="deleteTourButton"/>
-                    <Button style="-fx-text-fill: red" text="Cancel" onAction="#onCancelTour" minWidth="60" fx:id="cancelTourButton" visible="false"/>
                 </HBox>
+                <Button style="-fx-text-fill: red" text="Cancel" onAction="#onCancelTour" minWidth="60" fx:id="cancelTourButton" visible="false"/>
             </VBox>
 
             <!-- Middle: Tour Details -->

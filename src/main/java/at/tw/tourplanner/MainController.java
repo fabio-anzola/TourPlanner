@@ -405,6 +405,7 @@ public class MainController {
         }
     }
 
+    @FXML
     public void onCancelTour(ActionEvent actionEvent) {
         if (addTourButton.getText().equals("Confirm")) {addTourButton.setText("Add");}
         if (editTourButton.getText().equals("Apply")) {editTourButton.setText("Edit");}
@@ -420,6 +421,7 @@ public class MainController {
         cancelTourButton.setVisible(false);
     }
 
+    @FXML
     public void onCancelLog(ActionEvent actionEvent) {
         if (addLogButton.getText().equals("Confirm")) {
             this.model.getTourLogs().remove(this.model.getTourLogs().size() - 1);
