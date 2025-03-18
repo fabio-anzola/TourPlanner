@@ -1,7 +1,6 @@
 package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
-import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -12,22 +11,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.image.Image;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.converter.DoubleStringConverter;
-import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class MainController {
     public TextField tourSearchField;
@@ -49,6 +43,18 @@ public class MainController {
     public TableColumn logTime;
     public TableColumn logRating;
     public Label errorLabel;
+
+    // buttons
+    // tour
+    public Button addTourButton;
+    public Button editTourButton;
+    public Button deleteTourButton;
+    public Button cancelTourButton;
+    // log
+    public Button addLogButton;
+    public Button editLogButton;
+    public Button deleteLogButton;
+    public Button cancelLogButton;
 
     private final MainModel model = new MainModel();
 
@@ -145,10 +151,17 @@ public class MainController {
         toLocation.setDisable(b);
         transportType.setDisable(b);
     }
+    private boolean noCurrentAction(){
+        return addTourButton.getText().equals("Add") &&
+                editTourButton.getText().equals("Edit") &&
+                addLogButton.getText().equals("Add Log") &&
+                editLogButton.getText().equals("Edit Log");
+    }
+
 
     public void onAddTour(ActionEvent actionEvent) {
-        Button srcButton = (Button) actionEvent.getSource();
-        if (srcButton.getText().equals("Add")) {
+        if (noCurrentAction()) {
+
             // Clear selection and fields
             tourList.getSelectionModel().clearSelection();
 
@@ -156,8 +169,8 @@ public class MainController {
             disableTourFields(false);
 
             // Change button label to "Confirm"
-            srcButton.setText("Confirm");
-        } else if (srcButton.getText().equals("Confirm")) {
+            addTourButton.setText("Confirm");
+        } else if (addTourButton.getText().equals("Confirm")) {
             // Add tour
             if (!model.addTour()) {
                 // TODO: show error!
@@ -167,20 +180,19 @@ public class MainController {
                 // Disable fields again
                 disableTourFields(true);
                 // Reset button label back to "Add"
-                srcButton.setText("Add");
+                addTourButton.setText("Add");
             }
         }
     }
 
     public void onEditTour(ActionEvent actionEvent) {
-        Button srcButton = (Button) actionEvent.getSource();
-        if (srcButton.getText().equals("Edit") && tourList.getSelectionModel().getSelectedItem() != null) { //ein item muss ausgewählt sein damit man edit verwenden kann
+        if (noCurrentAction() && tourList.getSelectionModel().getSelectedItem() != null) { //ein item muss ausgewählt sein damit man edit verwenden kann
 
             disableTourFields(false);
             tourName.setDisable(true);
 
-            srcButton.setText("Apply");
-        } else if (srcButton.getText().equals("Apply")) {
+            editTourButton.setText("Apply");
+        } else if (editTourButton.getText().equals("Apply")) {
 
             if (!model.editTour(tourList.getSelectionModel().getSelectedItem().getName())) { // get currently selected (under edit) tour name
                 // TODO: Display error message
@@ -188,14 +200,16 @@ public class MainController {
                 // Yuhu - confirm!
 
                 disableTourFields(true);
-                srcButton.setText("Edit");
+                editTourButton.setText("Edit");
             }
         }
     }
 
     public void onDeleteTour(ActionEvent actionEvent) {
-        if (!model.deleteTour()) {
-            // TODO: Display error message
+        if (noCurrentAction()) {
+            if (!model.deleteTour()) {
+                // TODO: Display error message
+            }
         }
     }
 
@@ -203,8 +217,7 @@ public class MainController {
     }
 
     public void onAddLog(ActionEvent actionEvent) {
-        Button srcButton = (Button) actionEvent.getSource();
-        if (srcButton.getText().equals("Add Log")) {
+        if (noCurrentAction()) {
             /*
             // Values set here are overwritten by bind
             TourLog tourLog = new TourLog(LocalDate.now().toString(), "Enter comment", 0, 0, 0, 0, "");
@@ -225,8 +238,8 @@ public class MainController {
             tourLogs.setEditable(true);
 
             // Change button label to "Confirm"
-            srcButton.setText("Confirm");
-        } else if (srcButton.getText().equals("Confirm")) {
+            addLogButton.setText("Confirm");
+        } else if (addLogButton.getText().equals("Confirm")) {
             // Add tour log
             if (!model.addTourLog()) {
                 // TODO: show error!
@@ -248,16 +261,25 @@ public class MainController {
                 tourLogs.setEditable(false);
 
                 // Reset button label back to "Add"
-                srcButton.setText("Add Log");
+                addLogButton.setText("Add Log");
                 System.out.println(Arrays.deepToString(this.model.getTourLogs().toArray()));
             }
         }
     }
 
     public void onEditLog(ActionEvent actionEvent) {
+        if (noCurrentAction()){
+
+        } else if (editLogButton.getText().equals("Confirm")) {
+
+
+        }
     }
 
     public void onDeleteLog(ActionEvent actionEvent) {
+        if (noCurrentAction()){
+            // use deleteLogButton
+        }
     }
 
     public void onImportFile(ActionEvent actionEvent) {
@@ -350,5 +372,13 @@ public class MainController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void onCancelTour(ActionEvent actionEvent) {
+
+    }
+
+    public void onCancelLog(ActionEvent actionEvent) {
+
     }
 }
