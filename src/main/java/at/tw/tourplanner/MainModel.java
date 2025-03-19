@@ -235,7 +235,19 @@ public class MainModel {
             this.tourLogs.add(this.currentTourLog);
             return true;
         }
-
-
     }
+
+    // FRAGE!!! er gibt: Suspicious call to 'List.remove()' warning in zeile 245,
+    // wenn ich aber verwende (TourLog) tourLog gibts den warning nicht mehr,
+    // ich kann schon im controller auf (TourLog) casten und es wird gehen.
+    // falls du hier ein problem erkennst kannst du es ändern,
+    //sonst lösch diesen kommentar einfach
+
+    public boolean deleteTourLog(Object tourLog) {
+        if (tourLog != null) {
+            return tourLogs.remove(tourLog);  // Removes the specified TourLog from the list
+        }
+        return false;
+    }
+
 }

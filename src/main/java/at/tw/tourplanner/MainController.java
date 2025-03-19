@@ -1,6 +1,7 @@
 package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
+import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -308,8 +309,18 @@ public class MainController {
     }
 
     public void onDeleteLog(ActionEvent actionEvent) {
-        if (noCurrentAction()){
-            // use deleteLogButton
+        if (noCurrentAction() && tourLogs.getSelectionModel().getSelectedItem() != null) {
+            //nimmt selected
+            Object selectedTourLog = tourLogs.getSelectionModel().getSelectedItem();
+            if(!model.deleteTourLog(selectedTourLog)) { // callt deleteTourLog methode aus MainModel
+                // TODO: show error!
+            }
+            //For Debugging: Print out all remaining tour logs
+            System.out.println("Remaining tour logs:");
+            for (Object log : tourLogs.getItems()) {
+                System.out.println(log);  // You might want to customize this print statement if necessary
+            }
+            tourLogs.refresh();
         }
     }
 
