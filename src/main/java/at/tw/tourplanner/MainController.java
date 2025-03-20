@@ -36,7 +36,7 @@ public class MainController {
     public Label estimatedTime;
     public ImageView routeImage;
     public TextField logSearchField;
-    public TableView tourLogs;
+    public TableView<TourLog> tourLogs;
     public TableColumn logDate;
     public TableColumn logComment;
     public TableColumn logDifficulty;
@@ -311,13 +311,13 @@ public class MainController {
     public void onDeleteLog(ActionEvent actionEvent) {
         if (noCurrentAction() && tourLogs.getSelectionModel().getSelectedItem() != null) {
             //nimmt selected
-            Object selectedTourLog = tourLogs.getSelectionModel().getSelectedItem();
+            TourLog selectedTourLog = tourLogs.getSelectionModel().getSelectedItem();
             if(!model.deleteTourLog(selectedTourLog)) { // callt deleteTourLog methode aus MainModel
                 // TODO: show error!
             }
             //For Debugging: Print out all remaining tour logs
             System.out.println("Remaining tour logs:");
-            for (Object log : tourLogs.getItems()) {
+            for (TourLog log : tourLogs.getItems()) {
                 System.out.println(log);  // You might want to customize this print statement if necessary
             }
             tourLogs.refresh();
