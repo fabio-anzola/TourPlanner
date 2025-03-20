@@ -295,6 +295,8 @@ public class MainController {
         if (noCurrentAction()){
             // Disable choosing tours
             tourList.setDisable(true);
+            // Enable editing Logs
+            tourLogs.setEditable(true);
 
             editLogButton.setText("Confirm");
             cancelLogButton.setVisible(true);
@@ -302,6 +304,8 @@ public class MainController {
 
             // Enable choosing tours
             tourList.setDisable(false);
+            // Disable editing Logs
+            tourLogs.setEditable(false);
 
             editLogButton.setText("Edit Log");
             cancelLogButton.setVisible(false);
