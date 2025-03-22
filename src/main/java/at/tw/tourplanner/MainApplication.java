@@ -8,12 +8,28 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
+/**
+ * The Main Class to start the Application
+ */
 public class MainApplication extends Application {
+    /**
+     * Method to start the app
+     *
+     * @param stage a stage
+     * @throws Exception passed exceptions
+     */
     @Override
     public void start(Stage stage) throws Exception{
         showStage(stage);
     }
 
+    /**
+     * Method to show initial stage
+     *
+     * @param stage a stage
+     * @return the root stage built form fxml
+     * @throws Exception passed exceptions
+     */
     public static Parent showStage(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(Objects.requireNonNull(MainApplication.class.getResource("main-view.fxml")));
         stage.setTitle("Tour Planner");
@@ -25,5 +41,10 @@ public class MainApplication extends Application {
         return root;
     }
 
+    /**
+     * Main method
+     *
+     * @param args args passed from cli
+     */
     public static void main(String[] args) { launch(); }
 }
