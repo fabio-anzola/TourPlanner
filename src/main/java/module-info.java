@@ -10,5 +10,5 @@ module at.tw.tourplanner {
     opens at.tw.tourplanner.object to javafx.base;
     exports at.tw.tourplanner;
 
-    exports at.tw.tourplanner.object; // konnte TourLog nicht im main model verwenden
+    exports at.tw.tourplanner.object;
 }
