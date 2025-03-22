@@ -90,8 +90,6 @@ public class MainController {
         routeImage.imageProperty().bindBidirectional(model.getFieldTour().routeImageProperty());
 
         // Bind observable list to model tour logs list
-        tourLogs.setItems(this.model.getTourLogs());
-
         logDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         logComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
         logDifficulty.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
@@ -233,20 +231,6 @@ public class MainController {
 
     public void onAddLog(ActionEvent actionEvent) {
         if (noCurrentAction() && tourList.getSelectionModel().getSelectedItem() != null) {
-            /*
-            // Values set here are overwritten by bind
-            TourLog tourLog = new TourLog(LocalDate.now().toString(), "Enter comment", 0, 0, 0, 0, "");
-
-            tourLog.dateProperty().bindBidirectional(this.model.getCurrentTourLog().dateProperty());
-            tourLog.commentProperty().bindBidirectional(this.model.getCurrentTourLog().commentProperty());
-            tourLog.difficultyProperty().bindBidirectional(this.model.getCurrentTourLog().difficultyProperty());
-            tourLog.totalDistanceProperty().bindBidirectional(this.model.getCurrentTourLog().totalDistanceProperty());
-            tourLog.totalTimeProperty().bindBidirectional(this.model.getCurrentTourLog().totalTimeProperty());
-            tourLog.ratingProperty().bindBidirectional(this.model.getCurrentTourLog().ratingProperty());
-            tourLog.tourNameProperty().bindBidirectional(this.model.getCurrentTourLog().tourNameProperty());
-            this.model.getTourLogs().add(tourLog);
-            */
-
             if (this.model.addTourLogPreCheck()) {
                 // Disable choosing tours
                 tourList.setDisable(true);
@@ -288,6 +272,9 @@ public class MainController {
                 System.out.println(Arrays.deepToString(this.model.getTourLogs().toArray()));
                 cancelLogButton.setVisible(false);
             }
+        } else if (tourList.getSelectionModel().getSelectedItem() != null) {
+            System.out.println("No tour selected for log");
+            tourList.getFocusModel().focus(0);
         }
     }
 
