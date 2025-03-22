@@ -14,21 +14,38 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class MainModel {
-
+    /**
+     * Observable list holding all tours in the application.
+     */
     @Getter
     private final ObservableList<Tour> tours = FXCollections.observableArrayList();
 
+    /**
+     * Observable list holding all tour logs.
+     */
     @Getter
     private final ObservableList<TourLog> tourLogs = FXCollections.observableArrayList();
 
+    /**
+     * Property used for displaying validation or application error messages.
+     */
     private final StringProperty errorField = new SimpleStringProperty();
 
+    /**
+     * Tour object used for data binding in the UI form.
+     */
     @Getter
     private final Tour fieldTour = new Tour(TransportType.DEFAULT, null, "", "", "", "");
 
+    /**
+     * Currently edited or added tour log.
+     */
     @Getter
     private TourLog currentTourLog = new TourLog(LocalDate.now().toString(), "", 0, 0, 0, 0, "");
 
+    /**
+     * Constructs a MainModel and adds demo data for initial use.
+     */
     public MainModel() {
         tours.add(new Tour(
                 TransportType.WALK,
@@ -41,6 +58,11 @@ public class MainModel {
         tourLogs.add(new TourLog(LocalDate.now().toString(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour #1"));
     }
 
+    /**
+     * Adds the current fieldTour to the list of tours after validation.
+     *
+     * @return true if the tour was successfully added; false otherwise
+     */
     public boolean addTour() {
         if (!validateTourField(getFieldTour())) {
             return false;
@@ -55,6 +77,11 @@ public class MainModel {
         return msg;
     }
 
+    /**
+     * Validates the currentTourLog and resets the log after success.
+     *
+     * @return true if validation passed; false otherwise
+     */
     public boolean addTourLog() {
         if (!validateTourLog()) {
             return false;
@@ -66,11 +93,22 @@ public class MainModel {
         return true;
     }
 
+    /**
+     * Deletes the currently selected tour from the list.
+     *
+     * @return true if the tour was successfully removed
+     */
     public boolean deleteTour() {
         String name = fieldTour.getName();
         return tours.removeIf(t -> t.getName().equals(name));
     }
 
+    /**
+     * Updates an existing tour's details with the values from fieldTour.
+     *
+     * @param initialName the original name of the tour before editing
+     * @return true if the update was successful; false otherwise
+     */
     public boolean editTour(String initialName) {
         Tour edited = getFieldTour();
         if (edited == null) {
@@ -98,14 +136,33 @@ public class MainModel {
         return false;
     }
 
+    /**
+     * Provides the property used to bind error messages.
+     *
+     * @return the errorField property
+     */
     public StringProperty errorFieldProperty() {
         return errorField;
     }
 
+    /**
+     * Updates the error message shown to the user.
+     *
+     * @param errorField the new error message to set
+     */
     public void setErrorField(String errorField) {
         this.errorField.set(errorField);
     }
 
+
+    /**
+     * Validates the given tour object, including checks for required fields
+     * and name uniqueness. Optionally excludes a specific tour name from name checks.
+     *
+     * @param tour the Tour to validate
+     * @param excludedTourName optional original tour name to skip in duplicate check
+     * @return true if valid, false otherwise
+     */
     private boolean validateTourField(Tour tour, String... excludedTourName) {
         if (tour.getName() == null || tour.getName().isBlank()) {
             setErrorField("Please enter a valid tour name");
@@ -143,6 +200,11 @@ public class MainModel {
         return true;
     }
 
+    /**
+     * Validates the currentTourLog
+     *
+     * @return true if all fields are valid; false otherwise
+     */
     private boolean validateTourLog() {
         // Check date
         if (getCurrentTourLog().getDate() == null || getCurrentTourLog().getDate().isBlank()) {
@@ -226,6 +288,11 @@ public class MainModel {
         return true;
     }
 
+    /**
+     * Validates and prepares the currentTourLog for editing.
+     *
+     * @return true if preparation succeeded (e.g. a tour is selected)
+     */
     public boolean addTourLogPreCheck() {
         // TODO: check if a tour is selected
         if (fieldTour.getName() == null || fieldTour.getName().isBlank()) {
@@ -237,6 +304,12 @@ public class MainModel {
         }
     }
 
+    /**
+     * Deletes the given tour log from the observable list.
+     *
+     * @param tourLog the log to delete
+     * @return true if the log was removed; false if not found or null
+     */
     public boolean deleteTourLog(TourLog tourLog) {
         if (tourLog != null) {
             return tourLogs.remove(tourLog);  // Removes the specified TourLog from the list
