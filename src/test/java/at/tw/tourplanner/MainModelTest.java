@@ -15,6 +15,9 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Testing Class for Main Model
+ */
 class MainModelTest {
     private Parent root = null;
 
@@ -29,7 +32,7 @@ class MainModelTest {
     }
 
     /**
-     * Will be called with {@code @Before} semantics, i.e. before each test method.
+     * Will be called before each test method.
      *
      * @param Stage - Will be injected by the test runner.
      */
@@ -37,8 +40,10 @@ class MainModelTest {
     private void start(Stage Stage) throws Exception{
         root = MainApplication.showStage(Stage);
     }
-    //hab den teil von professor kopiert, weiß nicht was es genau tut außer dass die app gestartet wird
 
+    /**
+     * Test adding a tour - should work
+     */
     @Test
     void test_add_tour(){
         MainModel mainModel = new MainModel();
@@ -66,6 +71,9 @@ class MainModelTest {
         assertEquals(initialSize + 1, newSize, "Tour list size should increase by 1");
     }
 
+    /**
+     * Test adding a Tour with an existing name - should fail
+     */
     @Test
     void test_add_tour_fail_for_name_already_exists(){
         MainModel mainModel = new MainModel();
@@ -93,6 +101,9 @@ class MainModelTest {
         assertEquals(initialSize, newSize, "Tour list size should stay the same");
     }
 
+    /**
+     * Test delete tour - should work
+     */
     @Test
     void test_delete_tour(){
         MainModel mainModel = new MainModel();
@@ -120,6 +131,9 @@ class MainModelTest {
         assertEquals(initialSize - 1, newSize, "Tour list size should decrease by 1");
     }
 
+    /**
+     * Test edit a tour - should work
+     */
     @Test
     void test_edit_tour(){
         MainModel mainModel = new MainModel();
