@@ -120,8 +120,6 @@ public class MainController {
      */
     public Label errorLabel;
 
-// --- Tour Buttons ---
-
     /**
      * Button for adding a new tour.
      */
