@@ -6,7 +6,25 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ~/Documents/docker/postgresql/pg_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=tourplanner-postgres
       - POSTGRES_PASSWORD=S3cret
+      - POSTGRES_DB=tourplannerdb
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin.json:/pgadmin4/servers.json
+
+volumes:
+  pg_data:
+  pgadmin_data:
