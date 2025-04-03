@@ -2,6 +2,7 @@ package at.tw.tourplanner.tourplanner.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,18 +14,22 @@ public class Tour {
     @Id
     @Column(name = "name")
     @Getter
+    @Setter
     private String name;
 
     @Column(name = "description")
     @Getter
+    @Setter
     private String description;
 
     @Column(name = "fromLocation")
     @Getter
+    @Setter
     private String fromLocation;
 
     @Column(name = "toLocation")
     @Getter
+    @Setter
     private String toLocation;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
