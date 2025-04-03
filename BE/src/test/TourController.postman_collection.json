@@ -1,0 +1,107 @@
+{
+  "info": {
+    "name": "TourController",
+    "_postman_id": "e98dba5f-2782-4c29-89ee-123456789abc",
+    "description": "Postman collection to test TourController endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Tours",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/tour/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tour", ""]
+        }
+      }
+    },
+    {
+      "name": "Get Tour by Name",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/tour/MountainHike",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tour", "MountainHike"]
+        }
+      }
+    },
+    {
+      "name": "Create Tour",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"MountainHike\",\n  \"description\": \"A scenic mountain hike tour.\",\n  \"fromLocation\": \"Innsbruck\",\n  \"toLocation\": \"Alps Summit\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/tour/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tour", ""]
+        }
+      }
+    },
+    {
+      "name": "Update Tour",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"MountainHike\",\n  \"description\": \"Updated scenic mountain hike.\",\n  \"fromLocation\": \"Salzburg\",\n  \"toLocation\": \"Alps Summit\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/tour/MountainHike",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tour", "MountainHike"]
+        }
+      }
+    },
+    {
+      "name": "Delete Tour",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/plain"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "MountainHike"
+        },
+        "url": {
+          "raw": "http://localhost:8080/tour/MountainHike",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tour", "MountainHike"]
+        }
+      }
+    }
+  ]
+}
