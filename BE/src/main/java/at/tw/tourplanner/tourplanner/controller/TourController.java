@@ -40,7 +40,7 @@ public class TourController {
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<Tour> deleteTour(@RequestBody String name) {
+    public ResponseEntity<Tour> deleteTour(@PathVariable String name) {
         try {
             this.tourRepository.deleteById(name);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
