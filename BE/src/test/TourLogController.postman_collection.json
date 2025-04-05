@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "TourLogController",
+    "_postman_id": "c445c5c2-bd4e-4b3c-a9e7-6c305dbfab50",
+    "description": "Collection to test TourLogController endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Tour Logs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/tourlog/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tourlog", ""]
+        }
+      }
+    },
+    {
+      "name": "Get Tour Log by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/tourlog/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tourlog", "1"]
+        }
+      }
+    },
+    {
+      "name": "Get Tour Logs by Tour Name",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/tourlog/tour/MountainHike",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tourlog", "tour", "MountainHike"]
+        }
+      }
+    },
+    {
+      "name": "Create Tour Log",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"date\": \"2025-04-01\",\n  \"comment\": \"Very nice tour!\",\n  \"difficulty\": 3,\n  \"totalDistance\": 12000,\n  \"totalTime\": 90,\n  \"rating\": 5,\n  \"tour\": {\n    \"name\": \"MountainHike\",\n    \"description\": \"A scenic mountain hike tour.\",\n    \"fromLocation\": \"Innsbruck\",\n    \"toLocation\": \"Alps Summit\"\n  }\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/tourlog/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tourlog", ""]
+        }
+      }
+    },
+    {
+      "name": "Update Tour Log",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"date\": \"2025-04-01\",\n  \"comment\": \"Updated tour log comment\",\n  \"difficulty\": 4,\n  \"totalDistance\": 13000,\n  \"totalTime\": 95,\n  \"rating\": 4,\n  \"tour\": {\n    \"name\": \"MountainHike\",\n    \"description\": \"A scenic mountain hike tour.\",\n    \"fromLocation\": \"Innsbruck\",\n    \"toLocation\": \"Alps Summit\"\n  }\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/tourlog/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tourlog", "1"]
+        }
+      }
+    },
+    {
+      "name": "Delete Tour Log",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/plain"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "1"
+        },
+        "url": {
+          "raw": "http://localhost:8080/tourlog/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["tourlog", "1"]
+        }
+      }
+    }
+  ]
+}
