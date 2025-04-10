@@ -4,6 +4,7 @@ module at.tw.tourplanner {
     requires static lombok;
     requires java.desktop;
     requires jdk.jdi;
+    requires org.json;
 
 
     opens at.tw.tourplanner to javafx.fxml;
