@@ -31,6 +31,21 @@ public class MainController {
     public TextField tourSearchField;
 
     /**
+     * Contains Filtered Tours.
+     */
+    public FilteredList<Tour> filteredTours;
+
+    /**
+     * Button for filtering tours by name.
+     */
+    public Button tourSearchButton;
+
+    /**
+     * Contains Filtered Tour Logs.
+     */
+    public FilteredList<TourLog> filteredLogs;
+
+    /**
      * List view displaying all tours.
      */
     public ListView<Tour> tourList;
@@ -79,6 +94,11 @@ public class MainController {
      * Search field for filtering tour logs.
      */
     public TextField logSearchField;
+
+    /**
+     * Button for filtering tour logs.
+     */
+    public Button logSearchButton;
 
     /**
      * Table view showing all logs related to the selected tour.
@@ -184,7 +204,8 @@ public class MainController {
         routeImage.imageProperty().bindBidirectional(model.getFieldTour().routeImageProperty());
 
         // Bind observable list to model tour list
-        tourList.setItems(model.getTours());
+        filteredTours = new FilteredList<>(model.getTours(), t -> true);
+        tourList.setItems(filteredTours);
         tourList.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(Tour tour, boolean empty) {
@@ -570,9 +591,47 @@ public class MainController {
     /**
      * Searches for tours.
      *
-     * @param actionEvent triggered by the Search field or button
+     * @param actionEvent triggered by the Tour Search field or button
      */
     public void onTourSearch(ActionEvent actionEvent) {
+        String textSearch = tourSearchField.getText().toLowerCase();
+        if (textSearch == null || textSearch.isBlank()) {
+            filteredTours.setPredicate(t -> true); // Show all
+        } else {
+            filteredTours.setPredicate(tour ->
+                    tour.getName().toLowerCase().contains(textSearch)
+            );
+        }
+    }
+
+    /**
+     * Searches for tour logs.
+     *
+     * @param actionEvent triggered by the Log Search field or button
+     */
+    public void onLogSearch(ActionEvent actionEvent) {
+        String search = logSearchField.getText() != null ? logSearchField.getText().toLowerCase() : "";
+        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
+
+        if (selectedTour == null) {
+            tourLogs.setItems(FXCollections.observableArrayList());
+            return;
+        }
+
+        FilteredList<TourLog> result = new FilteredList<>(model.getTourLogs(), log -> {
+            boolean belongsToSelectedTour = log.getTourName().equalsIgnoreCase(selectedTour.getName());
+
+            if (search.isBlank()) {
+                return belongsToSelectedTour;
+            }
+
+            boolean matchesSearch = log.getComment().toLowerCase().contains(search)
+                    || log.getTourName().toString().toLowerCase().contains(search);
+
+            return belongsToSelectedTour && matchesSearch;
+        });
+
+        tourLogs.setItems(result);
     }
 
     /**

@@ -5,6 +5,7 @@ module at.tw.tourplanner {
     requires java.desktop;
     requires jdk.jdi;
     requires org.json;
+    requires org.kordamp.ikonli.javafx;
 
 
     opens at.tw.tourplanner to javafx.fxml;

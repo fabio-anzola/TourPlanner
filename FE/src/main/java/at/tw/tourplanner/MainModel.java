@@ -47,6 +47,7 @@ public class MainModel {
      * Constructs a MainModel and adds demo data for initial use.
      */
     public MainModel() {
+        // Dummy Tour
         tours.add(new Tour(
                 TransportType.WALK,
                 new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
@@ -55,6 +56,7 @@ public class MainModel {
                 "Wien",
                 "Burgenland"
         ));
+        // Dummy Tour Log
         tourLogs.add(new TourLog(LocalDate.now().toString(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour #1"));
     }
 
