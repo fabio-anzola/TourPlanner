@@ -306,6 +306,10 @@ public class MainController {
             // Disable choosing tours
             tourList.setDisable(true);
 
+            //Disable  text search for tours
+            tourSearchField.setDisable(true);
+            tourSearchButton.setDisable(true);
+
             // Enable the fields for input
             disableTourFields(false);
 
@@ -323,6 +327,10 @@ public class MainController {
 
                 // Enable choosing tours
                 tourList.setDisable(false);
+
+                // Enable text search for tours
+                tourSearchField.setDisable(false);
+                tourSearchButton.setDisable(false);
 
                 // Disable fields again
                 disableTourFields(true);
@@ -353,6 +361,10 @@ public class MainController {
             // Disable choosing tours
             tourList.setDisable(true);
 
+            // Disable text search for tours
+            tourSearchField.setDisable(true);
+            tourSearchButton.setDisable(true);
+
             // Change button text to apply
             editTourButton.setText("Apply");
 
@@ -367,6 +379,10 @@ public class MainController {
 
                 // Enable choosing tours
                 tourList.setDisable(false);
+
+                // Enable text search for tours
+                tourSearchField.setDisable(false);
+                tourSearchButton.setDisable(false);
 
                 // Disable tour fields again
                 disableTourFields(true);
@@ -414,6 +430,13 @@ public class MainController {
                 // Disable choosing tours
                 tourList.setDisable(true);
 
+                // Disable text search for tour logs
+                logSearchField.setDisable(true);
+                logSearchButton.setDisable(true);
+                // Disable text search for tours
+                tourSearchField.setDisable(true);
+                tourSearchButton.setDisable(true);
+
                 // refresh tour log list
                 tourLogs.refresh();
 
@@ -435,6 +458,13 @@ public class MainController {
 
                 // Enable choosing tours
                 tourList.setDisable(false);
+
+                // Enable text search for tour logs
+                logSearchField.setDisable(false);
+                logSearchButton.setDisable(false);
+                // Enable text search for tours
+                tourSearchField.setDisable(false);
+                tourSearchButton.setDisable(false);
 
                 tourLogs.setEditable(false);
 
@@ -460,6 +490,13 @@ public class MainController {
             // Disable choosing tours
             tourList.setDisable(true);
 
+            // Disable text search for tour logs
+            logSearchField.setDisable(true);
+            logSearchButton.setDisable(true);
+            // Disable text search for tours
+            tourSearchField.setDisable(true);
+            tourSearchButton.setDisable(true);
+
             // Enable editing Logs
             tourLogs.setEditable(true);
 
@@ -471,6 +508,13 @@ public class MainController {
         } else if (editLogButton.getText().equals("Confirm")) {
             // Enable choosing tours
             tourList.setDisable(false);
+
+            // Enable text search for tour logs
+            logSearchField.setDisable(false);
+            logSearchButton.setDisable(false);
+            // Enable text search for tours
+            tourSearchField.setDisable(false);
+            tourSearchButton.setDisable(false);
 
             // Disable editing Logs
             tourLogs.setEditable(false);
@@ -520,8 +564,8 @@ public class MainController {
 
         // Set file type filters
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Files", "*.*"),
-                new FileChooser.ExtensionFilter("Tourplanner Files", "*.tourplanner")
+                new FileChooser.ExtensionFilter("Tourplanner Files", "*.tourplanner"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
         );
 
         // Get the current stage
@@ -550,14 +594,23 @@ public class MainController {
      * @param actionEvent triggered by the Export menu item
      */
     public void onExportFile(ActionEvent actionEvent) {
+        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
+
+        // Check if a tour is selected
+        if (selectedTour == null) return;
+
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export File");
+        fileChooser.setTitle("Export Tour Data");
 
         // Set file type filters
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Files", "*.*"),
-                new FileChooser.ExtensionFilter("Tourplanner Files", "*.tourplanner")
+                new FileChooser.ExtensionFilter("Tourplanner Files", "*.tourplanner"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
         );
+
+        // Suggest default file name
+        fileChooser.setInitialFileName(selectedTour.getName() + ".tourplanner");
+
         // Get the current stage
         Stage stage = (Stage) ((MenuItem) actionEvent.getSource()).getParentPopup().getOwnerWindow();
 
@@ -567,7 +620,11 @@ public class MainController {
         if (file != null) {
             try (FileWriter writer = new FileWriter(file)) {
                 // Replace with object information
-                String content = "This is an exported file.\nReplace this with actual content.";
+                String content = "Tour Name: " + selectedTour.getName() + "\n" +
+                        "Description: " + selectedTour.getDescription() + "\n" +
+                        "From: " + selectedTour.getFromLocation() + "\n" +
+                        "To: " + selectedTour.getToLocation() + "\n" +
+                        "Transport Type: " + selectedTour.getTransportType() + "\n";
 
                 writer.write(content);
                 System.out.println("File saved to: " + file.getAbsolutePath());
@@ -695,6 +752,10 @@ public class MainController {
         // Enable choosing tours
         tourList.setDisable(false);
 
+        // Enable text search for tours
+        tourSearchField.setDisable(false);
+        tourSearchButton.setDisable(false);
+
         // Hide button
         cancelTourButton.setVisible(false);
     }
@@ -721,6 +782,13 @@ public class MainController {
 
         // Enable choosing tours
         tourList.setDisable(false);
+
+        // Enable text search for tour logs
+        logSearchField.setDisable(false);
+        logSearchButton.setDisable(false);
+        // Enable text search for tours
+        tourSearchField.setDisable(false);
+        tourSearchButton.setDisable(false);
 
         // Hide button
         cancelLogButton.setVisible(false);
