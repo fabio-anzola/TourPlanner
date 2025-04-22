@@ -35,7 +35,7 @@ public class MainModel {
      * Tour object used for data binding in the UI form.
      */
     @Getter
-    private final Tour fieldTour = new Tour(TransportType.DEFAULT, null, "", "", "", "");
+    private final Tour fieldTour = new Tour(TransportType.DEFAULT, null, "", "", "", "", 0, 0);
 
     /**
      * Currently edited or added tour log.
@@ -54,7 +54,9 @@ public class MainModel {
                 "Hiking Tour #1",
                 "Sunday Family Hiking Tour",
                 "Wien",
-                "Burgenland"
+                "Burgenland",
+                0,
+                0
         ));
         // Dummy Tour Log
         tourLogs.add(new TourLog(LocalDate.now().toString(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour #1"));
@@ -70,7 +72,7 @@ public class MainModel {
             return false;
         }
 
-        boolean msg = tours.add(new Tour(fieldTour.getTransportType(), fieldTour.getRouteImage(), fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation()));
+        boolean msg = tours.add(new Tour(fieldTour.getTransportType(), fieldTour.getRouteImage(), fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation(), 0, 0));
 
         // Clean up
         fieldTour.clearProperties();

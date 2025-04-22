@@ -38,22 +38,36 @@ public class Tour {
     private final SimpleObjectProperty<Image> routeImage;
 
     /**
+     * Contains the popularity of the tour
+     */
+    private final SimpleIntegerProperty popularity; // 1-3
+
+    /**
+     * Contains the child friendliness of the tour
+     */
+    private final SimpleIntegerProperty childFriendliness; // 1-3
+
+    /**
      * The constructor for the Tour object
      *
-     * @param transportType the Enum type
-     * @param routeImage    the Image
-     * @param name          Tour name
-     * @param description   tour description
-     * @param fromLocation  tour start location
-     * @param toLocation    tour end location
+     * @param transportType     the Enum type
+     * @param routeImage        the Image
+     * @param name              Tour name
+     * @param description       tour description
+     * @param fromLocation      tour start location
+     * @param toLocation        tour end location
+     * @param popularity        tour popularity
+     * @param childFriendliness tour child friendliness
      */
-    public Tour(TransportType transportType, Image routeImage, String name, String description, String fromLocation, String toLocation) {
+    public Tour(TransportType transportType, Image routeImage, String name, String description, String fromLocation, String toLocation, Integer popularity, Integer childFriendliness) {
         this.name = new SimpleStringProperty(name);
         this.description = new SimpleStringProperty(description);
         this.fromLocation = new SimpleStringProperty(fromLocation);
         this.toLocation = new SimpleStringProperty(toLocation);
         this.transportType = new SimpleObjectProperty<TransportType>(transportType);
         this.routeImage = new SimpleObjectProperty<Image>(routeImage);
+        this.popularity = new SimpleIntegerProperty(popularity);
+        this.childFriendliness = new SimpleIntegerProperty(childFriendliness);
     }
 
     /**
@@ -66,6 +80,8 @@ public class Tour {
         this.toLocation = new SimpleStringProperty("");
         this.transportType = new SimpleObjectProperty<TransportType>(TransportType.DEFAULT);
         this.routeImage = new SimpleObjectProperty<Image>(null);
+        this.popularity = new SimpleIntegerProperty(0);
+        this.childFriendliness = new SimpleIntegerProperty(0);
     }
 
     /**
@@ -78,6 +94,8 @@ public class Tour {
         setToLocation("");
         setTransportType(TransportType.DEFAULT);
         setRouteImage(null);
+        setPopularity(0);
+        setChildFriendliness(0);
     }
 
     /**
@@ -238,7 +256,47 @@ public class Tour {
      *
      * @param routeImage the Route Image
      */
-    public void setRouteImage(Image routeImage) {
-        this.routeImage.set(routeImage);
-    }
+    public void setRouteImage(Image routeImage) { this.routeImage.set(routeImage); }
+
+    /**
+     * Value getter
+     *
+     * @return the value
+     */
+    public Integer getPopularity() { return this.popularity.get(); }
+
+    /**
+     * Value property getter
+     *
+     * @return the value property
+     */
+    public SimpleIntegerProperty popularityProperty() { return popularity; }
+
+    /**
+     * Value property setter
+     *
+     * @param value the popularity
+     */
+    public void setPopularity(Integer value) { this.popularity.set(value); }
+
+    /**
+     * Child friendliness getter
+     *
+     * @return the child friendliness
+     */
+    public Integer getChildFriendliness() { return this.childFriendliness.get(); }
+
+    /**
+     * Child friendliness property getter
+     *
+     * @return the child friendliness property
+     */
+    public SimpleIntegerProperty childFriendlinessProperty() { return childFriendliness; }
+
+    /**
+     * Child friendliness property setter
+     *
+     * @param value the child friendliness
+     */
+    public void setChildFriendliness(Integer value) { this.childFriendliness.set(value); }
 }

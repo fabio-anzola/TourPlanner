@@ -54,7 +54,9 @@ class MainModelTest {
                 "Test Tour",
                 "Meet Fabio and Niki at the Museum",
                 "Start",
-                "End"
+                "End",
+                0,
+                0
         );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
@@ -84,7 +86,9 @@ class MainModelTest {
                 "Hiking Tour #1",
                 "Meet Fabio and Niki at the Museum",
                 "Start",
-                "End"
+                "End",
+                0,
+                0
         );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
@@ -114,7 +118,9 @@ class MainModelTest {
                 "Hiking Tour #1",
                 "Sunday Family Hiking Tour",
                 "Wien",
-                "Burgenland"
+                "Burgenland",
+                0,
+                0
         );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
@@ -143,7 +149,9 @@ class MainModelTest {
                 "Hiking Tour #1",
                 "Monday Family Hiking Tour",
                 "Burgenland",
-                "Wien"
+                "Wien",
+                0,
+                0
         );
 
         mainModel.getFieldTour().setTransportType(testTour.getTransportType());
