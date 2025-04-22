@@ -20,8 +20,8 @@ public class RouteService {
     @Value("${openrouteservice.api-key}")
     private String apiKey;
 
-    public RouteResultDTO getRoute(double startLon, double startLat, double endLon, double endLat) throws Exception {
-        URL url = new URL("https://api.openrouteservice.org/v2/directions/driving-car");
+    public RouteResultDTO getRoute(double startLon, double startLat, double endLon, double endLat, String profile) throws Exception {
+        URL url = new URL("https://api.openrouteservice.org/v2/directions/" + profile);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
         con.setRequestMethod("POST");

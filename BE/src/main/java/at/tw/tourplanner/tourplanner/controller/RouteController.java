@@ -26,11 +26,15 @@ public class RouteController {
             @RequestParam double startLon,
             @RequestParam double startLat,
             @RequestParam double endLon,
-            @RequestParam double endLat
+            @RequestParam double endLat,
+            @RequestParam(defaultValue = "car") String mode
     ) {
         try {
-            RouteResultDTO route = routeService.getRoute(startLon, startLat, endLon, endLat);
+            String profile = TransportMode.fromString(mode).getOrsProfile();
+            RouteResultDTO route = routeService.getRoute(startLon, startLat, endLon, endLat, profile);
             return ResponseEntity.ok(route);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
