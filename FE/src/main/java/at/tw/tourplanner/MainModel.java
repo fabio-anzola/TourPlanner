@@ -55,7 +55,7 @@ public class MainModel {
                 "Sunday Family Hiking Tour",
                 "Wien",
                 "Burgenland",
-                0,
+                1,
                 0
         ));
         // Dummy Tour Log
@@ -321,4 +321,10 @@ public class MainModel {
         return false;
     }
 
+    public boolean setTourPopularity(Tour tour, long tourLogCount) {
+        if(tour == null || tourLogCount < 0) return false;
+
+        tour.setPopularity((int)tourLogCount);
+        return true;
+    }
 }

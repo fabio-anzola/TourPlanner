@@ -294,6 +294,27 @@ public class MainController {
     }
 
     /**
+     * Handles recalibration of the popularity of a tour.
+     *
+     * @param selectedTour contains name of affected tour
+     */
+    private boolean tourPopularityRecalibration(Tour selectedTour){
+        if(selectedTour != null){
+            long tourLogCount = tourLogs.getItems().stream()
+                    .filter(log -> log.getTourName().equals(selectedTour.getName()))
+                    .count();
+
+            return model.setTourPopularity(selectedTour, tourLogCount);
+        }
+        return false;
+    }
+
+    private void tourChildFriendlinessRecalibration(){
+        // pass
+    }
+
+
+    /**
      * Handles adding a new tour.
      *
      * @param actionEvent triggered by the Add Tour button
@@ -451,7 +472,11 @@ public class MainController {
             }
         } else if (addLogButton.getText().equals("Confirm")) {
             // Add tour log
-            if (!model.addTourLog()) {
+            if (!model.addTourLog() ) {
+                // TODO: show error!
+            }
+            // Recalibrate the popularity of affected tour
+            else if (!tourPopularityRecalibration(tourList.getSelectionModel().getSelectedItem())){
                 // TODO: show error!
             } else {
                 // Yuhu - confirm!
@@ -541,6 +566,10 @@ public class MainController {
             if(!model.deleteTourLog(selectedTourLog)) {
                 // TODO: show error!
             }
+            // Recalibrate the popularity of affected tour
+            else if (!tourPopularityRecalibration(tourList.getSelectionModel().getSelectedItem())){
+                // TODO: show error!
+            }
 
             //For Debugging: Print out all remaining tour logs
             //System.out.println("Remaining tour logs:");
@@ -619,7 +648,7 @@ public class MainController {
 
         if (file != null) {
             try (FileWriter writer = new FileWriter(file)) {
-                // Replace with object information
+                // Set object information
                 String content = "Tour Name: " + selectedTour.getName() + "\n" +
                         "Description: " + selectedTour.getDescription() + "\n" +
                         "From: " + selectedTour.getFromLocation() + "\n" +

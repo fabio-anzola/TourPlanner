@@ -40,12 +40,12 @@ public class Tour {
     /**
      * Contains the popularity of the tour
      */
-    private final SimpleIntegerProperty popularity; // 1-3
+    private final SimpleIntegerProperty popularity; // number of logs
 
     /**
      * Contains the child friendliness of the tour
      */
-    private final SimpleIntegerProperty childFriendliness; // 1-3
+    private final SimpleIntegerProperty childFriendliness; // 1-3 (3=most child friendly)
 
     /**
      * The constructor for the Tour object
