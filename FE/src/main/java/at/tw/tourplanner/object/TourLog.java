@@ -24,12 +24,12 @@ public class TourLog {
     /**
      * The tour log total distance
      */
-    private final SimpleStringProperty totalDistance;
+    private final SimpleStringProperty totalDistance;   // kilometers
 
     /**
      * The tour log total time
      */
-    private final SimpleStringProperty totalTime;
+    private final SimpleStringProperty totalTime;   // minutes
 
     /**
      * The tour log rating

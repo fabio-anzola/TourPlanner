@@ -56,7 +56,7 @@ public class MainModel {
                 "Wien",
                 "Burgenland",
                 1,
-                0
+                1
         ));
         // Dummy Tour Log
         tourLogs.add(new TourLog(LocalDate.now().toString(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour #1"));
@@ -325,6 +325,13 @@ public class MainModel {
         if(tour == null || tourLogCount < 0) return false;
 
         tour.setPopularity((int)tourLogCount);
+        return true;
+    }
+
+    public boolean setTourChildFriendliness(Tour tour, Integer childFriendliness) {
+        if(tour == null || childFriendliness == null) return false;
+
+        tour.setChildFriendliness(childFriendliness);
         return true;
     }
 }

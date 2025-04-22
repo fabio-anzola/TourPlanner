@@ -4,6 +4,7 @@ import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -294,9 +295,10 @@ public class MainController {
     }
 
     /**
-     * Handles recalibration of the popularity of a tour.
+     * Handles recalibration of the popularity of a tour
      *
-     * @param selectedTour contains name of affected tour
+     * @param selectedTour contains tour object
+     * @return true if popularity was successfully set, false otherwise.
      */
     private boolean tourPopularityRecalibration(Tour selectedTour){
         if(selectedTour != null){
@@ -309,8 +311,56 @@ public class MainController {
         return false;
     }
 
-    private void tourChildFriendlinessRecalibration(){
-        // pass
+    /**
+     * Handles recalibration of the child friendliness of a tour
+     *
+     * @param selectedTour contains tour object
+     * @return true if child friendliness was successfully set, false otherwise.
+     */
+    private boolean tourChildFriendlinessRecalibration(Tour selectedTour){
+        if(selectedTour != null){
+            var matchingTourLogs = tourLogs.getItems().stream()
+                    .filter(log -> log.getTourName().equals(selectedTour.getName()))
+                    .toList();
+
+            if (matchingTourLogs.isEmpty()){
+                model.setTourChildFriendliness(selectedTour, -1); // unknown child friendliness
+                return true;
+            }
+
+            // calculating averages
+            double avgDifficulty = matchingTourLogs.stream()
+                    .mapToInt(TourLog::getParsedDifficulty)
+                    .average()
+                    .orElse(0);
+
+
+            double avgTime = matchingTourLogs.stream()
+                    .mapToInt(TourLog::getParsedTotalTime)
+                    .average()
+                    .orElse(0);
+
+            double avgDistance = matchingTourLogs.stream()
+                    .mapToInt(TourLog::getParsedTotalDistance)
+                    .average()
+                    .orElse(0);
+
+            // calculating child friendliness
+            double difficultyNorm = (avgDifficulty - 1) / 4.0;
+            double distanceNorm = Math.min(avgDistance / 15.0, 1.0);  // everything greater than 15km is max difficulty for children
+            double timeNorm = Math.min(avgTime / 300, 1.0);   // everything greater than 5h is max difficulty for children
+
+            double score = (difficultyNorm * 0.5 + distanceNorm * 0.25 + timeNorm * 0.25) * 100;
+
+            int childFriendliness;
+            if (score <= 25) childFriendliness = 4;         // very child friendly
+            else if (score <= 50) childFriendliness = 3;    // child friendly
+            else if (score <= 75) childFriendliness = 2;    // child unfriendly
+            else childFriendliness = 1;                     // very child unfriendly
+
+            return model.setTourChildFriendliness(selectedTour, childFriendliness);
+        }
+        return false;
     }
 
 
@@ -478,7 +528,12 @@ public class MainController {
             // Recalibrate the popularity of affected tour
             else if (!tourPopularityRecalibration(tourList.getSelectionModel().getSelectedItem())){
                 // TODO: show error!
-            } else {
+            }
+            // Recalibrate the child friendliness of affected tour
+            else if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
+                // TODO: show error!
+            }
+            else {
                 // Yuhu - confirm!
 
                 // Enable choosing tours
@@ -531,24 +586,29 @@ public class MainController {
             // Show cancel button
             cancelLogButton.setVisible(true);
         } else if (editLogButton.getText().equals("Confirm")) {
-            // Enable choosing tours
-            tourList.setDisable(false);
+            // Recalibrate the child friendliness of affected tour
+            if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
+                // TODO: show error!
+            } else {
+                // Enable choosing tours
+                tourList.setDisable(false);
 
-            // Enable text search for tour logs
-            logSearchField.setDisable(false);
-            logSearchButton.setDisable(false);
-            // Enable text search for tours
-            tourSearchField.setDisable(false);
-            tourSearchButton.setDisable(false);
+                // Enable text search for tour logs
+                logSearchField.setDisable(false);
+                logSearchButton.setDisable(false);
+                // Enable text search for tours
+                tourSearchField.setDisable(false);
+                tourSearchButton.setDisable(false);
 
-            // Disable editing Logs
-            tourLogs.setEditable(false);
+                // Disable editing Logs
+                tourLogs.setEditable(false);
 
-            // Change button text back again
-            editLogButton.setText("Edit Log");
+                // Change button text back again
+                editLogButton.setText("Edit Log");
 
-            // Disable cancel button again
-            cancelLogButton.setVisible(false);
+                // Disable cancel button again
+                cancelLogButton.setVisible(false);
+            }
         }
     }
 
@@ -568,6 +628,10 @@ public class MainController {
             }
             // Recalibrate the popularity of affected tour
             else if (!tourPopularityRecalibration(tourList.getSelectionModel().getSelectedItem())){
+                // TODO: show error!
+            }
+            // Recalibrate the child friendliness of affected tour
+            else if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
                 // TODO: show error!
             }
 

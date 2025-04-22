@@ -45,7 +45,7 @@ public class Tour {
     /**
      * Contains the child friendliness of the tour
      */
-    private final SimpleIntegerProperty childFriendliness; // 1-3 (3=most child friendly)
+    private final SimpleIntegerProperty childFriendliness; // 1-4 (4 = most child-friendly)
 
     /**
      * The constructor for the Tour object
