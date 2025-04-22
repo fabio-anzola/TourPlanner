@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -29,13 +30,13 @@ public class RouteService {
         con.setDoOutput(true);
 
         String jsonInput = String.format(Locale.US, """
-            {
-              "coordinates": [
-                [%f, %f],
-                [%f, %f]
-              ]
-            }
-            """, startLon, startLat, endLon, endLat);
+                {
+                  "coordinates": [
+                    [%f, %f],
+                    [%f, %f]
+                  ]
+                }
+                """, startLon, startLat, endLon, endLat);
 
         try (OutputStream os = con.getOutputStream()) {
             os.write(jsonInput.getBytes(StandardCharsets.UTF_8));
@@ -53,8 +54,8 @@ public class RouteService {
         return new RouteResultDTO(summary.getDouble("distance"), summary.getDouble("duration"));
     }
 
-    public String getRouteGeoJson(double startLon, double startLat, double endLon, double endLat) throws Exception {
-        URL url = new URL("https://api.openrouteservice.org/v2/directions/driving-car/geojson");
+    public String getRouteGeoJson(double startLon, double startLat, double endLon, double endLat, String profile) throws Exception {
+        URL url = new URL("https://api.openrouteservice.org/v2/directions/" + profile + "/geojson");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
         con.setRequestMethod("POST");

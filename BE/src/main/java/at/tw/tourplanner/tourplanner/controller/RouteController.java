@@ -1,6 +1,7 @@
 package at.tw.tourplanner.tourplanner.controller;
 
 import at.tw.tourplanner.tourplanner.dto.RouteResultDTO;
+import at.tw.tourplanner.tourplanner.model.TransportMode;
 import at.tw.tourplanner.tourplanner.service.RouteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,13 +41,18 @@ public class RouteController {
             @RequestParam double startLon,
             @RequestParam double startLat,
             @RequestParam double endLon,
-            @RequestParam double endLat
+            @RequestParam double endLat,
+            @RequestParam(defaultValue = "car") String mode
     ) {
         try {
-            String geoJson = routeService.getRouteGeoJson(startLon, startLat, endLon, endLat);
+            String profile = TransportMode.fromString(mode).getOrsProfile();
+            String geoJson = routeService.getRouteGeoJson(startLon, startLat, endLon, endLat, profile);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(geoJson);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body("{\"error\": \"Invalid transport mode. Use car, bicycle, walk, or public.\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"Failed to fetch GeoJSON route\"}");
