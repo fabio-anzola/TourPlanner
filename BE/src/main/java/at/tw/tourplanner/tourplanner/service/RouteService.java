@@ -52,4 +52,42 @@ public class RouteService {
 
         return new RouteResultDTO(summary.getDouble("distance"), summary.getDouble("duration"));
     }
+
+    public String getRouteGeoJson(double startLon, double startLat, double endLon, double endLat) throws Exception {
+        URL url = new URL("https://api.openrouteservice.org/v2/directions/driving-car/geojson");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Authorization", apiKey);
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setDoOutput(true);
+
+        String jsonInput = String.format(Locale.US, """
+        {
+          "coordinates": [
+            [%f, %f],
+            [%f, %f]
+          ]
+        }
+        """, startLon, startLat, endLon, endLat);
+
+        try (OutputStream os = con.getOutputStream()) {
+            os.write(jsonInput.getBytes(StandardCharsets.UTF_8));
+        }
+
+        int responseCode = con.getResponseCode();
+        if (responseCode != 200) {
+            throw new RuntimeException("GeoJSON route request failed: HTTP " + responseCode);
+        }
+
+        StringBuilder response = new StringBuilder();
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+            String line;
+            while ((line = in.readLine()) != null) {
+                response.append(line);
+            }
+        }
+
+        return response.toString();
+    }
 }
