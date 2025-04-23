@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Objects;
 
 public class MainModel {
@@ -358,8 +359,8 @@ public class MainModel {
      * @param file the file to be written to
      * @param tour the tour object
      */
-    public void exportTourPdf(File file, Tour tour) throws IOException {
-        new pdfGenerationService(file).generateTourPdf(tour);
+    public void exportTourPdf(File file, Tour tour, List<TourLog> tourLogs) throws IOException {
+        new pdfGenerationService(file).generateTourPdf(tour, tourLogs);
     }
 
     /**
@@ -368,7 +369,7 @@ public class MainModel {
      * @param file the file to be written to
      * @param tour the tour object
      */
-    public void exportSummaryPdf(File file, Tour tour) throws IOException {
-        new pdfGenerationService(file).generateSummaryPdf(tour);
+    public void exportSummaryPdf(File file, Tour tour, List<TourLog> tourLogs) throws IOException {
+        new pdfGenerationService(file).generateSummaryPdf(tour, tourLogs);
     }
 }

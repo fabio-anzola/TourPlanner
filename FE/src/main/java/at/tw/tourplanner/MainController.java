@@ -26,8 +26,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class MainController {
     /**
@@ -829,11 +831,12 @@ public class MainController {
         File file = fileChooser.showSaveDialog(stage);
 
         if (file != null){
+            List<TourLog> logsForTour = new ArrayList<>(tourLogs.getItems());
             Task<Void> task = new Task<>() {
                 @Override
                 protected Void call(){
                     try{
-                        model.exportTourPdf(file, selectedTour);
+                        model.exportTourPdf(file, selectedTour, logsForTour);
                     } catch (IOException e) {
                         // Handle error in UI
                         System.err.println("Error while exporting Tour PDF: " + e.getMessage());
@@ -883,11 +886,12 @@ public class MainController {
         File file = fileChooser.showSaveDialog(stage);
 
         if (file != null){
+            List<TourLog> logsForTour = new ArrayList<>(tourLogs.getItems());
             Task<Void> task = new Task<>() {
                 @Override
                 protected Void call(){
                     try{
-                        model.exportSummaryPdf(file, selectedTour);
+                        model.exportSummaryPdf(file, selectedTour, logsForTour);
                     } catch (IOException e) {
                         // Handle error in UI
                         System.err.println("Error while exporting Summary PDF: " + e.getMessage());
