@@ -6,6 +6,7 @@ import at.tw.tourplanner.object.TransportType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class MainController {
     /**
@@ -205,8 +207,15 @@ public class MainController {
         routeImage.imageProperty().bindBidirectional(model.getFieldTour().routeImageProperty());
 
         // Bind observable list to model tour list
+        // Step 1: Create FilteredList from the full model list
         filteredTours = new FilteredList<>(model.getTours(), t -> true);
-        tourList.setItems(filteredTours);
+
+        // Step 2: Wrap it in a SortedList (for ordering by popularity)
+        SortedList<Tour> sortedTours = new SortedList<>(filteredTours);
+        sortedTours.setComparator(Comparator.comparingInt(Tour::getPopularity).reversed());
+
+        // Step 3: Bind to the ListView
+        tourList.setItems(sortedTours);
         tourList.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(Tour tour, boolean empty) {
@@ -292,6 +301,17 @@ public class MainController {
                 editTourButton.getText().equals("Edit") &&
                 addLogButton.getText().equals("Add Log") &&
                 editLogButton.getText().equals("Edit Log");
+    }
+
+    /**
+     * Refreshes the tour list
+     */
+    public void refreshTourList() {
+        String textSearch = tourSearchField.getText().toLowerCase();
+
+        filteredTours.setPredicate(tour ->
+                textSearch.isBlank() || tour.getName().toLowerCase().contains(textSearch)
+        );
     }
 
     /**
@@ -395,6 +415,9 @@ public class MainController {
                 // TODO: show error!
             } else {
                 // Yuhu - confirm!
+
+                // Refresh the Tour table
+                refreshTourList();
 
                 // Enable choosing tours
                 tourList.setDisable(false);
@@ -536,6 +559,9 @@ public class MainController {
             else {
                 // Yuhu - confirm!
 
+                // Refresh the Tour table
+                refreshTourList();
+
                 // Enable choosing tours
                 tourList.setDisable(false);
 
@@ -641,6 +667,9 @@ public class MainController {
             //    System.out.println(log);  // You might want to customize this print statement if necessary
             //}
 
+            // Refresh the Tour table
+            refreshTourList();
+
             // Refresh the log table
             tourLogs.refresh();
         }
@@ -744,14 +773,7 @@ public class MainController {
      * @param actionEvent triggered by the Tour Search field or button
      */
     public void onTourSearch(ActionEvent actionEvent) {
-        String textSearch = tourSearchField.getText().toLowerCase();
-        if (textSearch == null || textSearch.isBlank()) {
-            filteredTours.setPredicate(t -> true); // Show all
-        } else {
-            filteredTours.setPredicate(tour ->
-                    tour.getName().toLowerCase().contains(textSearch)
-            );
-        }
+        refreshTourList();
     }
 
     /**
