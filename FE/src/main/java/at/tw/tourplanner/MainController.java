@@ -3,10 +3,12 @@ package at.tw.tourplanner;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
+import at.tw.tourplanner.service.pdfGenerationService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -807,10 +809,44 @@ public class MainController {
     }
 
     /**
-     * Opens a tour report window.
+     * Create tourReport PDF
      *
      * @param actionEvent triggered by the Generate Tour Report menu item
      */
+    public void onGenTourReport(ActionEvent actionEvent) {
+        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
+        if (selectedTour == null) return;
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Generating Tour Report for " + selectedTour.getName() + " ...");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Pdf Files", "*.pdf"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+        fileChooser.setInitialFileName(selectedTour.getName() + "_tour_report.pdf");
+
+        Stage stage = (Stage) ((MenuItem) actionEvent.getSource()).getParentPopup().getOwnerWindow();
+        File file = fileChooser.showSaveDialog(stage);
+
+        if (file != null){
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call(){
+                    try{
+                        model.exportTourPdf(file, selectedTour);
+                    } catch (IOException e) {
+                        // Handle error in UI
+                        System.err.println("Error while exporting Tour PDF: " + e.getMessage());
+                    }
+                    return null;
+                }
+            };
+            Thread thread = new Thread(task);
+            thread.setDaemon(true);
+            thread.start();
+        }
+    }
+    /*
     public void onGenTourReport(ActionEvent actionEvent) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("tour-reports-view.fxml"));
@@ -823,12 +859,48 @@ public class MainController {
             e.printStackTrace();
         }
     }
+    */
 
     /**
-     * Opens a summary report window.
+     * Create summaryReport PDF
      *
      * @param actionEvent triggered by the Generate Summary Report menu item
      */
+    public void onGenSummaryReport(ActionEvent actionEvent) {
+        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
+        if (selectedTour == null) return;
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Generating Summary Report for " + selectedTour.getName() + " ...");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Pdf Files", "*.pdf"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+        fileChooser.setInitialFileName(selectedTour.getName() + "_summary_report.pdf");
+
+        Stage stage = (Stage) ((MenuItem) actionEvent.getSource()).getParentPopup().getOwnerWindow();
+        File file = fileChooser.showSaveDialog(stage);
+
+        if (file != null){
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call(){
+                    try{
+                        model.exportSummaryPdf(file, selectedTour);
+                    } catch (IOException e) {
+                        // Handle error in UI
+                        System.err.println("Error while exporting Summary PDF: " + e.getMessage());
+                    }
+                    return null;
+                }
+            };
+            Thread thread = new Thread(task);
+            thread.setDaemon(true);
+            thread.start();
+        }
+    }
+    /*
     public void onGenSummaryReport(ActionEvent actionEvent) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("summary-reports-view.fxml"));
@@ -841,6 +913,7 @@ public class MainController {
             e.printStackTrace();
         }
     }
+    */
 
     /**
      * Cancels tour creation or editing.

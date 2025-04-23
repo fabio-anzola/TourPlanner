@@ -3,12 +3,15 @@ package at.tw.tourplanner;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
+import at.tw.tourplanner.service.pdfGenerationService;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import lombok.Getter;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
@@ -321,6 +324,13 @@ public class MainModel {
         return false;
     }
 
+    /**
+     * Sets tour popularity
+     *
+     * @param tour the tour object
+     * @param tourLogCount number of logs the tour has
+     * @return true if the popularity was set; otherwise false
+     */
     public boolean setTourPopularity(Tour tour, long tourLogCount) {
         if(tour == null || tourLogCount < 0) return false;
 
@@ -328,10 +338,37 @@ public class MainModel {
         return true;
     }
 
+    /**
+     * Sets tour popularity
+     *
+     * @param tour the tour object
+     * @param childFriendliness precomputed value for child friendliness
+     * @return true if the child friendliness was set; otherwise false
+     */
     public boolean setTourChildFriendliness(Tour tour, Integer childFriendliness) {
         if(tour == null || childFriendliness == null) return false;
 
         tour.setChildFriendliness(childFriendliness);
         return true;
+    }
+
+    /**
+     * Creates a Tour report
+     *
+     * @param file the file to be written to
+     * @param tour the tour object
+     */
+    public void exportTourPdf(File file, Tour tour) throws IOException {
+        new pdfGenerationService(file).generateTourPdf(tour);
+    }
+
+    /**
+     * Creates a Summary report
+     *
+     * @param file the file to be written to
+     * @param tour the tour object
+     */
+    public void exportSummaryPdf(File file, Tour tour) throws IOException {
+        new pdfGenerationService(file).generateSummaryPdf(tour);
     }
 }
