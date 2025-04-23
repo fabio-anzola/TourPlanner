@@ -367,9 +367,8 @@ public class MainModel {
      * Creates a Summary report
      *
      * @param file the file to be written to
-     * @param tour the tour object
      */
-    public void exportSummaryPdf(File file, Tour tour, List<TourLog> tourLogs) throws IOException {
-        new pdfGenerationService(file).generateSummaryPdf(tour, tourLogs);
+    public void exportSummaryPdf(File file) throws IOException {
+        new pdfGenerationService(file).generateSummaryPdf(tours, tourLogs);
     }
 }

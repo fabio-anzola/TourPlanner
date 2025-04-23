@@ -870,28 +870,24 @@ public class MainController {
      * @param actionEvent triggered by the Generate Summary Report menu item
      */
     public void onGenSummaryReport(ActionEvent actionEvent) {
-        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
-        if (selectedTour == null) return;
-
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Generating Summary Report for " + selectedTour.getName() + " ...");
+        fileChooser.setTitle("Generating Summary Report...");
 
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Pdf Files", "*.pdf"),
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
-        fileChooser.setInitialFileName(selectedTour.getName() + "_summary_report.pdf");
+        fileChooser.setInitialFileName("TourPlanner_summary_report.pdf");
 
         Stage stage = (Stage) ((MenuItem) actionEvent.getSource()).getParentPopup().getOwnerWindow();
         File file = fileChooser.showSaveDialog(stage);
 
         if (file != null){
-            List<TourLog> logsForTour = new ArrayList<>(tourLogs.getItems());
             Task<Void> task = new Task<>() {
                 @Override
                 protected Void call(){
                     try{
-                        model.exportSummaryPdf(file, selectedTour, logsForTour);
+                        model.exportSummaryPdf(file);
                     } catch (IOException e) {
                         // Handle error in UI
                         System.err.println("Error while exporting Summary PDF: " + e.getMessage());

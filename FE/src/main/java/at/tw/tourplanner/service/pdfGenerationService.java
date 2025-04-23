@@ -70,25 +70,35 @@ public class pdfGenerationService {
                 i++;
             }
         }
-
         document.close();
 
         System.out.println("Tour PDF generated at: " + file.getAbsolutePath());
     }
 
-    public void generateSummaryPdf(Tour tour, List<TourLog> tourLogs) throws IOException {
-        Paragraph title = new Paragraph("Generate Summary Pdf")
-                .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
-                .setFontSize(18)
-                .setFontColor(ColorConstants.BLUE);
-        document.add(title);
+    public void generateSummaryPdf(List<Tour> tours, List<TourLog> tourLogs) throws IOException {
+        if (tours.isEmpty()) {
+            document.add(new Paragraph("no tours found"));
+        } else {
+            for (Tour tour : tours) {
+                List<TourLog> logsForTour = tourLogs.stream()
+                        .filter(log -> log.getTourName().equalsIgnoreCase(tour.getName()))
+                        .toList();
 
-        document.add(new Paragraph("Tour Name: " + tour.getName()));
-        document.add(new Paragraph("Description: " + tour.getDescription()));
-        document.add(new Paragraph("From: " + tour.getFromLocation()));
-        document.add(new Paragraph("To: " + tour.getToLocation()));
-        document.add(new Paragraph("Transport Type: " + tour.getTransportType()));
+                double avgTime = logsForTour.stream().mapToInt(TourLog::getParsedTotalTime).average().orElse(0);
+                double avgDistance = logsForTour.stream().mapToInt(TourLog::getParsedTotalDistance).average().orElse(0);
+                double avgRating = logsForTour.stream().mapToInt(TourLog::getParsedRating).average().orElse(0);
 
+                Paragraph header = new Paragraph("Tour: " + tour.getName())
+                        .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
+                        .setFontSize(14)
+                        .setFontColor(ColorConstants.RED);
+                document.add(header);
+                document.add(new Paragraph("  Avg Time: " + avgTime));
+                document.add(new Paragraph("  Avg Distance: " + avgDistance));
+                document.add(new Paragraph("  Avg Rating: " + avgRating));
+                document.add(new Paragraph("--------------------------------------"));
+            }
+        }
         document.close();
 
         System.out.println("Summary PDF generated at: " + file.getAbsolutePath());
