@@ -1,15 +1,21 @@
 package at.tw.tourplanner.service;
 
+import at.tw.tourplanner.object.RouteData;
 import at.tw.tourplanner.object.TransportType;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Locale;
+import javafx.scene.web.WebView;
+import org.json.JSONObject;
+
+import java.io.FileWriter;
 
 public class RouteImageService {
     private static final String BASE_URL = "http://localhost:8080/api";
@@ -74,5 +80,35 @@ public class RouteImageService {
         double distance = summary.getDouble("distance");
 
         return new String[]{String.valueOf(duration / 60), String.valueOf(distance / 1000), response.toString()};
+    }
+
+    public WebView createWebViewWithGeoJson(JSONObject geoJson) throws IOException {
+        String htmlTemplate = Files.readString(Paths.get("src/main/resources/map_template.html"));
+        String htmlContent = htmlTemplate.replace("__GEOJSON__", geoJson.toString());
+
+        File tempHtml = File.createTempFile("map", ".html");
+        try (FileWriter writer = new FileWriter(tempHtml)) {
+            writer.write(htmlContent);
+        }
+
+        WebView webView = new WebView();
+        webView.getEngine().load(tempHtml.toURI().toString());
+
+        return webView;
+    }
+
+    public RouteData getRouteData(String startAddress, String endAddress, TransportType transportType) throws Exception {
+        RouteImageService restClient = new RouteImageService();
+        double[] startCoords = restClient.geocode(startAddress);
+        double[] endCoords = restClient.geocode(endAddress);
+
+        if (startCoords == null || endCoords == null) {
+            throw new Exception("Failed to geocode one or both addresses.");
+        }
+
+        String[] result = restClient.getRouteGeoJson(startCoords, endCoords, transportType);
+        RouteData routeData = new RouteData(result);
+
+        return routeData;
     }
 }
