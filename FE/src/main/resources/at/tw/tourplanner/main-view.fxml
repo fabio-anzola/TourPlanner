@@ -8,6 +8,7 @@
 <?import java.lang.String?>
 
 <?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.web.WebView?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="at.tw.tourplanner.MainController"
             prefWidth="700" prefHeight="600">
@@ -88,7 +89,7 @@
             </VBox>
 
             <!-- Right: Route Map -->
-            <VBox HBox.hgrow="ALWAYS">
+            <VBox fx:id="mapContainer" HBox.hgrow="NEVER">
                 <Label text="Route Map"/>
                 <ImageView fx:id="routeImage" fitWidth="300" fitHeight="200" preserveRatio="true"/>
             </VBox>
