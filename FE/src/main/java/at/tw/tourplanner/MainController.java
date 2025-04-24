@@ -3,17 +3,13 @@ package at.tw.tourplanner;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
-import at.tw.tourplanner.service.pdfGenerationService;
+import at.tw.tourplanner.service.RouteTask;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -27,7 +23,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -514,6 +509,15 @@ public class MainController {
      * @param actionEvent triggered by the Calculate Route button
      */
     public void onCalculateRoute(ActionEvent actionEvent) {
+        RouteTask task = new RouteTask(
+                model.getFieldTour().getFromLocation(),
+                model.getFieldTour().getToLocation(),
+                model.getFieldTour().getTransportType(),
+                estimatedTime, // JavaFX Label
+                tourDistance  // JavaFX Label
+        );
+
+        new Thread(task).start();
     }
 
     /**
