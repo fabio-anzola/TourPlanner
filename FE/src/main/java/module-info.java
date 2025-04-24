@@ -9,6 +9,9 @@ module at.tw.tourplanner {
     requires io;
     requires kernel;
     requires layout;
+    requires javafx.web;
+
+
 
 
     opens at.tw.tourplanner to javafx.fxml;
