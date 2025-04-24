@@ -19,4 +19,12 @@ public class RouteData {
         this.duration = res[1] != null ? Double.parseDouble(res[1]) : 0;
         this.geoJson = res[2];
     }
+
+    @Override
+    public String toString() {
+        return "RouteData{" +
+                "distance=" + distance +
+                ", duration=" + duration +
+                '}';
+    }
 }
