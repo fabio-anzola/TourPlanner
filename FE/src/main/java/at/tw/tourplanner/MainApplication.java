@@ -34,7 +34,7 @@ public class MainApplication extends Application {
     public static Parent showStage(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(Objects.requireNonNull(MainApplication.class.getResource("main-view.fxml")));
         stage.setTitle("Tour Planner");
-        stage.setScene(new Scene(root, 700, 700));
+        stage.setScene(new Scene(root, 1200, 800));
         stage.setMinWidth(700);
         stage.setMinHeight(700);
         stage.show();
