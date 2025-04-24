@@ -3,7 +3,7 @@ package at.tw.tourplanner;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
-import at.tw.tourplanner.service.pdfGenerationService;
+import at.tw.tourplanner.service.PdfGenerationService;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -360,7 +360,7 @@ public class MainModel {
      * @param tour the tour object
      */
     public void exportTourPdf(File file, Tour tour, List<TourLog> tourLogs) throws IOException {
-        new pdfGenerationService(file).generateTourPdf(tour, tourLogs);
+        new PdfGenerationService(file).generateTourPdf(tour, tourLogs);
     }
 
     /**
@@ -369,6 +369,6 @@ public class MainModel {
      * @param file the file to be written to
      */
     public void exportSummaryPdf(File file) throws IOException {
-        new pdfGenerationService(file).generateSummaryPdf(tours, tourLogs);
+        new PdfGenerationService(file).generateSummaryPdf(tours, tourLogs);
     }
 }
