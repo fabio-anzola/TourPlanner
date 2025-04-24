@@ -21,7 +21,7 @@ public enum TransportMode {
             case "car" -> CAR;
             case "bicycle" -> BICYCLE;
             case "walk" -> WALK;
-            case "public" -> PUBLIC;
+            case "public_transport" -> PUBLIC;
             default -> throw new IllegalArgumentException("Unsupported transport mode: " + value);
         };
     }
