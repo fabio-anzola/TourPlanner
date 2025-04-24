@@ -1,9 +1,10 @@
 package at.tw.tourplanner;
 
+import at.tw.tourplanner.object.RouteData;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
-import at.tw.tourplanner.service.RouteTask;
+import at.tw.tourplanner.service.RouteImageService;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -14,8 +15,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -186,6 +190,9 @@ public class MainController {
      * Reference to the main model containing business logic and observable data.
      */
     private final MainModel model = new MainModel();
+
+    @FXML
+    private VBox mapContainer;
 
     /**
      * Initializes UI bindings and event listeners.
@@ -509,13 +516,36 @@ public class MainController {
      * @param actionEvent triggered by the Calculate Route button
      */
     public void onCalculateRoute(ActionEvent actionEvent) {
-        RouteTask task = new RouteTask(
-                model.getFieldTour().getFromLocation(),
-                model.getFieldTour().getToLocation(),
-                model.getFieldTour().getTransportType(),
-                estimatedTime, // JavaFX Label
-                tourDistance  // JavaFX Label
-        );
+        routeImage.setVisible(false);
+
+        // TODO: SHOW SPINNER
+
+        Task<RouteData> task = new Task<RouteData>() {
+            @Override
+            protected RouteData call() throws Exception {
+                return new RouteImageService().getRouteData(
+                        model.getFieldTour().getFromLocation(),
+                        model.getFieldTour().getToLocation(),
+                        model.getFieldTour().getTransportType());
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            RouteData routeData = task.getValue();
+            estimatedTime.setText(String.format("%.2f min", routeData.duration / 60));
+            tourDistance.setText(String.format("%.2f km", routeData.distance / 1000));
+
+            JSONObject geoJson = new JSONObject(routeData.getGeoJson());
+            WebView webView = null;
+            try {
+                webView = new RouteImageService().createWebViewWithGeoJson(geoJson);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            mapContainer.getChildren().setAll(webView);
+
+            // TODO: DISABLE SPINNER
+        });
 
         new Thread(task).start();
     }
