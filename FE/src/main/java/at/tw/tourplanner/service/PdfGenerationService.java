@@ -3,28 +3,25 @@ package at.tw.tourplanner.service;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.properties.UnitValue;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.util.List;
 
-public class pdfGenerationService {
+public class PdfGenerationService {
 
     File file;
     PdfWriter writer;
     PdfDocument pdf;
     Document document;
 
-    public pdfGenerationService(File file) {
+    public PdfGenerationService(File file) {
         this.file = file;
         try{
             this.writer = new PdfWriter(file);
