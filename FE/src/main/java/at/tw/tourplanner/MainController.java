@@ -532,8 +532,8 @@ public class MainController {
 
         task.setOnSucceeded(event -> {
             RouteData routeData = task.getValue();
-            estimatedTime.setText(String.format("%.2f min", routeData.duration / 60));
-            tourDistance.setText(String.format("%.2f km", routeData.distance / 1000));
+            estimatedTime.setText(String.format("%.2f h", routeData.duration / 60));
+            tourDistance.setText(String.format("%.2f km", routeData.distance / 100));
 
             JSONObject geoJson = new JSONObject(routeData.getGeoJson());
             WebView webView = null;
