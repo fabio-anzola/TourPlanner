@@ -870,7 +870,7 @@ public class MainController {
                 @Override
                 protected Void call(){
                     try{
-                        model.exportTourPdf(file, selectedTour, logsForTour);
+                        model.exportTourPdf(file);
                     } catch (IOException e) {
                         // Handle error in UI
                         System.err.println("Error while exporting Tour PDF: " + e.getMessage());

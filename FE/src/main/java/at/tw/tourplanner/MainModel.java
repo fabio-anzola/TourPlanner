@@ -7,6 +7,7 @@ import at.tw.tourplanner.service.PdfGenerationService;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.Image;
 import lombok.Getter;
 
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MainModel {
     /**
@@ -357,10 +359,9 @@ public class MainModel {
      * Creates a Tour report
      *
      * @param file the file to be written to
-     * @param tour the tour object
      */
-    public void exportTourPdf(File file, Tour tour, List<TourLog> tourLogs) throws IOException {
-        new PdfGenerationService(file).generateTourPdf(tour, tourLogs);
+    public void exportTourPdf(File file) throws IOException {
+        new PdfGenerationService(file).generateTourPdf(fieldTour, tourLogs.stream().filter(log -> log.getTourName().equals(fieldTour.getName())).toList());
     }
 
     /**
