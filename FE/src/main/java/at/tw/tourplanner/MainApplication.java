@@ -8,10 +8,16 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * The Main Class to start the Application
  */
 public class MainApplication extends Application {
+    // log4j
+    private static final Logger logger = LogManager.getLogger(MainApplication.class);
+
     /**
      * Method to start the app
      *
@@ -20,7 +26,6 @@ public class MainApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception{
-
         showStage(stage);
     }
 
@@ -47,5 +52,11 @@ public class MainApplication extends Application {
      *
      * @param args args passed from cli
      */
-    public static void main(String[] args) { launch(); }
+    public static void main(String[] args) {
+        try {
+            launch();
+        } catch (Exception e) {
+            logger.error("Application failed to launch", e);
+        }
+    }
 }

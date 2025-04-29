@@ -10,8 +10,7 @@ module at.tw.tourplanner {
     requires kernel;
     requires layout;
     requires javafx.web;
-
-
+    requires org.apache.logging.log4j;
 
 
     opens at.tw.tourplanner to javafx.fxml;
