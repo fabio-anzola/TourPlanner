@@ -181,7 +181,20 @@ public class MainModel {
     public boolean deleteTour() {
         logger.debug("Entered function: deleteTour (MainModel)");
         String name = fieldTour.getName();
-        return tours.removeIf(t -> t.getName().equals(name));
+
+        try {
+            // Send to backend
+            tourService.deleteTour(name);
+
+            // Reload tours from backend to ensure full sync
+            reloadTours();
+
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to delete tour: " + e.getMessage());
+            setErrorField("Could not delete tour");
+            return false;
+        }
     }
 
     /**
@@ -202,22 +215,22 @@ public class MainModel {
             return false;
         }
 
-        // Find a tour with the same name in the list
-        for (Tour t : tours) {
-            if (t.getName().equalsIgnoreCase(edited.getName())) {
-                // Update fields. If Tour uses properties binding will update the UI.
-                t.setDescription(edited.getDescription());
-                t.setFromLocation(edited.getFromLocation());
-                t.setToLocation(edited.getToLocation());
-                t.setTransportType(edited.getTransportType());
+        try {
+            // Send to backend
+            tourService.updateTour(initialName, edited);
 
-                // Clean up
-                setErrorField("");
+            // Reload tours from backend to ensure full sync
+            reloadTours();
 
-                return true;
-            }
+            // Cleanup
+            setErrorField("");
+
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to update tour: " + e.getMessage());
+            setErrorField("Could not update tour");
+            return false;
         }
-        return false;
     }
 
     /**
