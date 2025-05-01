@@ -3,6 +3,7 @@ package at.tw.tourplanner.tourplanner.controller;
 import at.tw.tourplanner.tourplanner.model.Tour;
 import at.tw.tourplanner.tourplanner.model.TourLog;
 import at.tw.tourplanner.tourplanner.repository.TourLogRepository;
+import at.tw.tourplanner.tourplanner.repository.TourRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ public class TourLogController {
 
     @Autowired
     TourLogRepository tourLogRepository;
+    @Autowired
+    TourRepository tourRepository;
 
     @GetMapping("/")
     public ResponseEntity<List<TourLog>> getTourLog() {
@@ -32,6 +35,7 @@ public class TourLogController {
 
     @GetMapping("/tour/{tourName}")
     public ResponseEntity<List<TourLog>> getTourLog(@PathVariable String tourName) {
+        System.out.println(tourName);
         List<TourLog> tourLogsByName = this.tourLogRepository.findByTourName(tourName);
         return new ResponseEntity<>(tourLogsByName, tourLogsByName.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK );
     }
@@ -39,6 +43,11 @@ public class TourLogController {
     @PostMapping("/")
     public ResponseEntity<TourLog> createTourLog(@RequestBody TourLog tourLog) {
         try {
+            String tourName = tourLog.getTour().getName();
+            Tour existingTour = tourRepository.findById(tourName)
+                    .orElseThrow(() -> new RuntimeException("Tour not found: " + tourName));
+            tourLog.setTour(existingTour);
+
             TourLog _tourLog = this.tourLogRepository.save(tourLog);
             return new ResponseEntity<>(_tourLog, HttpStatus.CREATED);
         } catch (Exception e) {
