@@ -1,5 +1,6 @@
 package at.tw.tourplanner.service;
 
+import at.tw.tourplanner.config.AppConfig;
 import at.tw.tourplanner.object.RouteData;
 import at.tw.tourplanner.object.TransportType;
 import org.json.JSONObject;
@@ -17,7 +18,7 @@ import javafx.scene.web.WebView;
 import java.io.FileWriter;
 
 public class RouteImageService {
-    private static final String BASE_URL = "http://localhost:8080/api";
+    private static final String BASE_URL = AppConfig.getBackendApiUrl();
 
     public double[] geocode(String address) throws Exception {
         String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
