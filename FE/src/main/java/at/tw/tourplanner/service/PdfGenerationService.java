@@ -1,5 +1,8 @@
 package at.tw.tourplanner.service;
 
+import at.tw.tourplanner.MainApplication;
+import at.tw.tourplanner.logger.ILoggerWrapper;
+import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import com.itextpdf.io.font.constants.StandardFonts;
@@ -15,11 +18,13 @@ import java.io.IOException;
 import java.util.List;
 
 public class PdfGenerationService {
-
     File file;
     PdfWriter writer;
     PdfDocument pdf;
     Document document;
+
+    // log4j
+    private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
 
     public PdfGenerationService(File file) {
         this.file = file;
@@ -28,12 +33,12 @@ public class PdfGenerationService {
             this.pdf = new PdfDocument(writer);
             this.document = new Document(pdf);
         } catch (IOException e) {
-            System.err.println("Error in constructor for pdfGenerationService: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Error in constructor for pdfGenerationService: " + e + ", Message: " + e.getMessage());
         }
     }
 
     public void generateTourPdf(Tour tour, List<TourLog> tourLogs) throws IOException {
+        logger.debug("entered function: generateTourPdf (PdfGenerationService) with parameter: " + tour + " and " + tourLogs);
         Paragraph title = new Paragraph("Tour Report")
                 .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
                 .setFontSize(18)
@@ -68,11 +73,10 @@ public class PdfGenerationService {
             }
         }
         document.close();
-
-        System.out.println("Tour PDF generated at: " + file.getAbsolutePath());
     }
 
     public void generateSummaryPdf(List<Tour> tours, List<TourLog> tourLogs) throws IOException {
+        logger.debug("entered function: generateSummaryPdf (PdfGenerationService) with parameter: " + tours + " and " + tourLogs);
         if (tours.isEmpty()) {
             document.add(new Paragraph("no tours found"));
         } else {
@@ -97,7 +101,5 @@ public class PdfGenerationService {
             }
         }
         document.close();
-
-        System.out.println("Summary PDF generated at: " + file.getAbsolutePath());
     }
 }
