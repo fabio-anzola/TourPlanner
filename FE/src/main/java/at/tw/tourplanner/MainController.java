@@ -336,11 +336,7 @@ public class MainController {
      */
     private boolean tourPopularityRecalibration(Tour selectedTour){
         if(selectedTour != null){
-            long tourLogCount = tourLogs.getItems().stream()
-                    .filter(log -> log.getTourName().equals(selectedTour.getName()))
-                    .count();
-
-            return model.setTourPopularity(selectedTour, tourLogCount);
+            return model.setTourPopularity(selectedTour);
         }
         return false;
     }
@@ -353,18 +349,7 @@ public class MainController {
      */
     private boolean tourChildFriendlinessRecalibration(Tour selectedTour){
         if(selectedTour != null){
-            var matchingTourLogs = tourLogs.getItems().stream()
-                    .filter(log -> log.getTourName().equals(selectedTour.getName()))
-                    .toList();
-
-            if (matchingTourLogs.isEmpty()){
-                model.setTourChildFriendliness(selectedTour, -1); // unknown child friendliness
-                return true;
-            }
-
-            int childFriendliness = model.calculateTourChildFriendliness();
-
-            return model.setTourChildFriendliness(selectedTour, childFriendliness);
+            return model.setTourChildFriendliness();
         }
         return false;
     }

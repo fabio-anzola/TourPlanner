@@ -331,37 +331,33 @@ public class MainModel {
      * Sets tour popularity
      *
      * @param tour the tour object
-     * @param tourLogCount number of logs the tour has
      * @return true if the popularity was set; otherwise false
      */
-    public boolean setTourPopularity(Tour tour, long tourLogCount) {
-        if(tour == null || tourLogCount < 0) return false;
-
-        tour.setPopularity((int)tourLogCount);
-        return true;
+    public boolean setTourPopularity(Tour tour) {
+        long tourLogCount = tourLogs.stream().filter(log -> log.getTourName().equals(tour.getName())).count();
+        if(tourLogCount < 0 || tour == null) {
+            return false;
+        } else {
+            tour.setPopularity((int)tourLogCount);
+            return true;
+        }
     }
 
     /**
      * Sets tour popularity
      *
-     * @param tour the tour object
-     * @param childFriendliness precomputed value for child friendliness
      * @return true if the child friendliness was set; otherwise false
      */
-    public boolean setTourChildFriendliness(Tour tour, Integer childFriendliness) {
-        if(tour == null || childFriendliness == null) return false;
+    public boolean setTourChildFriendliness(){
+        if(fieldTour == null) return false;
 
-        tour.setChildFriendliness(childFriendliness);
-        return true;
-    }
-
-    /**
-     * Sets tour popularity
-     *
-     * @return calculated child friendliness as an Integer
-     */
-    public int calculateTourChildFriendliness(){
         List<TourLog> matchingTourLogs = tourLogs.stream().filter(log -> log.getTourName().equals(fieldTour.getName())).toList();
+
+        if(matchingTourLogs.isEmpty()) {
+            fieldTour.setChildFriendliness(-1);
+            System.out.println(-1);
+            return true;
+        }
 
         // calculating averages
         double avgDifficulty = matchingTourLogs.stream()
@@ -393,7 +389,8 @@ public class MainModel {
         else if (score <= 75) childFriendliness = 2;    // child unfriendly
         else childFriendliness = 1;                     // very child unfriendly
 
-        return childFriendliness;
+        fieldTour.setChildFriendliness(childFriendliness);
+        return true;
     }
 
     /**
