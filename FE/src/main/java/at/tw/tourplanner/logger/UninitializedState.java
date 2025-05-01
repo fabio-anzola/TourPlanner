@@ -9,7 +9,13 @@ public class UninitializedState extends LoggerStateBase {
     }
 
     @Override
-    public void fatal(String message) {
+    public void info(String message) {
+        this.printUninitializedWarning();
+        return;
+    }
+
+    @Override
+    public void warn(String message) {
         this.printUninitializedWarning();
         return;
     }
@@ -21,7 +27,7 @@ public class UninitializedState extends LoggerStateBase {
     }
 
     @Override
-    public void warn(String message) {
+    public void fatal(String message) {
         this.printUninitializedWarning();
         return;
     }

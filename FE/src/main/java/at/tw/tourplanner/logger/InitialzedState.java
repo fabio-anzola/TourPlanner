@@ -16,8 +16,13 @@ public class InitialzedState extends LoggerStateBase {
     }
 
     @Override
-    public void fatal(String message) {
-        this.logger.fatal(message);
+    public void info(String message) {
+        this.logger.info(message);
+    }
+
+    @Override
+    public void warn(String message) {
+        this.logger.warn(message);
     }
 
     @Override
@@ -26,7 +31,7 @@ public class InitialzedState extends LoggerStateBase {
     }
 
     @Override
-    public void warn(String message) {
-        this.logger.warn(message);
+    public void fatal(String message) {
+        this.logger.fatal(message);
     }
 }

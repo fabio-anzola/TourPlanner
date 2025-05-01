@@ -9,25 +9,40 @@ public class Log4J2Wrapper implements ILoggerWrapper {
 
     private Logger logger;
     private LoggerStateBase state = new UninitializedState();
+    private final Class<?> clazz;
+
+    public Log4J2Wrapper(Class<?> clazz) {
+        this.clazz = clazz;
+    }
 
     @Override
     public void debug(String message) {
         this.state.debug(message);
     }
+
     @Override
-    public void fatal(String message) {
-        this.state.fatal(message);
+    public void info(String message) {
+        this.state.info(message);
     }
-    @Override
-    public void error(String message) {
-        this.state.error(message);
-    }
+
     @Override
     public void warn(String message) {
         this.state.warn(message);
     }
 
-    public void initialize() {
-        this.state = new InitialzedState(LogManager.getLogger(this.getClass().getName()));
+    @Override
+    public void error(String message) {
+        this.state.error(message);
+    }
+
+    @Override
+    public void fatal(String message) {
+        this.state.fatal(message);
+    }
+
+    public synchronized void initialize() { // Thread safe
+        if (!(state instanceof InitialzedState)) {
+            this.state = new InitialzedState(LogManager.getLogger(clazz));
+        }
     }
 }
