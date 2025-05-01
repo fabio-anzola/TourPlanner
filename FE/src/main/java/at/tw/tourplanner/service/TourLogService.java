@@ -99,6 +99,7 @@ public class TourLogService {
 
     private TourLog fromDto(TourLogDto dto) {
         return new TourLog(
+                (int)dto.id,
                 dto.date.toString(),
                 dto.comment,
                 dto.difficulty,
