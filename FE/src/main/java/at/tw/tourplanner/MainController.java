@@ -339,6 +339,7 @@ public class MainController {
         if(selectedTour != null){
             return model.setTourPopularity(selectedTour);
         }
+        logger.warn("No tour selected");
         return false;
     }
 
@@ -353,6 +354,7 @@ public class MainController {
         if(selectedTour != null){
             return model.setTourChildFriendliness();
         }
+        logger.warn("No tour selected");
         return false;
     }
 
@@ -730,6 +732,7 @@ public class MainController {
             }
         } else {
             System.out.println("File selection cancelled.");
+            logger.debug("file selection cancelled");
         }
     }
 
@@ -779,6 +782,7 @@ public class MainController {
             }
         } else {
             System.out.println("File save cancelled.");
+            logger.debug("file save cancelled");
         }
     }
 
