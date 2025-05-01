@@ -252,33 +252,26 @@ public class MainController {
 
         tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
             if (newTour == null) {
-                // Show empty list if no tour is selected
                 tourLogs.setItems(FXCollections.observableArrayList());
+
+                model.getFieldTour().clearProperties();
+                model.getCurrentTourLog().setTourName("");
             } else {
+                // Update fieldTour and currentTourLog
+                model.getFieldTour().setName(newTour.getName());
+                model.getFieldTour().setDescription(newTour.getDescription());
+                model.getFieldTour().setFromLocation(newTour.getFromLocation());
+                model.getFieldTour().setToLocation(newTour.getToLocation());
+                model.getFieldTour().setTransportType(newTour.getTransportType());
+                model.getFieldTour().setRouteImage(newTour.getRouteImage());
+                model.getCurrentTourLog().setTourName(newTour.getName());
+
+                // Reload logs from backend
+                model.reloadTourLogs();
+
+                // Update UI table with filtered logs
                 tourLogs.setItems(new FilteredList<>(model.getTourLogs(), log -> log.getTourName().equalsIgnoreCase(newTour.getName())));
             }
-        });
-
-        tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
-            if (null == newTour) {
-                model.getFieldTour().setName(null);
-                model.getFieldTour().setDescription(null);
-                model.getFieldTour().setFromLocation(null);
-                model.getFieldTour().setToLocation(null);
-                model.getFieldTour().setTransportType(TransportType.DEFAULT);
-                model.getFieldTour().setRouteImage(null);
-
-                model.getCurrentTourLog().setTourName("");
-                return;
-            }
-            model.getFieldTour().setName(newTour.getName());
-            model.getFieldTour().setDescription(newTour.getDescription());
-            model.getFieldTour().setFromLocation(newTour.getFromLocation());
-            model.getFieldTour().setToLocation(newTour.getToLocation());
-            model.getFieldTour().setTransportType(newTour.getTransportType());
-            model.getFieldTour().setRouteImage(newTour.getRouteImage());
-
-            model.getCurrentTourLog().setTourName(newTour.getName());
         });
 
         // Populate the combo box with the enum values
