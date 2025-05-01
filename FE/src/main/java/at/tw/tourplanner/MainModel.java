@@ -4,6 +4,7 @@ import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
 import at.tw.tourplanner.service.PdfGenerationService;
+import at.tw.tourplanner.service.TourLogService;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +21,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MainModel {
+
+    private final TourLogService tourLogService = new TourLogService();
+
     /**
      * Observable list holding all tours in the application.
      */
@@ -57,7 +61,7 @@ public class MainModel {
         tours.add(new Tour(
                 TransportType.WALK,
                 new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
-                "Hiking Tour #1",
+                "Hiking Tour",
                 "Sunday Family Hiking Tour",
                 "Wien",
                 "Burgenland",
@@ -65,7 +69,7 @@ public class MainModel {
                 1
         ));
         // Dummy Tour Log
-        tourLogs.add(new TourLog(LocalDate.now().toString(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour #1"));
+        tourLogs.add(new TourLog(LocalDate.now().toString(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour"));
     }
 
     /**
@@ -97,10 +101,37 @@ public class MainModel {
             return false;
         }
 
-        currentTourLog = new TourLog(LocalDate.now().toString(), "", 0, 0, 0, 0, "");
-        setErrorField("");
+        try {
+            // Send to backend
+           tourLogService.addTourLog(currentTourLog);
 
-        return true;
+            // Reload logs from backend to ensure full sync
+            reloadTourLogs();
+
+            // Clear current input
+            currentTourLog = new TourLog(LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
+            setErrorField("");
+
+            return true;
+        } catch (Exception e) {
+            setErrorField("Failed to save Tour Log to server: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void reloadTourLogs() {
+        if (fieldTour.getName() == null || fieldTour.getName().isBlank()) {
+            return;
+        }
+
+        try {
+            List<TourLog> updatedLogs = tourLogService.getTourLogsByTourName(fieldTour.getName());
+            tourLogs.setAll(updatedLogs); // Replaces entire list
+            setErrorField("");
+        } catch (Exception e) {
+            setErrorField("Could not reload logs: " + e.getMessage());
+        }
     }
 
     /**
