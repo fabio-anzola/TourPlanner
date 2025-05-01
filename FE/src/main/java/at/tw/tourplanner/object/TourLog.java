@@ -1,11 +1,19 @@
 package at.tw.tourplanner.object;
 
 import javafx.beans.property.SimpleStringProperty;
+import lombok.Getter;
 
 /**
  * Object that storages log information
  */
 public class TourLog {
+
+    /**
+     * The tour log id
+     */
+    @Getter
+    private final int id;
+
     /**
      * The tour log date
      */
@@ -52,7 +60,8 @@ public class TourLog {
      * @param rating the rating
      * @param tourName the associated tour
      */
-    public TourLog(String date, String comment, int difficulty, int totalDistance, int totalTime, int rating, String tourName) {
+    public TourLog(int id, String date, String comment, int difficulty, int totalDistance, int totalTime, int rating, String tourName) {
+        this.id = id;
         this.date = new SimpleStringProperty(date);
         this.comment = new SimpleStringProperty(comment);
         this.difficulty = new SimpleStringProperty(Integer.toString(difficulty));
