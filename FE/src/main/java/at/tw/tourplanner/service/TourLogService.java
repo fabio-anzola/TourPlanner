@@ -8,9 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.util.UriUtils;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -34,6 +32,10 @@ public class TourLogService {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+            if (response.statusCode() == 204 || response.body().isBlank()) {
+                return List.of();
+            }
+
             List<TourLogDto> dtos = objectMapper.readValue(response.body(), new TypeReference<>() {});
             List<TourLog> logs = new ArrayList<>();
 
@@ -43,46 +45,62 @@ public class TourLogService {
 
             return logs;
         } catch (Exception e) {
-            System.out.println("Exception while loading tour logs:");
+            System.err.println("Error while loading tour logs: " + e.getMessage());
             e.printStackTrace();
             return List.of();
         }
     }
 
-    public void addTourLog(TourLog log) throws IOException, InterruptedException {
-        TourLogDto dto = toDto(log);
+    public boolean addTourLog(TourLog log) {
+        try {
+            TourLogDto dto = toDto(log);
+            String requestBody = objectMapper.writeValueAsString(dto);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
 
-        String requestBody = objectMapper.writeValueAsString(dto);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                .build();
-
-        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return true;
+        } catch (Exception e) {
+            System.err.println("Failed to add tour log: " + e.getMessage());
+            return false;
+        }
     }
 
-    public void updateTourLog(int id, TourLog log) throws IOException, InterruptedException {
-        TourLogDto dto = toDto(log);
+    public boolean updateTourLog(int id, TourLog log) {
+        try {
+            TourLogDto dto = toDto(log);
+            String requestBody = objectMapper.writeValueAsString(dto);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/" + id))
+                    .header("Content-Type", "application/json")
+                    .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
 
-        String requestBody = objectMapper.writeValueAsString(dto);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/" + id))
-                .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
-                .build();
-
-        httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+            httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+            return true;
+        } catch (Exception e) {
+            System.err.println("Failed to update tour log: " + e.getMessage());
+            return false;
+        }
     }
 
-    public void deleteTourLog(int id) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/" + id))
-                .header("Content-Type", "text/plain")
-                .method("DELETE", HttpRequest.BodyPublishers.ofString(String.valueOf(id)))
-                .build();
+    public boolean deleteTourLog(int id) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/" + id))
+                    .header("Content-Type", "text/plain")
+                    .method("DELETE", HttpRequest.BodyPublishers.ofString(String.valueOf(id)))
+                    .build();
 
-        httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+            httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+            return true;
+        } catch (Exception e) {
+            System.err.println("Failed to delete tour log: " + e.getMessage());
+            return false;
+        }
     }
 
     private TourLogDto toDto(TourLog log) {
@@ -101,7 +119,7 @@ public class TourLogService {
 
     private TourLog fromDto(TourLogDto dto) {
         return new TourLog(
-                (int)dto.id,
+                (int) dto.id,
                 dto.date.toString(),
                 dto.comment,
                 dto.difficulty,

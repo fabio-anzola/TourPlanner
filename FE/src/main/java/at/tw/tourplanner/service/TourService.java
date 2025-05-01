@@ -7,7 +7,6 @@ import at.tw.tourplanner.object.TransportType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -22,64 +21,86 @@ public class TourService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public List<Tour> getAllTours() throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/"))
-                .GET()
-                .build();
+    public List<Tour> getAllTours() {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/"))
+                    .GET()
+                    .build();
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() == 204 || response.body().isBlank()) {
+            if (response.statusCode() == 204 || response.body().isBlank()) return List.of();
+
+            List<TourDto> dtos = objectMapper.readValue(response.body(), new TypeReference<>() {});
+            List<Tour> tours = new ArrayList<>();
+            for (TourDto dto : dtos) {
+                tours.add(fromDto(dto));
+            }
+
+            return tours;
+        } catch (Exception e) {
+            System.err.println("Error while loading tours: " + e.getMessage());
+            e.printStackTrace();
             return List.of();
         }
+    }
 
-        List<TourDto> dtos = objectMapper.readValue(response.body(), new TypeReference<>() {});
-        List<Tour> tours = new ArrayList<>();
-        for (TourDto dto : dtos) {
-            tours.add(fromDto(dto));
+    public boolean addTour(Tour tour) {
+        try {
+            TourDto dto = toDto(tour);
+            String json = objectMapper.writeValueAsString(dto);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return true;
+        } catch (Exception e) {
+            System.err.println("Failed to add tour: " + e.getMessage());
+            return false;
         }
-
-        return tours;
     }
 
-    public void addTour(Tour tour) throws IOException, InterruptedException {
-        TourDto dto = toDto(tour);
-        String json = objectMapper.writeValueAsString(dto);
+    public boolean updateTour(String name, Tour tour) {
+        try {
+            String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
+            TourDto dto = toDto(tour);
+            String json = objectMapper.writeValueAsString(dto);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/" + encodedName))
+                    .header("Content-Type", "application/json")
+                    .PUT(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return true;
+        } catch (Exception e) {
+            System.err.println("Failed to update tour: " + e.getMessage());
+            return false;
+        }
     }
 
-    public void updateTour(String name, Tour tour) throws IOException, InterruptedException {
-        String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
-        TourDto dto = toDto(tour);
-        String json = objectMapper.writeValueAsString(dto);
+    public boolean deleteTour(String name) {
+        try {
+            String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/" + encodedName))
-                .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(json))
-                .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/" + encodedName))
+                    .header("Content-Type", "text/plain")
+                    .method("DELETE", HttpRequest.BodyPublishers.ofString(name))
+                    .build();
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-
-    public void deleteTour(String name) throws IOException, InterruptedException {
-        String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/" + encodedName))
-                .header("Content-Type", "text/plain")
-                .method("DELETE", HttpRequest.BodyPublishers.ofString(name))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return true;
+        } catch (Exception e) {
+            System.err.println("Failed to delete tour: " + e.getMessage());
+            return false;
+        }
     }
 
     private TourDto toDto(Tour tour) {
@@ -94,9 +115,8 @@ public class TourService {
 
     private Tour fromDto(TourDto dto) {
         return new Tour(
-                // Use defaults for missing UI-related fields
                 TransportType.valueOf(dto.transportType),
-                null, // no image saved in the BE
+                null,
                 dto.name,
                 dto.description,
                 dto.fromLocation,
