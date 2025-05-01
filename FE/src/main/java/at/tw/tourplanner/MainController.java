@@ -335,6 +335,7 @@ public class MainController {
      * @return true if popularity was successfully set, false otherwise.
      */
     private boolean tourPopularityRecalibration(Tour selectedTour){
+        logger.debug("Entered function: tourPopularityRecalibration (MainController) with parameter: " + selectedTour);
         if(selectedTour != null){
             return model.setTourPopularity(selectedTour);
         }
@@ -348,6 +349,7 @@ public class MainController {
      * @return true if child friendliness was successfully set, false otherwise.
      */
     private boolean tourChildFriendlinessRecalibration(Tour selectedTour){
+        logger.debug("Entered function: tourChildFriendlinessRecalibration (MainController) with parameter: " + selectedTour);
         if(selectedTour != null){
             return model.setTourChildFriendliness();
         }
@@ -386,7 +388,7 @@ public class MainController {
             logger.debug("Entered else if statement: onAddTour (MainController)");
             // Add tour
             if (!model.addTour()) {
-                // TODO: show error!
+                logger.error("Failed to add tour");
             } else {
                 // Yuhu - confirm!
 
@@ -444,7 +446,7 @@ public class MainController {
             logger.debug("Entered else if statement: onEditTour (MainController)");
             // get currently selected (under edit) tour name
             if (!model.editTour(tourList.getSelectionModel().getSelectedItem().getName())) {
-                // TODO: Display error message
+                logger.error("Failed to edit tour");
             } else {
                 // Yuhu - confirm!
 

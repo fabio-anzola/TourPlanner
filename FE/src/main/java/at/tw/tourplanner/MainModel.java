@@ -1,5 +1,7 @@
 package at.tw.tourplanner;
 
+import at.tw.tourplanner.logger.ILoggerWrapper;
+import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
@@ -16,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -53,6 +56,9 @@ public class MainModel {
     @Getter
     private TourLog currentTourLog = new TourLog(LocalDate.now().toString(), "", 0, 0, 0, 0, "");
 
+    // log4j
+    private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
+
     /**
      * Constructs a MainModel and adds demo data for initial use.
      */
@@ -78,6 +84,7 @@ public class MainModel {
      * @return true if the tour was successfully added; false otherwise
      */
     public boolean addTour() {
+        logger.debug("Entered function: addTour (MainModel)");
         if (!validateTourField(getFieldTour())) {
             return false;
         }
@@ -97,6 +104,7 @@ public class MainModel {
      * @return true if validation passed; false otherwise
      */
     public boolean addTourLog() {
+        logger.debug("Entered function: addTourLog (MainModel)");
         if (!validateTourLog()) {
             return false;
         }
@@ -114,13 +122,14 @@ public class MainModel {
 
             return true;
         } catch (Exception e) {
-            setErrorField("Failed to save Tour Log to server: " + e.getMessage());
-            e.printStackTrace();
+            setErrorField("Failed to save Tour Log");
+            logger.error("Failed to save Tour Log to server: " + e + ", Message: " + e.getCause());
             return false;
         }
     }
 
     public void reloadTourLogs() {
+        logger.debug("Entered function: reloadTourLogs (MainModel)");
         if (fieldTour.getName() == null || fieldTour.getName().isBlank()) {
             return;
         }
@@ -130,7 +139,8 @@ public class MainModel {
             tourLogs.setAll(updatedLogs); // Replaces entire list
             setErrorField("");
         } catch (Exception e) {
-            setErrorField("Could not reload logs: " + e.getMessage());
+            setErrorField("Could not reload logs");
+            logger.error("Could not reload logs: " + e + ", Message: " + e.getCause());
         }
     }
 
@@ -140,6 +150,7 @@ public class MainModel {
      * @return true if the tour was successfully removed
      */
     public boolean deleteTour() {
+        logger.debug("Entered function: deleteTour (MainModel)");
         String name = fieldTour.getName();
         return tours.removeIf(t -> t.getName().equals(name));
     }
@@ -151,6 +162,7 @@ public class MainModel {
      * @return true if the update was successful; false otherwise
      */
     public boolean editTour(String initialName) {
+        logger.debug("Entered function: editTour (MainModel) with parameter: " + initialName);
         Tour edited = getFieldTour();
         if (edited == null) {
             return false;
@@ -183,6 +195,7 @@ public class MainModel {
      * @return the errorField property
      */
     public StringProperty errorFieldProperty() {
+        logger.debug("Entered function: errorFieldProperty (MainModel)");
         return errorField;
     }
 
@@ -192,6 +205,7 @@ public class MainModel {
      * @param errorField the new error message to set
      */
     public void setErrorField(String errorField) {
+        logger.debug("Entered function: setErrorField (MainModel) with parameter: " + errorField);
         this.errorField.set(errorField);
     }
 
@@ -205,37 +219,45 @@ public class MainModel {
      * @return true if valid, false otherwise
      */
     private boolean validateTourField(Tour tour, String... excludedTourName) {
+        logger.debug("Entered function: validateTourField (MainModel) with parameter: " + tour + " and " + Arrays.toString(excludedTourName));
         if (tour.getName() == null || tour.getName().isBlank()) {
             setErrorField("Please enter a valid tour name");
+            logger.warn("User selected invalid tour name: " + tour.getName());
             return false;
         }
         if (tours.stream().anyMatch(t -> t.getName().equalsIgnoreCase(tour.getName()))) {
             if (excludedTourName.length > 0) { // exclude provided
                 if (!tour.getName().equalsIgnoreCase(excludedTourName[0])) { // check if match is equal to excluded - in not then enter
                     setErrorField("Tour name already exists");
+                    logger.warn("User selected already taken tour name: " + tour.getName());
                     return false;
                 }
             } else { // no exclude provided
                 setErrorField("Tour name already exists");
+                logger.warn("User selected already taken tour name: " + tour.getName());
                 return false;
             }
         }
         if (tour.getDescription() == null || tour.getDescription().isBlank()) {
             setErrorField("Please enter a valid tour description");
+            logger.warn("User selected invalid tour description: " + tour.getDescription());
             return false;
         }
         if (tour.getFromLocation() == null || tour.getFromLocation().isBlank()) {
             setErrorField("Please enter a valid fromLocation");
+            logger.warn("User selected invalid fromLocation: " + tour.getFromLocation());
             return false;
         }
         if (tour.getToLocation() == null || tour.getToLocation().isBlank()) {
             setErrorField("Please enter a valid toLocation");
+            logger.warn("User selected invalid toLocation: " + tour.getToLocation());
             return false;
         }
         if (tour.getTransportType() == null ||
                 (tour.getTransportType() instanceof TransportType && ((TransportType) tour.getTransportType()).equals(TransportType.DEFAULT))
         ) {
             setErrorField("Please enter a valid transportType");
+            logger.warn("User selected invalid transportType: " + tour.getTransportType());
             return false;
         }
         return true;
@@ -247,85 +269,99 @@ public class MainModel {
      * @return true if all fields are valid; false otherwise
      */
     private boolean validateTourLog() {
+        logger.debug("Entered function: validateTourLog (MainModel)");
         // Check date
         if (getCurrentTourLog().getDate() == null || getCurrentTourLog().getDate().isBlank()) {
             setErrorField("Please enter a tour date");
+            logger.warn("User selected empty tour date: " + getCurrentTourLog().getDate());
             return false;
         }
         try {
             LocalDate ld = LocalDate.parse(getCurrentTourLog().getDate());
         } catch (DateTimeParseException e) {
             setErrorField("Please enter a valid tour date (YYYY-MM-DD)");
+            logger.warn("User selected invalid tour date: " + getCurrentTourLog().getDate());
             return false;
         }
 
         // Check Comment
         if (getCurrentTourLog().getComment() == null || getCurrentTourLog().getComment().isBlank()) {
             setErrorField("Please enter a comment");
+            logger.warn("User selected empty comment: " + getCurrentTourLog().getComment());
             return false;
         }
 
         // Check difficulty
         if (getCurrentTourLog().getDifficulty() == null || getCurrentTourLog().getDifficulty().isBlank()) {
             setErrorField("Please enter a difficulty");
+            logger.warn("User selected empty difficulty: " + getCurrentTourLog().getDifficulty());
             return false;
         }
         try {
             if (getCurrentTourLog().getParsedDifficulty() < 0 || getCurrentTourLog().getParsedDifficulty() > 5) {
                 setErrorField("Please enter a valid difficulty (range from 0 to 5 where 5 is the most difficult)");
+                logger.warn("User selected invalid difficulty range: " + getCurrentTourLog().getDifficulty());
                 return false;
             }
         } catch (NumberFormatException e) {
             setErrorField("Difficulty must be an integer");
+            logger.warn("User selected invalid difficulty data type: " + getCurrentTourLog().getDifficulty());
             return false;
         }
 
         // Check Total Distance
         if (getCurrentTourLog().getTotalDistance() == null || getCurrentTourLog().getTotalDistance().isBlank()) {
             setErrorField("Please enter a total distance in meters");
+            logger.warn("User selected empty total distance");
             return false;
         }
         try {
             if (getCurrentTourLog().getParsedTotalDistance() < 0) {
                 setErrorField("Please enter a valid total distance (> 0m)");
+                logger.warn("User selected invalid total distance range: " + getCurrentTourLog().getTotalDistance());
                 return false;
             }
         } catch (NumberFormatException e) {
             setErrorField("Total distance must be an integer");
+            logger.warn("User selected invalid total distance data type: " + getCurrentTourLog().getTotalDistance());
             return false;
         }
 
         // Check Total Time
         if (getCurrentTourLog().getTotalTime() == null || getCurrentTourLog().getTotalTime().isBlank()) {
             setErrorField("Please enter a total time in minutes");
+            logger.warn("User selected empty total time");
             return false;
         }
         try {
             if (getCurrentTourLog().getParsedTotalTime() < 0) {
                 setErrorField("Please enter a valid total time (> 0 minutes)");
+                logger.warn("User selected invalid total time range: " + getCurrentTourLog().getTotalTime());
                 return false;
             }
         } catch (NumberFormatException e) {
             setErrorField("Total Time must be an integer");
+            logger.warn("User selected invalid total time data type: " + getCurrentTourLog().getTotalTime());
             return false;
         }
 
         // Check Rating
         if (getCurrentTourLog().getRating() == null || getCurrentTourLog().getRating().isBlank()) {
             setErrorField("Please enter a difficulty");
+            logger.warn("User selected empty difficulty: " + getCurrentTourLog().getDifficulty());
             return false;
         }
         try {
             if (getCurrentTourLog().getParsedRating() < 0 || getCurrentTourLog().getParsedRating() > 5) {
                 setErrorField("Please enter a valid difficulty (range from 0 to 5 where 5 is the most difficult)");
+                logger.warn("User selected invalid difficulty range: " + getCurrentTourLog().getDifficulty());
                 return false;
             }
         } catch (NumberFormatException e) {
             setErrorField("Rating must be an integer");
+            logger.warn("User selected invalid difficulty data type: " + getCurrentTourLog().getDifficulty());
             return false;
         }
-
-
         return true;
     }
 
@@ -335,6 +371,7 @@ public class MainModel {
      * @return true if preparation succeeded (e.g. a tour is selected)
      */
     public boolean addTourLogPreCheck() {
+        logger.debug("Entered function: addTourLogPreCheck (MainModel)");
         // TODO: check if a tour is selected
         if (fieldTour.getName() == null || fieldTour.getName().isBlank()) {
             return false;
@@ -352,6 +389,7 @@ public class MainModel {
      * @return true if the log was removed; false if not found or null
      */
     public boolean deleteTourLog(TourLog tourLog) {
+        logger.debug("Entered function: deleteTourLog (MainModel) with parameter: " + tourLog);
         if (tourLog != null) {
             return tourLogs.remove(tourLog);  // Removes the specified TourLog from the list
         }
@@ -365,6 +403,7 @@ public class MainModel {
      * @return true if the popularity was set; otherwise false
      */
     public boolean setTourPopularity(Tour tour) {
+        logger.debug("Entered function: setTourPopularity (MainModel) with parameter: " + tour);
         long tourLogCount = tourLogs.stream().filter(log -> log.getTourName().equals(tour.getName())).count();
         if(tourLogCount < 0 || tour == null) {
             return false;
@@ -380,6 +419,7 @@ public class MainModel {
      * @return true if the child friendliness was set; otherwise false
      */
     public boolean setTourChildFriendliness(){
+        logger.debug("Entered function: setTourChildFriendliness (MainModel)");
         if(fieldTour == null) return false;
 
         List<TourLog> matchingTourLogs = tourLogs.stream().filter(log -> log.getTourName().equals(fieldTour.getName())).toList();
@@ -430,6 +470,7 @@ public class MainModel {
      * @param file the file to be written to
      */
     public void exportTourPdf(File file) throws IOException {
+        logger.debug("Entered function: exportTourPdf (MainModel) with parameter: " + file);
         new PdfGenerationService(file).generateTourPdf(fieldTour, tourLogs.stream().filter(log -> log.getTourName().equals(fieldTour.getName())).toList());
     }
 
@@ -439,6 +480,7 @@ public class MainModel {
      * @param file the file to be written to
      */
     public void exportSummaryPdf(File file) throws IOException {
+        logger.debug("Entered function: exportSummaryPdf (MainModel) with parameter: " + file);
         new PdfGenerationService(file).generateSummaryPdf(tours, tourLogs);
     }
 }
