@@ -48,6 +48,7 @@ public class TourLog {
     @ManyToOne
     @JoinColumn(name = "tourName")
     @Getter
+    @Setter
     private Tour tour;
 
     public TourLog(Date date, String comment, int difficulty, int totalDistance, int totalTime, int rating) {
