@@ -14,12 +14,4 @@ public class TourLogDto {
     public int totalTime;
     public int rating;
     public TourDto tour;
-
-    // nested DTO for Tour
-    public static class TourDto {
-        public String name;
-        public String description;
-        public String fromLocation;
-        public String toLocation;
-    }
 }
