@@ -295,7 +295,7 @@ public class MainController {
      * @param b true to disable, false to enable
      */
     private void disableTourFields(boolean b) {
-        logger.debug("Entered function: disableTourFields with parameter: " + b);
+        logger.debug("Entered function: disableTourFields (MainController) with parameter: " + b);
         tourName.setDisable(b);
         tourDescription.setDisable(b);
         fromLocation.setDisable(b);
@@ -309,7 +309,7 @@ public class MainController {
      * @return true if no actions are ongoing
      */
     private boolean noCurrentAction(){
-        logger.debug("Entered function: noCurrentAction");
+        logger.debug("Entered function: noCurrentAction (MainController)");
         return addTourButton.getText().equals("Add") &&
                 editTourButton.getText().equals("Edit") &&
                 addLogButton.getText().equals("Add Log") &&
@@ -320,7 +320,7 @@ public class MainController {
      * Refreshes the tour list
      */
     public void refreshTourList() {
-        logger.debug("Entered function: refreshTourList");
+        logger.debug("Entered function: refreshTourList (MainController)");
         String textSearch = tourSearchField.getText().toLowerCase();
 
         filteredTours.setPredicate(tour ->
@@ -363,6 +363,7 @@ public class MainController {
     public void onAddTour(ActionEvent actionEvent) {
         logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction()) {
+            logger.debug("Entered if statement: onAddTour (MainController)");
             // Clear selection and fields
             tourList.getSelectionModel().clearSelection();
 
@@ -382,6 +383,7 @@ public class MainController {
             // Set cancel button as visible
             cancelTourButton.setVisible(true);
         } else if (addTourButton.getText().equals("Confirm")) {
+            logger.debug("Entered else if statement: onAddTour (MainController)");
             // Add tour
             if (!model.addTour()) {
                 // TODO: show error!
@@ -419,6 +421,7 @@ public class MainController {
         logger.info("User clicked: " + actionEvent.getSource());
         //ein item muss ausgewählt sein damit man edit verwenden kann
         if (noCurrentAction() && tourList.getSelectionModel().getSelectedItem() != null) {
+            logger.debug("Entered if statement: onEditTour (MainController)");
             // Enable the tour fields
             disableTourFields(false);
 
@@ -438,6 +441,7 @@ public class MainController {
             // Enable the cancel button
             cancelTourButton.setVisible(true);
         } else if (editTourButton.getText().equals("Apply")) {
+            logger.debug("Entered else if statement: onEditTour (MainController)");
             // get currently selected (under edit) tour name
             if (!model.editTour(tourList.getSelectionModel().getSelectedItem().getName())) {
                 // TODO: Display error message
@@ -473,7 +477,7 @@ public class MainController {
         logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction()) {
             if (!model.deleteTour()) {
-                // TODO: Display error message
+                logger.error("failed to delete Tour");
             }
         }
     }
@@ -528,6 +532,7 @@ public class MainController {
         logger.info("User clicked: " + actionEvent.getSource());
         // check if no action ongoing and if a tour is selected
         if (noCurrentAction() && tourList.getSelectionModel().getSelectedItem() != null) {
+            logger.debug("Entered if statement: onAddLog (MainController)");
             if (this.model.addTourLogPreCheck()) {
                 // Disable choosing tours
                 tourList.setDisable(true);
@@ -552,17 +557,18 @@ public class MainController {
                 cancelLogButton.setVisible(true);
             }
         } else if (addLogButton.getText().equals("Confirm")) {
+            logger.debug("Entered first else if statement: onAddLog (MainController)");
             // Add tour log
             if (!model.addTourLog() ) {
-                // TODO: show error!
+                logger.error("Failed to add tour log");
             }
             // Recalibrate the popularity of affected tour
             else if (!tourPopularityRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                // TODO: show error!
+                logger.error("Failed to change popularity of affected tour");
             }
             // Recalibrate the child friendliness of affected tour
             else if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                // TODO: show error!
+                logger.error("Failed to change child friendliness of affected tour");
             }
             else {
                 // Yuhu - confirm!
@@ -589,6 +595,7 @@ public class MainController {
                 cancelLogButton.setVisible(false);
             }
         } else if (tourList.getSelectionModel().getSelectedItem() != null) {
+            logger.debug("Entered second else if statement: onAddLog (MainController)");
             System.out.println("No tour selected for log");
             tourList.getFocusModel().focus(0);
         }
@@ -602,6 +609,7 @@ public class MainController {
     public void onEditLog(ActionEvent actionEvent) {
         logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction()){
+            logger.debug("Entered if statement: onEditLog (MainController)");
             // Disable choosing tours
             tourList.setDisable(true);
 
@@ -621,9 +629,10 @@ public class MainController {
             // Show cancel button
             cancelLogButton.setVisible(true);
         } else if (editLogButton.getText().equals("Confirm")) {
+            logger.debug("Entered else if statement: onEditLog (MainController)");
             // Recalibrate the child friendliness of affected tour
             if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                // TODO: show error!
+                logger.error("Failed to change child friendliness of affected tour");
             } else {
                 // Enable choosing tours
                 tourList.setDisable(false);
@@ -655,20 +664,21 @@ public class MainController {
     public void onDeleteLog(ActionEvent actionEvent) {
         logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction() && tourLogs.getSelectionModel().getSelectedItem() != null) {
+            logger.debug("Entered if statement: onDeleteLog (MainController)");
             //nimmt selected
             TourLog selectedTourLog = tourLogs.getSelectionModel().getSelectedItem();
 
             // called deleteTourLog methode aus MainModel
             if(!model.deleteTourLog(selectedTourLog)) {
-                // TODO: show error!
+                logger.error("Failed to delete tour log");
             }
             // Recalibrate the popularity of affected tour
             else if (!tourPopularityRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                // TODO: show error!
+                logger.error("Failed to change popularity of affected tour");
             }
             // Recalibrate the child friendliness of affected tour
             else if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                // TODO: show error!
+                logger.error("Failed to change child friendliness of affected tour");
             }
 
             //For Debugging: Print out all remaining tour logs
@@ -714,7 +724,7 @@ public class MainController {
                 String content = new String(Files.readAllBytes(Paths.get(selectedFile.getAbsolutePath())));
                 //System.out.println("File content:\n" + content);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Failed to read file content, " + e + ", Message: " + e.getCause());
             }
         } else {
             System.out.println("File selection cancelled.");
@@ -763,7 +773,7 @@ public class MainController {
                 writer.write(content);
                 System.out.println("File saved to: " + file.getAbsolutePath());
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("failed to write file, " + e + ", Message: " + e.getCause());
             }
         } else {
             System.out.println("File save cancelled.");
@@ -850,8 +860,7 @@ public class MainController {
                     try{
                         model.exportTourPdf(file);
                     } catch (IOException e) {
-                        // Handle error in UI
-                        System.err.println("Error while exporting Tour PDF: " + e.getMessage());
+                        logger.error("failed to generate Tour Report, " + e + ", Message: " + e.getCause());
                     }
                     return null;
                 }
@@ -888,8 +897,7 @@ public class MainController {
                     try{
                         model.exportSummaryPdf(file);
                     } catch (IOException e) {
-                        // Handle error in UI
-                        System.err.println("Error while exporting Summary PDF: " + e.getMessage());
+                        logger.error("failed to generate Summary Report, " + e + ", Message: " + e.getCause());
                     }
                     return null;
                 }
@@ -917,7 +925,7 @@ public class MainController {
             editTourButton.setText("Edit");
         }
 
-        // Disable the fout fields
+        // Disable the tour fields
         disableTourFields(true);
 
         // Clean error outputs
