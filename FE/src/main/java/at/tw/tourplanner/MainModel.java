@@ -95,35 +95,24 @@ public class MainModel {
             return false;
         }
 
-        try {
-            // Send to backend
-            tourService.addTour(new Tour(fieldTour.getTransportType(), fieldTour.getRouteImage(), fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation(), 0, -1));
-
-            // sync with backend
-            reloadTours();
-
-            // Clear current input
-            fieldTour.clearProperties();
-            setErrorField("");
-            return true;
-        } catch (Exception e) {
-            logger.error("Failed to add tour: " + e.getMessage());
+        if (!tourService.addTour(new Tour(fieldTour.getTransportType(), fieldTour.getRouteImage(), fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation(), 0, -1))) {
             setErrorField("Could not save tour");
             return false;
         }
+
+        reloadTours();
+        fieldTour.clearProperties();
+        setErrorField("");
+        return true;
     }
 
     public void reloadTours() {
         logger.debug("Entered function: reloadTours (MainModel)");
-        try {
-            List<Tour> updatedTours = tourService.getAllTours();
-            tours.setAll(updatedTours);
-            setErrorField("");
-        } catch (Exception e) {
-            logger.error("Could not reload tours: " + e.getMessage());
-            setErrorField("Could not reload tours");
-        }
+        List<Tour> updatedTours = tourService.getAllTours();
+        tours.setAll(updatedTours);
+        setErrorField("");
     }
+
 
     /**
      * Validates the currentTourLog and resets the log after success.
@@ -137,23 +126,15 @@ public class MainModel {
             return false;
         }
 
-        try {
-            // Send to backend
-           tourLogService.addTourLog(currentTourLog);
-
-            // Reload logs from backend to ensure full sync
-            reloadTourLogs();
-
-            // Clear current input
-            currentTourLog = new TourLog(-1, LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
-            setErrorField("");
-
-            return true;
-        } catch (Exception e) {
+        if (!tourLogService.addTourLog(currentTourLog)) {
             setErrorField("Failed to save Tour Log");
-            logger.error("Failed to save Tour Log to server: " + e + ", Message: " + e.getCause());
             return false;
         }
+
+        reloadTourLogs();
+        currentTourLog = new TourLog(-1, LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
+        setErrorField("");
+        return true;
     }
 
     public void reloadTourLogs() {
@@ -163,14 +144,9 @@ public class MainModel {
             return;
         }
 
-        try {
-            List<TourLog> updatedLogs = tourLogService.getTourLogsByTourName(fieldTour.getName());
-            tourLogs.setAll(updatedLogs); // Replaces entire list
-            setErrorField("");
-        } catch (Exception e) {
-            setErrorField("Could not reload logs");
-            logger.error("Could not reload logs: " + e + ", Message: " + e.getCause());
-        }
+        List<TourLog> updatedLogs = tourLogService.getTourLogsByTourName(fieldTour.getName());
+        tourLogs.setAll(updatedLogs);
+        setErrorField("");
     }
 
     /**
@@ -182,19 +158,13 @@ public class MainModel {
         logger.debug("Entered function: deleteTour (MainModel)");
         String name = fieldTour.getName();
 
-        try {
-            // Send to backend
-            tourService.deleteTour(name);
-
-            // Reload tours from backend to ensure full sync
-            reloadTours();
-
-            return true;
-        } catch (Exception e) {
-            logger.error("Failed to delete tour: " + e.getMessage());
+        if (!tourService.deleteTour(name)) {
             setErrorField("Could not delete tour");
             return false;
         }
+
+        reloadTours();
+        return true;
     }
 
     /**
@@ -215,22 +185,14 @@ public class MainModel {
             return false;
         }
 
-        try {
-            // Send to backend
-            tourService.updateTour(initialName, edited);
-
-            // Reload tours from backend to ensure full sync
-            reloadTours();
-
-            // Cleanup
-            setErrorField("");
-
-            return true;
-        } catch (Exception e) {
-            logger.error("Failed to update tour: " + e.getMessage());
+        if (!tourService.updateTour(initialName, edited)) {
             setErrorField("Could not update tour");
             return false;
         }
+
+        reloadTours();
+        setErrorField("");
+        return true;
     }
 
     /**
@@ -436,28 +398,20 @@ public class MainModel {
      */
     public boolean deleteTourLog(TourLog tourLog) {
         logger.debug("Entered function: deleteTourLog (MainModel) with parameter: " + tourLog);
-
         if (tourLog == null) {
             logger.error("no tour log selected");
             return false;
         }
 
-        try {
-            int id = tourLog.getId();
-
-            // Send to Backend
-            tourLogService.deleteTourLog(id);
-
-            // Reload to reflect backend state
-            reloadTourLogs();
-
-            setErrorField("");
-            return true;
-        } catch (Exception e) {
-            setErrorField("Failed to delete TourLog: " + e.getMessage());
-            e.printStackTrace();
+        int id = tourLog.getId();
+        if (!tourLogService.deleteTourLog(id)) {
+            setErrorField("Failed to delete TourLog");
             return false;
         }
+
+        reloadTourLogs();
+        setErrorField("");
+        return true;
     }
 
     /**
@@ -553,20 +507,15 @@ public class MainModel {
     }
 
     public boolean editTourLog() {
-        try {
-            // Send to backend
-            for (TourLog tourLog : tourLogs) {
-                tourLogService.updateTourLog(tourLog.getId(), tourLog);
+        logger.debug("Entered function: editTourLog (MainModel)");
+
+        for (TourLog tourLog : tourLogs) {
+            if (tourLogService.updateTourLog(tourLog.getId(), tourLog)) {
+                return false;
             }
-
-            // Reload logs from backend to ensure full sync
-            reloadTourLogs();
-
-            return true;
-        } catch (Exception e) {
-            setErrorField("Failed to save edited (all) Tour Logs");
-            logger.error("Failed to save edited (all) Tour Logs to server: " + e + ", Message: " + e.getCause());
-            return false;
         }
+
+        reloadTourLogs();
+        return true;
     }
 }
