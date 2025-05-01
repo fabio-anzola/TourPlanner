@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.Image;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class MainModel {
 
     private final TourLogService tourLogService = new TourLogService();
@@ -86,6 +88,7 @@ public class MainModel {
     public boolean addTour() {
         logger.debug("Entered function: addTour (MainModel)");
         if (!validateTourField(getFieldTour())) {
+            logger.warn("Failed to validate tour " + getFieldTour());
             return false;
         }
 
@@ -106,6 +109,7 @@ public class MainModel {
     public boolean addTourLog() {
         logger.debug("Entered function: addTourLog (MainModel)");
         if (!validateTourLog()) {
+            logger.warn("Failed to validate tour log " + getCurrentTourLog());
             return false;
         }
 
@@ -131,6 +135,7 @@ public class MainModel {
     public void reloadTourLogs() {
         logger.debug("Entered function: reloadTourLogs (MainModel)");
         if (fieldTour.getName() == null || fieldTour.getName().isBlank()) {
+            logger.warn("no tour selected");
             return;
         }
 
@@ -165,9 +170,11 @@ public class MainModel {
         logger.debug("Entered function: editTour (MainModel) with parameter: " + initialName);
         Tour edited = getFieldTour();
         if (edited == null) {
+            logger.warn("could not edit tour");
             return false;
         }
         if (!validateTourField(edited, initialName)) {
+            logger.warn("Failed to validate edited tour");
             return false;
         }
 
@@ -374,6 +381,7 @@ public class MainModel {
         logger.debug("Entered function: addTourLogPreCheck (MainModel)");
         // TODO: check if a tour is selected
         if (fieldTour.getName() == null || fieldTour.getName().isBlank()) {
+            logger.warn("no tour selected");
             return false;
         } else {
             this.currentTourLog = new TourLog(LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
@@ -393,6 +401,7 @@ public class MainModel {
         if (tourLog != null) {
             return tourLogs.remove(tourLog);  // Removes the specified TourLog from the list
         }
+        logger.warn("no tour log selected to delete");
         return false;
     }
 
@@ -406,6 +415,7 @@ public class MainModel {
         logger.debug("Entered function: setTourPopularity (MainModel) with parameter: " + tour);
         long tourLogCount = tourLogs.stream().filter(log -> log.getTourName().equals(tour.getName())).count();
         if(tourLogCount < 0 || tour == null) {
+            logger.warn("invalid log count or no tour selected: " + tourLogCount);
             return false;
         } else {
             tour.setPopularity((int)tourLogCount);
@@ -420,7 +430,10 @@ public class MainModel {
      */
     public boolean setTourChildFriendliness(){
         logger.debug("Entered function: setTourChildFriendliness (MainModel)");
-        if(fieldTour == null) return false;
+        if(fieldTour == null) {
+            logger.warn("no tour selected");
+            return false;
+        }
 
         List<TourLog> matchingTourLogs = tourLogs.stream().filter(log -> log.getTourName().equals(fieldTour.getName())).toList();
 
