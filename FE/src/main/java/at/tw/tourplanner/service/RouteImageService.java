@@ -18,7 +18,7 @@ import javafx.scene.web.WebView;
 import java.io.FileWriter;
 
 public class RouteImageService {
-    private static final String BASE_URL = AppConfig.getBackendApiUrl();
+    private static final String BASE_URL = AppConfig.getBackendApiUrl() + "/api";
 
     public double[] geocode(String address) throws Exception {
         String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
