@@ -295,6 +295,7 @@ public class MainController {
      * @param b true to disable, false to enable
      */
     private void disableTourFields(boolean b) {
+        logger.debug("Entered function: disableTourFields with parameter: " + b);
         tourName.setDisable(b);
         tourDescription.setDisable(b);
         fromLocation.setDisable(b);
@@ -308,6 +309,7 @@ public class MainController {
      * @return true if no actions are ongoing
      */
     private boolean noCurrentAction(){
+        logger.debug("Entered function: noCurrentAction");
         return addTourButton.getText().equals("Add") &&
                 editTourButton.getText().equals("Edit") &&
                 addLogButton.getText().equals("Add Log") &&
@@ -318,6 +320,7 @@ public class MainController {
      * Refreshes the tour list
      */
     public void refreshTourList() {
+        logger.debug("Entered function: refreshTourList");
         String textSearch = tourSearchField.getText().toLowerCase();
 
         filteredTours.setPredicate(tour ->
@@ -373,6 +376,7 @@ public class MainController {
      * @param actionEvent triggered by the Add Tour button
      */
     public void onAddTour(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction()) {
             // Clear selection and fields
             tourList.getSelectionModel().clearSelection();
@@ -427,6 +431,7 @@ public class MainController {
      * @param actionEvent triggered by the Edit Tour button
      */
     public void onEditTour(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         //ein item muss ausgewählt sein damit man edit verwenden kann
         if (noCurrentAction() && tourList.getSelectionModel().getSelectedItem() != null) {
             // Enable the tour fields
@@ -480,6 +485,7 @@ public class MainController {
      * @param actionEvent triggered by the Delete Tour button
      */
     public void onDeleteTour(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction()) {
             if (!model.deleteTour()) {
                 // TODO: Display error message
@@ -493,6 +499,7 @@ public class MainController {
      * @param actionEvent triggered by the Calculate Route button
      */
     public void onCalculateRoute(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         routeImage.setVisible(false);
 
         // TODO: SHOW SPINNER
@@ -533,6 +540,7 @@ public class MainController {
      * @param actionEvent triggered by the Add Log button
      */
     public void onAddLog(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         // check if no action ongoing and if a tour is selected
         if (noCurrentAction() && tourList.getSelectionModel().getSelectedItem() != null) {
             if (this.model.addTourLogPreCheck()) {
@@ -607,6 +615,7 @@ public class MainController {
      * @param actionEvent triggered by the Edit Log button
      */
     public void onEditLog(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction()){
             // Disable choosing tours
             tourList.setDisable(true);
@@ -659,6 +668,7 @@ public class MainController {
      * @param actionEvent triggered by the Delete Log button
      */
     public void onDeleteLog(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction() && tourLogs.getSelectionModel().getSelectedItem() != null) {
             //nimmt selected
             TourLog selectedTourLog = tourLogs.getSelectionModel().getSelectedItem();
@@ -696,6 +706,7 @@ public class MainController {
      * @param actionEvent triggered by the Import menu item
      */
     public void onImportFile(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Import File");
 
@@ -731,6 +742,7 @@ public class MainController {
      * @param actionEvent triggered by the Export menu item
      */
     public void onExportFile(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
 
         // Check if a tour is selected
@@ -780,6 +792,7 @@ public class MainController {
      * @param actionEvent triggered by the Exit menu item
      */
     public void onExitWindow(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
     }
 
     /**
@@ -788,6 +801,7 @@ public class MainController {
      * @param actionEvent triggered by the Tour Search field or button
      */
     public void onTourSearch(ActionEvent actionEvent) {
+        logger.info("User used: " + actionEvent.getSource());
         refreshTourList();
     }
 
@@ -797,6 +811,7 @@ public class MainController {
      * @param actionEvent triggered by the Log Search field or button
      */
     public void onLogSearch(ActionEvent actionEvent) {
+        logger.info("User used: " + actionEvent.getSource());
         String search = logSearchField.getText() != null ? logSearchField.getText().toLowerCase() : "";
         Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
 
@@ -827,6 +842,7 @@ public class MainController {
      * @param actionEvent triggered by the Generate Tour Report menu item
      */
     public void onGenTourReport(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
         if (selectedTour == null) return;
 
@@ -860,20 +876,6 @@ public class MainController {
             thread.start();
         }
     }
-    /*
-    public void onGenTourReport(ActionEvent actionEvent) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("tour-reports-view.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Tour Report");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    */
 
     /**
      * Create summaryReport PDF
@@ -881,6 +883,7 @@ public class MainController {
      * @param actionEvent triggered by the Generate Summary Report menu item
      */
     public void onGenSummaryReport(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Generating Summary Report...");
 
@@ -911,20 +914,6 @@ public class MainController {
             thread.start();
         }
     }
-    /*
-    public void onGenSummaryReport(ActionEvent actionEvent) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("summary-reports-view.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Summary Report");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    */
 
     /**
      * Cancels tour creation or editing.
@@ -932,6 +921,7 @@ public class MainController {
      * @param actionEvent triggered by the Cancel Tour button
      */
     public void onCancelTour(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         // Change button text
         if (addTourButton.getText().equals("Confirm")) {
             addTourButton.setText("Add");
@@ -965,6 +955,7 @@ public class MainController {
      * @param actionEvent triggered by the Cancel Log button
      */
     public void onCancelLog(ActionEvent actionEvent) {
+        logger.info("User clicked: " + actionEvent.getSource());
         if (addLogButton.getText().equals("Confirm")) {
             this.model.getTourLogs().remove(this.model.getTourLogs().size() - 1);
 
