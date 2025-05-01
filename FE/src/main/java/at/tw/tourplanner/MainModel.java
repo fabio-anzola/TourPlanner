@@ -7,6 +7,7 @@ import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
 import at.tw.tourplanner.service.PdfGenerationService;
 import at.tw.tourplanner.service.TourLogService;
+import at.tw.tourplanner.service.TourService;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,12 +23,12 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class MainModel {
 
     private final TourLogService tourLogService = new TourLogService();
+    private final TourService tourService = new TourService();
 
     /**
      * Observable list holding all tours in the application.
@@ -65,6 +66,8 @@ public class MainModel {
      * Constructs a MainModel and adds demo data for initial use.
      */
     public MainModel() {
+        reloadTours();
+
         // Dummy Tour
         tours.add(new Tour(
                 TransportType.WALK,
@@ -92,13 +95,34 @@ public class MainModel {
             return false;
         }
 
-        boolean msg = tours.add(new Tour(fieldTour.getTransportType(), fieldTour.getRouteImage(), fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation(), 0, -1));
+        try {
+            // Send to backend
+            tourService.addTour(new Tour(fieldTour.getTransportType(), fieldTour.getRouteImage(), fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation(), 0, -1));
 
-        // Clean up
-        fieldTour.clearProperties();
-        setErrorField("");
+            // sync with backend
+            reloadTours();
 
-        return msg;
+            // Clear current input
+            fieldTour.clearProperties();
+            setErrorField("");
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to add tour: " + e.getMessage());
+            setErrorField("Could not save tour");
+            return false;
+        }
+    }
+
+    public void reloadTours() {
+        logger.debug("Entered function: reloadTours (MainModel)");
+        try {
+            List<Tour> updatedTours = tourService.getAllTours();
+            tours.setAll(updatedTours);
+            setErrorField("");
+        } catch (Exception e) {
+            logger.error("Could not reload tours: " + e.getMessage());
+            setErrorField("Could not reload tours");
+        }
     }
 
     /**
