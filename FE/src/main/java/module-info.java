@@ -14,6 +14,8 @@ module at.tw.tourplanner {
     requires com.fasterxml.jackson.databind;
     requires java.sql;
     requires spring.web;
+    requires org.slf4j;
+
 
 
     opens at.tw.tourplanner to javafx.fxml;
