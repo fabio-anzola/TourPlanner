@@ -56,7 +56,7 @@ public class MainModel {
      * Currently edited or added tour log.
      */
     @Getter
-    private TourLog currentTourLog = new TourLog(LocalDate.now().toString(), "", 0, 0, 0, 0, "");
+    private TourLog currentTourLog = new TourLog(-1, LocalDate.now().toString(), "", 0, 0, 0, 0, "");
 
     // log4j
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
@@ -77,7 +77,7 @@ public class MainModel {
                 1
         ));
         // Dummy Tour Log
-        tourLogs.add(new TourLog(LocalDate.now().toString(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour"));
+        tourLogs.add(new TourLog(-1, LocalDate.now().toString(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour"));
     }
 
     /**
@@ -121,7 +121,7 @@ public class MainModel {
             reloadTourLogs();
 
             // Clear current input
-            currentTourLog = new TourLog(LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
+            currentTourLog = new TourLog(-1, LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
             setErrorField("");
 
             return true;
@@ -384,7 +384,7 @@ public class MainModel {
             logger.error("no tour selected");
             return false;
         } else {
-            this.currentTourLog = new TourLog(LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
+            this.currentTourLog = new TourLog(-1, LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
             this.tourLogs.add(this.currentTourLog);
             return true;
         }
@@ -398,11 +398,28 @@ public class MainModel {
      */
     public boolean deleteTourLog(TourLog tourLog) {
         logger.debug("Entered function: deleteTourLog (MainModel) with parameter: " + tourLog);
-        if (tourLog != null) {
-            return tourLogs.remove(tourLog);  // Removes the specified TourLog from the list
+
+        if (tourLog == null) {
+            logger.error("no tour log selected");
+            return false;
         }
-        logger.error("no tour log selected");
-        return false;
+
+        try {
+            int id = tourLog.getId();
+
+            // Send to Backend
+            tourLogService.deleteTourLog(id);
+
+            // Reload to reflect backend state
+            reloadTourLogs();
+
+            setErrorField("");
+            return true;
+        } catch (Exception e) {
+            setErrorField("Failed to delete TourLog: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
