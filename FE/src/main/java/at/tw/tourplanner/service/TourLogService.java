@@ -1,6 +1,7 @@
 package at.tw.tourplanner.service;
 
 import at.tw.tourplanner.config.AppConfig;
+import at.tw.tourplanner.dto.TourDto;
 import at.tw.tourplanner.dto.TourLogDto;
 import at.tw.tourplanner.object.TourLog;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -92,7 +93,8 @@ public class TourLogService {
         dto.totalDistance = log.getParsedTotalDistance();
         dto.totalTime = log.getParsedTotalTime();
         dto.rating = log.getParsedRating();
-        dto.tour = new TourLogDto.TourDto();
+
+        dto.tour = new TourDto();
         dto.tour.name = log.getTourName();
         return dto;
     }
