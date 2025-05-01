@@ -32,14 +32,20 @@ public class Tour {
     @Setter
     private String toLocation;
 
+    @Column(name = "transportType")
+    @Getter
+    @Setter
+    private String transportType;
+
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<TourLog> tourLog = new ArrayList<>();
 
-    public Tour(String name, String description, String fromLocation, String toLocation) {
+    public Tour(String name, String description, String fromLocation, String toLocation, String transportType) {
         this.name = name;
         this.description = description;
         this.fromLocation = fromLocation;
         this.toLocation = toLocation;
+        this.transportType = transportType;
     }
 
     public Tour() {

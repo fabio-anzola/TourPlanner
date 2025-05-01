@@ -57,6 +57,7 @@ public class TourController {
             tour.setDescription(updatedTour.getDescription());
             tour.setFromLocation(updatedTour.getFromLocation());
             tour.setToLocation(updatedTour.getToLocation());
+            tour.setTransportType(updatedTour.getTransportType());
             Tour savedTour = tourRepository.save(tour);
             return new ResponseEntity<>(savedTour, HttpStatus.OK);
         } else {
