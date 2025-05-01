@@ -356,6 +356,47 @@ public class MainModel {
     }
 
     /**
+     * Sets tour popularity
+     *
+     * @return calculated child friendliness as an Integer
+     */
+    public int calculateTourChildFriendliness(){
+        List<TourLog> matchingTourLogs = tourLogs.stream().filter(log -> log.getTourName().equals(fieldTour.getName())).toList();
+
+        // calculating averages
+        double avgDifficulty = matchingTourLogs.stream()
+                .mapToInt(TourLog::getParsedDifficulty)
+                .average()
+                .orElse(0);
+
+
+        double avgTime = matchingTourLogs.stream()
+                .mapToInt(TourLog::getParsedTotalTime)
+                .average()
+                .orElse(0);
+
+        double avgDistance = matchingTourLogs.stream()
+                .mapToInt(TourLog::getParsedTotalDistance)
+                .average()
+                .orElse(0);
+
+        // calculating child friendliness
+        double difficultyNorm = (avgDifficulty - 1) / 4.0;
+        double distanceNorm = Math.min(avgDistance / 15.0, 1.0);  // everything greater than 15km is max difficulty for children
+        double timeNorm = Math.min(avgTime / 300, 1.0);   // everything greater than 5h is max difficulty for children
+
+        double score = (difficultyNorm * 0.5 + distanceNorm * 0.25 + timeNorm * 0.25) * 100;
+
+        int childFriendliness;
+        if (score <= 25) childFriendliness = 4;         // very child friendly
+        else if (score <= 50) childFriendliness = 3;    // child friendly
+        else if (score <= 75) childFriendliness = 2;    // child unfriendly
+        else childFriendliness = 1;                     // very child unfriendly
+
+        return childFriendliness;
+    }
+
+    /**
      * Creates a Tour report
      *
      * @param file the file to be written to

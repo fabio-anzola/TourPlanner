@@ -1,5 +1,7 @@
 package at.tw.tourplanner;
 
+import at.tw.tourplanner.logger.ILoggerWrapper;
+import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.object.RouteData;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
@@ -194,6 +196,9 @@ public class MainController {
     @FXML
     private VBox mapContainer;
 
+    // log4j
+    private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
+
     /**
      * Initializes UI bindings and event listeners.
      */
@@ -354,35 +359,7 @@ public class MainController {
                 return true;
             }
 
-            // calculating averages
-            double avgDifficulty = matchingTourLogs.stream()
-                    .mapToInt(TourLog::getParsedDifficulty)
-                    .average()
-                    .orElse(0);
-
-
-            double avgTime = matchingTourLogs.stream()
-                    .mapToInt(TourLog::getParsedTotalTime)
-                    .average()
-                    .orElse(0);
-
-            double avgDistance = matchingTourLogs.stream()
-                    .mapToInt(TourLog::getParsedTotalDistance)
-                    .average()
-                    .orElse(0);
-
-            // calculating child friendliness
-            double difficultyNorm = (avgDifficulty - 1) / 4.0;
-            double distanceNorm = Math.min(avgDistance / 15.0, 1.0);  // everything greater than 15km is max difficulty for children
-            double timeNorm = Math.min(avgTime / 300, 1.0);   // everything greater than 5h is max difficulty for children
-
-            double score = (difficultyNorm * 0.5 + distanceNorm * 0.25 + timeNorm * 0.25) * 100;
-
-            int childFriendliness;
-            if (score <= 25) childFriendliness = 4;         // very child friendly
-            else if (score <= 50) childFriendliness = 3;    // child friendly
-            else if (score <= 75) childFriendliness = 2;    // child unfriendly
-            else childFriendliness = 1;                     // very child unfriendly
+            int childFriendliness = model.calculateTourChildFriendliness();
 
             return model.setTourChildFriendliness(selectedTour, childFriendliness);
         }

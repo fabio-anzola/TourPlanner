@@ -55,7 +55,7 @@ public class MainApplication extends Application {
         try {
             launch();
         } catch (Exception e) {
-            logger.fatal("An exception occurred while launching: " + e);
+            logger.fatal("An exception occurred while launching: " + e + ", Message: " + e.getCause());
         }
     }
 }
