@@ -1,5 +1,7 @@
 package at.tw.tourplanner;
 
+import at.tw.tourplanner.logger.ILoggerWrapper;
+import at.tw.tourplanner.logger.LoggerFactory;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,15 +10,12 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * The Main Class to start the Application
  */
 public class MainApplication extends Application {
     // log4j
-    private static final Logger logger = LogManager.getLogger(MainApplication.class);
+    private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
 
     /**
      * Method to start the app
@@ -56,7 +55,7 @@ public class MainApplication extends Application {
         try {
             launch();
         } catch (Exception e) {
-            logger.error("Application failed to launch", e);
+            logger.fatal("An exception occurred while launching: " + e);
         }
     }
 }
