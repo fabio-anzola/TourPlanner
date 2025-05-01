@@ -384,6 +384,7 @@ public class MainModel {
             logger.error("no tour selected");
             return false;
         } else {
+            // add an empty tour log to the list
             this.currentTourLog = new TourLog(-1, LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
             this.tourLogs.add(this.currentTourLog);
             return true;
@@ -512,5 +513,23 @@ public class MainModel {
     public void exportSummaryPdf(File file) throws IOException {
         logger.debug("Entered function: exportSummaryPdf (MainModel) with parameter: " + file);
         new PdfGenerationService(file).generateSummaryPdf(tours, tourLogs);
+    }
+
+    public boolean editTourLog() {
+        try {
+            // Send to backend
+            for (TourLog tourLog : tourLogs) {
+                tourLogService.updateTourLog(tourLog.getId(), tourLog);
+            }
+
+            // Reload logs from backend to ensure full sync
+            reloadTourLogs();
+
+            return true;
+        } catch (Exception e) {
+            setErrorField("Failed to save edited (all) Tour Logs");
+            logger.error("Failed to save edited (all) Tour Logs to server: " + e + ", Message: " + e.getCause());
+            return false;
+        }
     }
 }

@@ -638,6 +638,13 @@ public class MainController {
             if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
                 logger.error("Failed to change child friendliness of affected tour");
             } else {
+
+                // Edit tour log in model
+                if (!model.editTourLog()) {
+                    logger.error("Failed to edit tour log");
+                    return;
+                }
+
                 // Enable choosing tours
                 tourList.setDisable(false);
 
