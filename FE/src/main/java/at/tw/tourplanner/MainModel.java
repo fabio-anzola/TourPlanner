@@ -68,20 +68,6 @@ public class MainModel {
      */
     public MainModel() {
         reloadTours();
-
-        // Dummy Tour
-        tours.add(new Tour(
-                TransportType.WALK,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
-                "Hiking Tour",
-                "Sunday Family Hiking Tour",
-                "Wien",
-                "Burgenland",
-                1,
-                1
-        ));
-        // Dummy Tour Log
-        tourLogs.add(new TourLog(-1, LocalDate.now().toString(), "tolle tour!", 5, 10, 1900, 1, "Hiking Tour"));
     }
 
     /**
