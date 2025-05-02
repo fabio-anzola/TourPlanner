@@ -1,5 +1,8 @@
 package at.tw.tourplanner.service;
 
+import at.tw.tourplanner.MainApplication;
+import at.tw.tourplanner.logger.ILoggerWrapper;
+import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.config.AppConfig;
 import at.tw.tourplanner.dto.TourDto;
 import at.tw.tourplanner.object.Tour;
@@ -22,7 +25,11 @@ public class TourService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // log4j
+    private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
+
     public List<Tour> getAllTours() {
+        logger.debug("Entered function getAllTours (TourService)");
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/"))
@@ -41,13 +48,14 @@ public class TourService {
 
             return tours;
         } catch (Exception e) {
-            System.err.println("Error while loading tours: " + e.getMessage());
+            logger.error("Error while loading tours: " + e.getMessage());
             e.printStackTrace();
             return List.of();
         }
     }
 
     public boolean addTour(Tour tour) {
+        logger.debug("Entered function addTour (TourService) with parameter: " + tour);
         try {
             TourDto dto = toDto(tour);
             String json = objectMapper.writeValueAsString(dto);
@@ -61,12 +69,13 @@ public class TourService {
             httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return true;
         } catch (Exception e) {
-            System.err.println("Failed to add tour: " + e.getMessage());
+            logger.error("Failed to add tour: " + e.getMessage());
             return false;
         }
     }
 
     public boolean updateTour(String name, Tour tour) {
+        logger.debug("Entered function updateTour (TourService) with parameter: " + name + " and " + tour);
         try {
             String encodedName = UriUtils.encodePathSegment(name, StandardCharsets.UTF_8);
             TourDto dto = toDto(tour);
@@ -81,12 +90,13 @@ public class TourService {
             httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return true;
         } catch (Exception e) {
-            System.err.println("Failed to update tour: " + e.getMessage());
+            logger.error("Failed to update tour: " + e.getMessage());
             return false;
         }
     }
 
     public boolean deleteTour(String name) {
+        logger.debug("Entered function deleteTour (TourService) with parameter: " + name);
         try {
             String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
 
@@ -99,12 +109,13 @@ public class TourService {
             httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return true;
         } catch (Exception e) {
-            System.err.println("Failed to delete tour: " + e.getMessage());
+            logger.error("Failed to delete tour: " + e.getMessage());
             return false;
         }
     }
 
     private TourDto toDto(Tour tour) {
+        logger.debug("Entered function toDto (TourService) with parameter: " + tour);
         TourDto dto = new TourDto();
         dto.name = tour.getName();
         dto.description = tour.getDescription();
@@ -115,6 +126,7 @@ public class TourService {
     }
 
     private Tour fromDto(TourDto dto) {
+        logger.debug("Entered function fromDto (TourService) with parameter: " + dto);
         return new Tour(
                 TransportType.valueOf(dto.transportType),
                 null,
