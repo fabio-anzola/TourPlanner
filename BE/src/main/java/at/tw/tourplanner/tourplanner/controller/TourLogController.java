@@ -35,7 +35,6 @@ public class TourLogController {
 
     @GetMapping("/tour/{tourName}")
     public ResponseEntity<List<TourLog>> getTourLog(@PathVariable String tourName) {
-        System.out.println(tourName);
         List<TourLog> tourLogsByName = this.tourLogRepository.findByTourName(tourName);
         return new ResponseEntity<>(tourLogsByName, tourLogsByName.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK );
     }
