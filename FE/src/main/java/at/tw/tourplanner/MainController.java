@@ -445,28 +445,40 @@ public class MainController {
             cancelTourButton.setVisible(true);
         } else if (editTourButton.getText().equals("Apply")) {
             logger.debug("Entered else if statement: onEditTour (MainController)");
-            // get currently selected (under edit) tour name
-            if (!model.editTour(tourList.getSelectionModel().getSelectedItem().getName())) {
-                logger.error("Failed to edit tour");
-            } else {
-                // Yuhu - confirm!
 
-                // Enable choosing tours
-                tourList.setDisable(false);
+            String initialName = tourList.getSelectionModel().getSelectedItem().getName();
+            Task<Boolean> task = new Task<>() {
+                @Override
+                protected Boolean call() {
+                    return model.editTour(initialName);
+                }
+            };
 
-                // Enable text search for tours
-                tourSearchField.setDisable(false);
-                tourSearchButton.setDisable(false);
+            task.setOnSucceeded(e -> {
+                if (!task.getValue()) {
+                    logger.error("Failed to edit tour");
+                } else {
+                    // Yuhu - confirm!
 
-                // Disable tour fields again
-                disableTourFields(true);
+                    // Enable choosing tours
+                    tourList.setDisable(false);
 
-                // Set button text back to edit
-                editTourButton.setText("Edit");
+                    // Enable text search for tours
+                    tourSearchField.setDisable(false);
+                    tourSearchButton.setDisable(false);
 
-                // Disable cancel tour again
-                cancelTourButton.setVisible(false);
-            }
+                    // Disable tour fields again
+                    disableTourFields(true);
+
+                    // Set button text back to edit
+                    editTourButton.setText("Edit");
+
+                    // Disable cancel tour again
+                    cancelTourButton.setVisible(false);
+                }
+            });
+
+            new Thread(task).start();
         }
     }
 

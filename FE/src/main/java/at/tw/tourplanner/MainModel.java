@@ -197,12 +197,15 @@ public class MainModel {
         }
 
         if (!tourService.updateTour(initialName, edited)) {
-            setErrorField("Could not update tour");
+            Platform.runLater(() -> setErrorField("Could not update tour"));
             return false;
         }
 
-        reloadTours();
-        setErrorField("");
+        Platform.runLater(() -> {
+            reloadTours();
+            setErrorField("");
+        });
+
         return true;
     }
 
