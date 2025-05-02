@@ -9,6 +9,7 @@ import at.tw.tourplanner.service.JsonGenerationService;
 import at.tw.tourplanner.service.PdfGenerationService;
 import at.tw.tourplanner.service.TourLogService;
 import at.tw.tourplanner.service.TourService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -518,6 +519,32 @@ public class MainModel {
     public void exportTourJson(File file) throws IOException {
         logger.debug("Entered function: exportTourJson (MainModel) with parameter: " + file);
         new JsonGenerationService(file).generateTourJson(tours);
+    }
+
+    /**
+     * Creates Tours by importing a json file
+     *
+     * @param file the file to be written to
+     */
+    public void importTourJson(File file) throws IOException {
+        logger.debug("Entered function: importTourJson (MainModel) with parameter: " + file);
+        ObjectMapper mapper = new ObjectMapper();
+        List<Tour> importedTours = Arrays.asList(mapper.readValue(file, Tour[].class));
+
+        for (Tour tour : importedTours) {
+            boolean alreadyExists = tours.stream()
+                    .anyMatch(existing -> existing.getName().equalsIgnoreCase(tour.getName()));
+
+            if (!alreadyExists) {
+                tourService.addTour(tour);
+            } else {
+                logger.warn("Tour with name " + tour.getName() + " already exists. Skipping import.");
+            }
+        }
+        Platform.runLater(() -> {
+            reloadTours();
+            fieldTour.clearProperties();
+        });
     }
 
     public boolean editTourLog() {

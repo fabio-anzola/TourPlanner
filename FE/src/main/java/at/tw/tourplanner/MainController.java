@@ -7,7 +7,6 @@ import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
 import at.tw.tourplanner.service.RouteImageService;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -27,13 +26,8 @@ import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 
 public class MainController {
@@ -742,34 +736,42 @@ public class MainController {
      * @param actionEvent triggered by the Import menu item
      */
     public void onImportFile(ActionEvent actionEvent) {
-        logger.info("User clicked: " + actionEvent.getSource());
+        logger.info("User clicked: onImportFile (MainController)");
+        if(!noCurrentAction()){
+            logger.warn("actions ongoing, aborting import");
+            return;
+        }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Import File");
-
-        // Set file type filters
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Tourplanner Files", "*.tourplanner"),
+                new FileChooser.ExtensionFilter("Json Files", "*.json"),
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
-
-        // Get the current stage
         Stage stage = (Stage) ((javafx.scene.control.MenuItem) actionEvent.getSource()).getParentPopup().getOwnerWindow();
-
-        // Show open file dialog
         File selectedFile = fileChooser.showOpenDialog(stage);
 
-        if (selectedFile != null) {
-            System.out.println("File selected: " + selectedFile.getAbsolutePath());
+        if (selectedFile != null){
+            Task<Boolean> task = new Task<>() {
+                @Override
+                protected Boolean call(){
+                    try{
+                        model.importTourJson(selectedFile);
+                    } catch (IOException e) {
+                        logger.error("failed to import tour data, " + e + ", Message: " + e.getMessage());
+                        return false;
+                    }
+                    return true;
+                }
+            };
 
-            try {
-                String content = new String(Files.readAllBytes(Paths.get(selectedFile.getAbsolutePath())));
-                //System.out.println("File content:\n" + content);
-            } catch (IOException e) {
-                logger.error("Failed to read file content, " + e + ", Message: " + e.getCause());
-            }
-        } else {
-            System.out.println("File selection cancelled.");
-            logger.debug("file selection cancelled");
+            task.setOnSucceeded(event -> {
+                if (task.getValue()) {
+                    refreshTourList();
+                }
+            });
+
+            Thread thread = new Thread(task);
+            thread.start();
         }
     }
 
@@ -779,7 +781,11 @@ public class MainController {
      * @param actionEvent triggered by the Export menu item
      */
     public void onExportFile(ActionEvent actionEvent) {
-        logger.info("User clicked: " + actionEvent.getSource());
+        logger.info("User clicked: onExportFile (MainController)");
+        if(!noCurrentAction()){
+            logger.warn("actions ongoing, aborting export");
+            return;
+        }
         if(model.getTours() == null || model.getTours().isEmpty()){
             logger.debug("No tour data to export");
             return;
