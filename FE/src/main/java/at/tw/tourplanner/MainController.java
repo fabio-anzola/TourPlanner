@@ -274,6 +274,14 @@ public class MainController {
             }
         });
 
+        tourLogs.getSelectionModel().selectedItemProperty().addListener((obs, oldTourLog, newTourLog) -> {
+            if (newTourLog == null) {
+                model.getCurrentTourLog().setId(-1);
+            } else {
+                model.getCurrentTourLog().setId(newTourLog.getId());
+            }
+        });
+
         // Populate the combo box with the enum values
         this.transportType.getItems().addAll(TransportType.values());
         this.transportType.getItems().remove(TransportType.DEFAULT);
@@ -669,11 +677,9 @@ public class MainController {
         logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction() && tourLogs.getSelectionModel().getSelectedItem() != null) {
             logger.debug("Entered if statement: onDeleteLog (MainController)");
-            //nimmt selected
-            TourLog selectedTourLog = tourLogs.getSelectionModel().getSelectedItem();
 
             // called deleteTourLog methode aus MainModel
-            if(!model.deleteTourLog(selectedTourLog)) {
+            if(!model.deleteTourLog()) {
                 logger.error("Failed to delete tour log");
             }
             // Recalibrate the popularity of affected tour

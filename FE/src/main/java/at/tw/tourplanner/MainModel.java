@@ -396,8 +396,9 @@ public class MainModel {
      * @param tourLog the log to delete
      * @return true if the log was removed; false if not found or null
      */
-    public boolean deleteTourLog(TourLog tourLog) {
-        logger.debug("Entered function: deleteTourLog (MainModel) with parameter: " + tourLog);
+    public boolean deleteTourLog() {
+        logger.debug("Entered function: deleteTourLog (MainModel) with current tour: " + currentTourLog);
+        TourLog tourLog = currentTourLog;
         if (tourLog == null) {
             logger.error("no tour log selected");
             return false;
@@ -510,7 +511,8 @@ public class MainModel {
         logger.debug("Entered function: editTourLog (MainModel)");
 
         for (TourLog tourLog : tourLogs) {
-            if (tourLogService.updateTourLog(tourLog.getId(), tourLog)) {
+            if (!tourLogService.updateTourLog(tourLog.getId(), tourLog)) {
+                logger.debug("TourLog updated successfully with id: " + tourLog.getId());
                 return false;
             }
         }

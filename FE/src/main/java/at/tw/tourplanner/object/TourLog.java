@@ -2,6 +2,7 @@ package at.tw.tourplanner.object;
 
 import javafx.beans.property.SimpleStringProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Object that storages log information
@@ -12,7 +13,8 @@ public class TourLog {
      * The tour log id
      */
     @Getter
-    private final int id;
+    @Setter
+    private int id;
 
     /**
      * The tour log date
