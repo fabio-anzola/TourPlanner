@@ -5,7 +5,6 @@ ToDo:
 * 1 Design Pattern
 * Logging calls (In den Klassen)
 * Unit Tests
-* Verbindung zu Backend
 * Verbesserungen aus Intermediate
 * Image in Report
 * Protokoll
