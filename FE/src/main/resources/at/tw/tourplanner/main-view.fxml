@@ -89,9 +89,13 @@
             </VBox>
 
             <!-- Right: Route Map -->
-            <VBox fx:id="mapContainer" HBox.hgrow="NEVER">
+            <VBox fx:id="mapContainer">
                 <Label text="Route Map"/>
-                <ImageView fx:id="routeImage" fitWidth="300" fitHeight="200" preserveRatio="true"/>
+                <StackPane fx:id="mapStack" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="spinnerOverlay" alignment="CENTER" style="-fx-background-color: rgba(255,255,255,0.6);" visible="false">
+                        <ImageView fx:id="spinnerGif" fitWidth="64" preserveRatio="true"/>
+                    </VBox>
+                </StackPane>
             </VBox>
         </HBox>
     </center>
