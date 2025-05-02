@@ -656,36 +656,36 @@ public class MainController {
             cancelLogButton.setVisible(true);
         } else if (editLogButton.getText().equals("Confirm")) {
             logger.debug("Entered else if statement: onEditLog (MainController)");
-            // Recalibrate the child friendliness of affected tour
-            if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                logger.error("Failed to change child friendliness of affected tour");
-            } else {
 
-                // Edit tour log in model
-                if (!model.editTourLog()) {
+            Task<Boolean> task = new Task<>() {
+                @Override
+                protected Boolean call() {
+                    // Recalibrate child friendliness first
+                    boolean recalibrated = tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem());
+                    if (!recalibrated) return false;
+
+                    return model.editTourLog();
+                }
+            };
+
+            task.setOnSucceeded(e -> {
+                if (!task.getValue()) {
                     logger.error("Failed to edit tour log");
                     return;
                 }
 
-                // Enable choosing tours
+                // Restore UI
                 tourList.setDisable(false);
-
-                // Enable text search for tour logs
                 logSearchField.setDisable(false);
                 logSearchButton.setDisable(false);
-                // Enable text search for tours
                 tourSearchField.setDisable(false);
                 tourSearchButton.setDisable(false);
-
-                // Disable editing Logs
                 tourLogs.setEditable(false);
-
-                // Change button text back again
                 editLogButton.setText("Edit Log");
-
-                // Disable cancel button again
                 cancelLogButton.setVisible(false);
-            }
+            });
+
+            new Thread(task).start();
         }
     }
 

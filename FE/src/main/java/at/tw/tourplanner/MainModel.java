@@ -534,7 +534,11 @@ public class MainModel {
             }
         }
 
-        reloadTourLogs();
+        Platform.runLater(() -> {
+            reloadTourLogs();
+            setErrorField("");
+        });
+
         return true;
     }
 }
