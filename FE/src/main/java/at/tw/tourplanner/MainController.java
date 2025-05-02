@@ -7,6 +7,7 @@ import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
 import at.tw.tourplanner.service.RouteImageService;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -16,7 +17,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -31,6 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class MainController {
     /**
@@ -92,11 +96,6 @@ public class MainController {
      * Label displaying the estimated time for the tour.
      */
     public Label estimatedTime;
-
-    /**
-     * Image view showing the route map of the tour.
-     */
-    public ImageView routeImage;
 
     /**
      * Search field for filtering tour logs.
@@ -194,7 +193,14 @@ public class MainController {
     private final MainModel model = new MainModel();
 
     @FXML
-    private VBox mapContainer;
+    private VBox spinnerOverlay;
+
+    @FXML
+    private ImageView spinnerGif;
+
+    @FXML
+    private StackPane mapStack;
+
 
     // log4j
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
@@ -204,6 +210,10 @@ public class MainController {
      */
     @FXML
     public void initialize() {
+        spinnerGif.setImage(new Image(Objects.requireNonNull(getClass().getResource("/spinner.gif")).toExternalForm()));
+        spinnerOverlay.setVisible(false);
+        mapStack.getChildren().removeIf(node -> node instanceof WebView);
+
         // Disable text fields by default
         disableTourFields(true);
 
@@ -215,7 +225,6 @@ public class MainController {
         tourDescription.textProperty().bindBidirectional(model.getFieldTour().descriptionProperty());
         fromLocation.textProperty().bindBidirectional(model.getFieldTour().fromLocationProperty());
         toLocation.textProperty().bindBidirectional(model.getFieldTour().toLocationProperty());
-        routeImage.imageProperty().bindBidirectional(model.getFieldTour().routeImageProperty());
 
         // Bind observable list to model tour list
         // Step 1: Create FilteredList from the full model list
@@ -511,17 +520,12 @@ public class MainController {
     }
 
     /**
-     * Placeholder for route calculation logic.
+     * Calculates the route and displays it in the map view.
      *
      * @param actionEvent triggered by the Calculate Route button
      */
     public void onCalculateRoute(ActionEvent actionEvent) {
-        logger.info("User clicked: " + actionEvent.getSource());
-        routeImage.setVisible(false);
-
-        // TODO: SHOW SPINNER
-
-        Task<RouteData> task = new Task<RouteData>() {
+        Task<RouteData> task = new Task<>() {
             @Override
             protected RouteData call() throws Exception {
                 return new RouteImageService().getRouteData(
@@ -536,18 +540,24 @@ public class MainController {
             estimatedTime.setText(String.format("%.2f h", routeData.duration / 60));
             tourDistance.setText(String.format("%.2f km", routeData.distance / 100));
 
-            JSONObject geoJson = new JSONObject(routeData.getGeoJson());
-            WebView webView = null;
             try {
-                webView = new RouteImageService().createWebViewWithGeoJson(geoJson);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                JSONObject geoJson = new JSONObject(routeData.getGeoJson());
+                WebView newWebView = new RouteImageService().createWebViewWithGeoJson(geoJson);
+                mapStack.getChildren().removeIf(node -> node instanceof WebView); // clear old
+                mapStack.getChildren().add(0, newWebView); // insert behind spinner
+            } catch (Exception e) {
+                logger.error("Error displaying route" + e);
+            } finally {
+                spinnerOverlay.setVisible(false);
             }
-            mapContainer.getChildren().setAll(webView);
-
-            // TODO: DISABLE SPINNER
         });
 
+        task.setOnFailed(event -> {
+            logger.error("Route calculation failed" + task.getException());
+            spinnerOverlay.setVisible(false);
+        });
+
+        spinnerOverlay.setVisible(true);
         new Thread(task).start();
     }
 
