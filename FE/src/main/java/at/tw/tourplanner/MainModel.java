@@ -166,11 +166,15 @@ public class MainModel {
         String name = fieldTour.getName();
 
         if (!tourService.deleteTour(name)) {
-            setErrorField("Could not delete tour");
+            Platform.runLater(() -> setErrorField("Could not delete tour"));
             return false;
         }
 
-        reloadTours();
+        Platform.runLater(() -> {
+            reloadTours();
+            setErrorField("");
+        });
+
         return true;
     }
 

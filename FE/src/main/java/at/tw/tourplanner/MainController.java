@@ -479,9 +479,22 @@ public class MainController {
     public void onDeleteTour(ActionEvent actionEvent) {
         logger.info("User clicked: " + actionEvent.getSource());
         if (noCurrentAction()) {
-            if (!model.deleteTour()) {
-                logger.error("failed to delete Tour");
-            }
+            Task<Boolean> task = new Task<>() {
+                @Override
+                protected Boolean call() {
+                    return model.deleteTour();
+                }
+            };
+
+            task.setOnSucceeded(e -> {
+                if (!task.getValue()) {
+                    logger.error("Failed to delete tour");
+                } else {
+                    refreshTourList();
+                }
+            });
+
+            new Thread(task).start();
         }
     }
 
