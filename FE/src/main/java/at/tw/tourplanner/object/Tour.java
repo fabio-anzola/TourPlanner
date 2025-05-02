@@ -1,5 +1,6 @@
 package at.tw.tourplanner.object;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
 
@@ -35,16 +36,19 @@ public class Tour {
     /**
      * Contains the route image for the tour
      */
+    @JsonIgnore
     private final SimpleObjectProperty<Image> routeImage;
 
     /**
      * Contains the popularity of the tour
      */
+    @JsonIgnore
     private final SimpleIntegerProperty popularity; // number of logs
 
     /**
      * Contains the child friendliness of the tour
      */
+    @JsonIgnore
     private final SimpleIntegerProperty childFriendliness; // 1-4 (4 = most child-friendly)
 
     /**

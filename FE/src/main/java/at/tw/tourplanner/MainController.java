@@ -780,46 +780,36 @@ public class MainController {
      */
     public void onExportFile(ActionEvent actionEvent) {
         logger.info("User clicked: " + actionEvent.getSource());
-        Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
-
-        // Check if a tour is selected
-        if (selectedTour == null) return;
+        if(model.getTours() == null || model.getTours().isEmpty()){
+            logger.debug("No tour data to export");
+            return;
+        }
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export Tour Data");
-
-        // Set file type filters
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Tourplanner Files", "*.tourplanner"),
+                new FileChooser.ExtensionFilter("Json Files", "*.json"),
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
-
-        // Suggest default file name
-        fileChooser.setInitialFileName(selectedTour.getName() + ".tourplanner");
-
-        // Get the current stage
+        fileChooser.setInitialFileName("TourData.json");
         Stage stage = (Stage) ((MenuItem) actionEvent.getSource()).getParentPopup().getOwnerWindow();
-
-        // Show save file dialog
         File file = fileChooser.showSaveDialog(stage);
 
-        if (file != null) {
-            try (FileWriter writer = new FileWriter(file)) {
-                // Set object information
-                String content = "Tour Name: " + selectedTour.getName() + "\n" +
-                        "Description: " + selectedTour.getDescription() + "\n" +
-                        "From: " + selectedTour.getFromLocation() + "\n" +
-                        "To: " + selectedTour.getToLocation() + "\n" +
-                        "Transport Type: " + selectedTour.getTransportType() + "\n";
-
-                writer.write(content);
-                System.out.println("File saved to: " + file.getAbsolutePath());
-            } catch (IOException e) {
-                logger.error("failed to write file, " + e + ", Message: " + e.getCause());
-            }
-        } else {
-            System.out.println("File save cancelled.");
-            logger.debug("file save cancelled");
+        if (file != null){
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call(){
+                    try{
+                        model.exportTourJson(file);
+                    } catch (IOException e) {
+                        logger.error("failed to export tour data, " + e + ", Message: " + e.getCause());
+                    }
+                    return null;
+                }
+            };
+            Thread thread = new Thread(task);
+            thread.setDaemon(true);
+            thread.start();
         }
     }
 
@@ -831,6 +821,7 @@ public class MainController {
      */
     public void onExitWindow(ActionEvent actionEvent) {
         logger.info("User clicked: " + actionEvent.getSource());
+        // TODO
     }
 
     /**
@@ -896,7 +887,6 @@ public class MainController {
         File file = fileChooser.showSaveDialog(stage);
 
         if (file != null){
-            List<TourLog> logsForTour = new ArrayList<>(tourLogs.getItems());
             Task<Void> task = new Task<>() {
                 @Override
                 protected Void call(){

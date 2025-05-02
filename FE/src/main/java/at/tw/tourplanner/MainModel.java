@@ -5,6 +5,7 @@ import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
+import at.tw.tourplanner.service.JsonGenerationService;
 import at.tw.tourplanner.service.PdfGenerationService;
 import at.tw.tourplanner.service.TourLogService;
 import at.tw.tourplanner.service.TourService;
@@ -393,7 +394,6 @@ public class MainModel {
     /**
      * Deletes the given tour log from the observable list.
      *
-     * @param tourLog the log to delete
      * @return true if the log was removed; false if not found or null
      */
     public boolean deleteTourLog() {
@@ -508,6 +508,16 @@ public class MainModel {
     public void exportSummaryPdf(File file) throws IOException {
         logger.debug("Entered function: exportSummaryPdf (MainModel) with parameter: " + file);
         new PdfGenerationService(file).generateSummaryPdf(tours, tourLogs);
+    }
+
+    /**
+     * Creates Tour data .json
+     *
+     * @param file the file to be written to
+     */
+    public void exportTourJson(File file) throws IOException {
+        logger.debug("Entered function: exportTourJson (MainModel) with parameter: " + file);
+        new JsonGenerationService(file).generateTourJson(tours);
     }
 
     public boolean editTourLog() {
