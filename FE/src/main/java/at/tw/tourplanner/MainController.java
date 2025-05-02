@@ -389,31 +389,29 @@ public class MainController {
             cancelTourButton.setVisible(true);
         } else if (addTourButton.getText().equals("Confirm")) {
             logger.debug("Entered else if statement: onAddTour (MainController)");
-            // Add tour
-            if (!model.addTour()) {
-                logger.error("Failed to add tour");
-            } else {
-                // Yuhu - confirm!
 
-                // Refresh the Tour table
-                refreshTourList();
+            Task<Boolean> task = new Task<>() {
+                @Override
+                protected Boolean call() {
+                    return model.addTour();
+                }
+            };
 
-                // Enable choosing tours
-                tourList.setDisable(false);
+            task.setOnSucceeded(event -> {
+                if (task.getValue()) {
+                    refreshTourList();
+                    tourList.setDisable(false);
+                    tourSearchField.setDisable(false);
+                    tourSearchButton.setDisable(false);
+                    disableTourFields(true);
+                    addTourButton.setText("Add");
+                    cancelTourButton.setVisible(false);
+                } else {
+                    logger.error("Failed to add tour");
+                }
+            });
 
-                // Enable text search for tours
-                tourSearchField.setDisable(false);
-                tourSearchButton.setDisable(false);
-
-                // Disable fields again
-                disableTourFields(true);
-
-                // Reset button label back to "Add"
-                addTourButton.setText("Add");
-
-                // Set cancel button as not visible
-                cancelTourButton.setVisible(false);
-            }
+            new Thread(task).start();
         }
     }
 

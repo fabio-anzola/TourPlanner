@@ -8,6 +8,7 @@ import at.tw.tourplanner.object.TransportType;
 import at.tw.tourplanner.service.PdfGenerationService;
 import at.tw.tourplanner.service.TourLogService;
 import at.tw.tourplanner.service.TourService;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -96,13 +97,16 @@ public class MainModel {
         }
 
         if (!tourService.addTour(new Tour(fieldTour.getTransportType(), fieldTour.getRouteImage(), fieldTour.getName(), fieldTour.getDescription(), fieldTour.getFromLocation(), fieldTour.getToLocation(), 0, -1))) {
-            setErrorField("Could not save tour");
+            Platform.runLater(() -> setErrorField("Could not save tour"));
             return false;
         }
 
-        reloadTours();
-        fieldTour.clearProperties();
-        setErrorField("");
+        Platform.runLater(() -> {
+            reloadTours();
+            fieldTour.clearProperties();
+            setErrorField("");
+        });
+
         return true;
     }
 
