@@ -687,30 +687,30 @@ public class MainController {
         if (noCurrentAction() && tourLogs.getSelectionModel().getSelectedItem() != null) {
             logger.debug("Entered if statement: onDeleteLog (MainController)");
 
-            // called deleteTourLog methode aus MainModel
-            if(!model.deleteTourLog()) {
-                logger.error("Failed to delete tour log");
-            }
-            // Recalibrate the popularity of affected tour
-            else if (!tourPopularityRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                logger.error("Failed to change popularity of affected tour");
-            }
-            // Recalibrate the child friendliness of affected tour
-            else if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                logger.error("Failed to change child friendliness of affected tour");
-            }
+            Task<Boolean> task = new Task<>() {
+                @Override
+                protected Boolean call() {
+                    return model.deleteTourLog();
+                }
+            };
 
-            //For Debugging: Print out all remaining tour logs
-            //System.out.println("Remaining tour logs:");
-            //for (TourLog log : tourLogs.getItems()) {
-            //    System.out.println(log);  // You might want to customize this print statement if necessary
-            //}
+            task.setOnSucceeded(e -> {
+                if (!task.getValue()) {
+                    logger.error("Failed to delete tour log");
+                } else {
+                    // Recalibrate and refresh
+                    if (!tourPopularityRecalibration(tourList.getSelectionModel().getSelectedItem())) {
+                        logger.error("Failed to change popularity of affected tour");
+                    } else if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())) {
+                        logger.error("Failed to change child friendliness of affected tour");
+                    }
 
-            // Refresh the Tour table
-            refreshTourList();
+                    refreshTourList();
+                    tourLogs.refresh();
+                }
+            });
 
-            // Refresh the log table
-            tourLogs.refresh();
+            new Thread(task).start();
         }
     }
 

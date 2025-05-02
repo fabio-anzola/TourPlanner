@@ -417,12 +417,15 @@ public class MainModel {
 
         int id = tourLog.getId();
         if (!tourLogService.deleteTourLog(id)) {
-            setErrorField("Failed to delete TourLog");
+            Platform.runLater(() -> setErrorField("Failed to delete TourLog"));
             return false;
         }
 
-        reloadTourLogs();
-        setErrorField("");
+        Platform.runLater(() -> {
+            reloadTourLogs();
+            setErrorField("");
+        });
+
         return true;
     }
 
