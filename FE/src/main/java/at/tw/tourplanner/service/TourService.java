@@ -6,6 +6,7 @@ import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TransportType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.util.UriUtils;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -67,7 +68,7 @@ public class TourService {
 
     public boolean updateTour(String name, Tour tour) {
         try {
-            String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
+            String encodedName = UriUtils.encodePathSegment(name, StandardCharsets.UTF_8);
             TourDto dto = toDto(tour);
             String json = objectMapper.writeValueAsString(dto);
 
