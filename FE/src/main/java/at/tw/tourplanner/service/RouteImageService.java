@@ -1,6 +1,9 @@
 package at.tw.tourplanner.service;
 
+import at.tw.tourplanner.MainApplication;
 import at.tw.tourplanner.config.AppConfig;
+import at.tw.tourplanner.logger.ILoggerWrapper;
+import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.object.RouteData;
 import at.tw.tourplanner.object.TransportType;
 import org.json.JSONObject;
@@ -12,6 +15,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Locale;
 import javafx.scene.web.WebView;
 
@@ -20,7 +24,11 @@ import java.io.FileWriter;
 public class RouteImageService {
     private static final String BASE_URL = AppConfig.getBackendApiUrl() + "/api";
 
+    // log4j
+    private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
+
     public double[] geocode(String address) throws Exception {
+        logger.debug("Entered function geocode (RouteImageService) with parameter: " + address);
         String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
         String urlStr = BASE_URL + "/coordinates?address=" + encodedAddress;
 
@@ -30,7 +38,7 @@ public class RouteImageService {
 
         int responseCode = con.getResponseCode();
         if (responseCode != 200) {
-            System.err.println("Geocoding failed with HTTP code: " + responseCode);
+            logger.error("Geocoding failed with HTTP code: " + responseCode);
             return null;
         }
 
@@ -48,6 +56,7 @@ public class RouteImageService {
     }
 
     public String[] getRouteGeoJson(double[] start, double[] end, TransportType transportType) throws Exception {
+        logger.debug("Entered function getRouteGeoJson (RouteImageService) with parameter: " + Arrays.toString(start) + ", " + Arrays.toString(end) + ", " + transportType);
         String urlStr = String.format(
                 Locale.US,
                 BASE_URL + "/route?startLon=%f&startLat=%f&endLon=%f&endLat=%f&mode=%s",
@@ -61,7 +70,7 @@ public class RouteImageService {
 
         int responseCode = con.getResponseCode();
         if (responseCode != 200) {
-            System.err.println("GeoJSON request failed with HTTP code: " + responseCode);
+            logger.error("GeoJSON request failed with HTTP code: " + responseCode);
             return null;
         }
 
@@ -83,6 +92,7 @@ public class RouteImageService {
     }
 
     public WebView createWebViewWithGeoJson(JSONObject geoJson) throws IOException {
+        logger.debug("Entered function createWebViewWithGeoJson (RouteImageService) with parameter: " + geoJson);
         String htmlTemplate = Files.readString(Paths.get("src/main/resources/map_template.html"));
         String htmlContent = htmlTemplate.replace("__GEOJSON__", geoJson.toString());
 
@@ -98,6 +108,7 @@ public class RouteImageService {
     }
 
     public RouteData getRouteData(String startAddress, String endAddress, TransportType transportType) throws Exception {
+        logger.debug("Entered function getRouteData (RouteImageService) with parameter: " + startAddress + ", " + endAddress + ", " + transportType);
         RouteImageService restClient = new RouteImageService();
         double[] startCoords = restClient.geocode(startAddress);
         double[] endCoords = restClient.geocode(endAddress);

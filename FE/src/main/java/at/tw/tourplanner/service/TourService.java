@@ -1,10 +1,10 @@
 package at.tw.tourplanner.service;
 
 import at.tw.tourplanner.MainApplication;
-import at.tw.tourplanner.logger.ILoggerWrapper;
-import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.config.AppConfig;
 import at.tw.tourplanner.dto.TourDto;
+import at.tw.tourplanner.logger.ILoggerWrapper;
+import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TransportType;
 import com.fasterxml.jackson.core.type.TypeReference;
