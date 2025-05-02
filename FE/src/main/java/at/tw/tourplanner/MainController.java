@@ -561,42 +561,40 @@ public class MainController {
             }
         } else if (addLogButton.getText().equals("Confirm")) {
             logger.debug("Entered first else if statement: onAddLog (MainController)");
-            // Add tour log
-            if (!model.addTourLog() ) {
-                logger.error("Failed to add tour log");
-            }
-            // Recalibrate the popularity of affected tour
-            else if (!tourPopularityRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                logger.error("Failed to change popularity of affected tour");
-            }
-            // Recalibrate the child friendliness of affected tour
-            else if (!tourChildFriendlinessRecalibration(tourList.getSelectionModel().getSelectedItem())){
-                logger.error("Failed to change child friendliness of affected tour");
-            }
-            else {
-                // Yuhu - confirm!
+            Task<Boolean> task = new Task<>() {
+                @Override
+                protected Boolean call() {
+                    return model.addTourLog();
+                }
+            };
 
-                // Refresh the Tour table
-                refreshTourList();
+            task.setOnSucceeded(e -> {
+                if (!task.getValue()) {
+                    logger.error("Failed to add tour log");
+                    return;
+                }
 
-                // Enable choosing tours
-                tourList.setDisable(false);
+                Tour selectedTour = tourList.getSelectionModel().getSelectedItem();
 
-                // Enable text search for tour logs
-                logSearchField.setDisable(false);
-                logSearchButton.setDisable(false);
-                // Enable text search for tours
-                tourSearchField.setDisable(false);
-                tourSearchButton.setDisable(false);
+                if (!tourPopularityRecalibration(selectedTour)) {
+                    logger.error("Failed to change popularity of affected tour");
+                } else if (!tourChildFriendlinessRecalibration(selectedTour)) {
+                    logger.error("Failed to change child friendliness of affected tour");
+                } else {
+                    refreshTourList();
+                    tourList.setDisable(false);
+                    logSearchField.setDisable(false);
+                    logSearchButton.setDisable(false);
+                    tourSearchField.setDisable(false);
+                    tourSearchButton.setDisable(false);
+                    tourLogs.setEditable(false);
+                    addLogButton.setText("Add Log");
+                    cancelLogButton.setVisible(false);
+                }
+            });
 
-                tourLogs.setEditable(false);
+            new Thread(task).start();
 
-                // Reset button label back to "Add"
-                addLogButton.setText("Add Log");
-
-                // disable chancel button again
-                cancelLogButton.setVisible(false);
-            }
         } else if (tourList.getSelectionModel().getSelectedItem() != null) {
             logger.debug("Entered second else if statement: onAddLog (MainController)");
             System.out.println("No tour selected for log");

@@ -131,13 +131,16 @@ public class MainModel {
         }
 
         if (!tourLogService.addTourLog(currentTourLog)) {
-            setErrorField("Failed to save Tour Log");
+            Platform.runLater(() -> setErrorField("Failed to save Tour Log"));
             return false;
         }
 
-        reloadTourLogs();
-        currentTourLog = new TourLog(-1, LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
-        setErrorField("");
+        Platform.runLater(() -> {
+            reloadTourLogs();
+            currentTourLog = new TourLog(-1, LocalDate.now().toString(), "", 0, 0, 0, 0, fieldTour.getName());
+            setErrorField("");
+        });
+
         return true;
     }
 
