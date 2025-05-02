@@ -1,8 +1,11 @@
 package at.tw.tourplanner.service;
 
+import at.tw.tourplanner.MainApplication;
 import at.tw.tourplanner.config.AppConfig;
 import at.tw.tourplanner.dto.TourDto;
 import at.tw.tourplanner.dto.TourLogDto;
+import at.tw.tourplanner.logger.ILoggerWrapper;
+import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.object.TourLog;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +25,11 @@ public class TourLogService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // log4j
+    private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
+
     public List<TourLog> getTourLogsByTourName(String tourName) {
+        logger.debug("Entered function getTourLogsByTourName (TourLogService) with parameter: " + tourName);
         try {
             String encodedName = UriUtils.encodePathSegment(tourName, StandardCharsets.UTF_8);
             HttpRequest request = HttpRequest.newBuilder()
@@ -45,13 +52,14 @@ public class TourLogService {
 
             return logs;
         } catch (Exception e) {
-            System.err.println("Error while loading tour logs: " + e.getMessage());
+            logger.error("Error while loading tour logs: " + e.getMessage());
             e.printStackTrace();
             return List.of();
         }
     }
 
     public boolean addTourLog(TourLog log) {
+        logger.debug("Entered function addTourLog (TourLogService) with parameter: " + log);
         try {
             TourLogDto dto = toDto(log);
             String requestBody = objectMapper.writeValueAsString(dto);
@@ -64,12 +72,13 @@ public class TourLogService {
             httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return true;
         } catch (Exception e) {
-            System.err.println("Failed to add tour log: " + e.getMessage());
+            logger.error("Failed to add tour log: " + e.getMessage());
             return false;
         }
     }
 
     public boolean updateTourLog(int id, TourLog log) {
+        logger.debug("Entered function updateTourLog (TourLogService) with parameter: " + id + " and " + log);
         try {
             TourLogDto dto = toDto(log);
             String requestBody = objectMapper.writeValueAsString(dto);
@@ -82,12 +91,13 @@ public class TourLogService {
             httpClient.send(request, HttpResponse.BodyHandlers.discarding());
             return true;
         } catch (Exception e) {
-            System.err.println("Failed to update tour log: " + e.getMessage());
+            logger.error("Failed to update tour log: " + e.getMessage());
             return false;
         }
     }
 
     public boolean deleteTourLog(int id) {
+        logger.debug("Entered function deleteTourLog (TourLogService) with parameter: " + id);
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/" + id))
@@ -98,12 +108,13 @@ public class TourLogService {
             httpClient.send(request, HttpResponse.BodyHandlers.discarding());
             return true;
         } catch (Exception e) {
-            System.err.println("Failed to delete tour log: " + e.getMessage());
+            logger.error("Failed to delete tour log: " + e.getMessage());
             return false;
         }
     }
 
     private TourLogDto toDto(TourLog log) {
+        logger.debug("Entered function toDto (TourLogService) with parameter: " + log);
         TourLogDto dto = new TourLogDto();
         dto.date = Date.valueOf(log.getDate());
         dto.comment = log.getComment();
@@ -118,6 +129,7 @@ public class TourLogService {
     }
 
     private TourLog fromDto(TourLogDto dto) {
+        logger.debug("Entered function fromDto (TourLogService) with parameter: " + dto);
         return new TourLog(
                 (int) dto.id,
                 dto.date.toString(),
