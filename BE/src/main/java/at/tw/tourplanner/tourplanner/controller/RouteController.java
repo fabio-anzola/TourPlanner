@@ -56,6 +56,10 @@ public class RouteController {
                     .body(geoJson);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
+                    // Annotation (minor for the lectures):
+                    // I would not list possible options here ... it supports tampering
+                    // and can be confusing when you enter new transport types (scooter) into the system but you
+                    // are not adapting the message here
                     .body("{\"error\": \"Invalid transport mode. Use car, bicycle, walk, or public.\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

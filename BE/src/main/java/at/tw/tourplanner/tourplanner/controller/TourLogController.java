@@ -43,6 +43,9 @@ public class TourLogController {
     public ResponseEntity<TourLog> createTourLog(@RequestBody TourLog tourLog) {
         try {
             String tourName = tourLog.getTour().getName();
+            // Annotation:
+            // this would result in a HTTP COnflict 409 (simply not compatible with a previous request)
+            // if you return a 500 here the client may retry later as 500 is a temporary condition
             Tour existingTour = tourRepository.findById(tourName)
                     .orElseThrow(() -> new RuntimeException("Tour not found: " + tourName));
             tourLog.setTour(existingTour);
@@ -54,6 +57,8 @@ public class TourLogController {
         }
     }
 
+    // Annotation (minor):
+    // you could return a 404 if the resource does not exist.
     @DeleteMapping("/{tourLogId}")
     public ResponseEntity<TourLog> deleteTourLog(@PathVariable Long tourLogId) {
         try {

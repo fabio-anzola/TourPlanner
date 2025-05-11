@@ -314,6 +314,8 @@ public class MainController {
      */
     private boolean noCurrentAction(){
         logger.debug("Entered function: noCurrentAction (MainController)");
+        // Annotation:
+        // Keeping the state of the application in the UI Controls harms transportability of the application
         return addTourButton.getText().equals("Add") &&
                 editTourButton.getText().equals("Edit") &&
                 addLogButton.getText().equals("Add Log") &&
@@ -390,6 +392,11 @@ public class MainController {
 
             // Set cancel button as visible
             cancelTourButton.setVisible(true);
+
+            // Annotation:
+            // don't store the state of the application in the UI Controls
+            // This should be in the model.
+            // you can bind the model to the properties of the UI Control
         } else if (addTourButton.getText().equals("Confirm")) {
             logger.debug("Entered else if statement: onAddTour (MainController)");
 
@@ -446,6 +453,10 @@ public class MainController {
 
             // Enable the cancel button
             cancelTourButton.setVisible(true);
+
+            // Annotation:
+            // Don't extract state from the UI Controls ... this kind of stuff should be known by
+            // the model itself
         } else if (editTourButton.getText().equals("Apply")) {
             logger.debug("Entered else if statement: onEditTour (MainController)");
 

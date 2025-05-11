@@ -8,6 +8,8 @@ class TourplannerApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// Annotation (minor);
+		// remove empty unit tests ... it confuses only CICD
 	}
 
 }

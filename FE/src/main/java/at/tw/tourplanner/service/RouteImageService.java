@@ -74,7 +74,14 @@ public class RouteImageService {
             return null;
         }
 
+        // Annotation:
+        // You can extract this into a method to stay DRY here
+        // compare duplication above at line 46
         StringBuilder response = new StringBuilder();
+        // Annotation (minor):
+        // If you would return the length of the body by your REST API you could optimize it
+        // and then go with read(char[], int, int) -> prevents you from hanging in a loop
+        // compare here https://docs.oracle.com/javase/8/docs/api/java/io/BufferedReader.html#read-char:A-int-int-
         try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
             String line;
             while ((line = in.readLine()) != null) {
