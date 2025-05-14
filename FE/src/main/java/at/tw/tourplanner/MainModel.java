@@ -30,8 +30,8 @@ import java.util.Objects;
 @Slf4j
 public class MainModel {
 
-    private final TourLogService tourLogService = new TourLogService();
-    private final TourService tourService = new TourService();
+    private TourLogService tourLogService = new TourLogService();
+    private TourService tourService = new TourService();
 
     /**
      * Observable list holding all tours in the application.
@@ -69,6 +69,17 @@ public class MainModel {
      * Constructs a MainModel and adds demo data for initial use.
      */
     public MainModel() {
+        this(new TourService(), new TourLogService());
+    }
+
+    /**
+     * Constructor to allow mocking of TourService and TourLogService for testing.
+     * @param tourService
+     * @param tourLogService
+     */
+    public MainModel(TourService tourService, TourLogService tourLogService) {
+        this.tourService = tourService;
+        this.tourLogService = tourLogService;
         reloadTours();
     }
 
