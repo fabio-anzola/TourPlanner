@@ -15,7 +15,8 @@ module at.tw.tourplanner {
     requires java.sql;
     requires spring.web;
     requires org.slf4j;
-
+    requires java.desktop;
+    requires javafx.swing;
 
 
     opens at.tw.tourplanner to javafx.fxml;
