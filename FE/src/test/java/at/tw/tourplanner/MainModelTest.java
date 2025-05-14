@@ -1,173 +1,169 @@
 package at.tw.tourplanner;
 
 import at.tw.tourplanner.object.Tour;
+import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
+import at.tw.tourplanner.service.TourLogService;
+import at.tw.tourplanner.service.TourService;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.testfx.framework.junit5.Start;
 
+import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-/**
- * Testing Class for Main Model
- */
-class MainModelTest {
-    private Parent root = null;
+@ExtendWith(MockitoExtension.class)
+public class MainModelTest {
 
-    /**
-     * Initializes JavaFX before running any tests.
-     */
+    @Mock
+    private TourService tourService;
+
+    @Mock
+    private TourLogService tourLogService;
+
+    private MainModel mainModel;
+
+    @BeforeEach
+    void setUp() {
+        mainModel = new MainModel(tourService, tourLogService);
+    }
+
     @BeforeAll
-    static void initJavaFX() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.startup(latch::countDown);  // Initialize JavaFX
-        latch.await();  // Wait until JavaFX is fully initialized
+    static void initToolkit() {
+        // Hack: initializes JavaFX toolkit for tests using headless environment
+        System.setProperty("java.awt.headless", "true");
+        try {
+            Platform.startup(() -> {});
+        } catch (IllegalStateException e) {
+            // JavaFX already initialized
+        }
     }
 
-    /**
-     * Will be called before each test method.
-     *
-     * @param Stage - Will be injected by the test runner.
-     */
-    @Start
-    private void start(Stage Stage) throws Exception{
-        root = MainApplication.showStage(Stage);
-    }
-
-    /**
-     * Test adding a tour - should work
-     */
     @Test
-    void test_add_tour(){
-        MainModel mainModel = new MainModel();
-        var initialSize = mainModel.getTours().size();
-        Tour testTour = new Tour(
-                TransportType.WALK,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
-                "Test Tour",
-                "Meet Fabio and Niki at the Museum",
-                "Start",
-                "End",
-                0,
-                0
-        );
+    void testAddTour_success() {
+        // Arrange
+        Tour validTour = new Tour(TransportType.CAR, null, "TestTour", "Desc", "From", "To", 0, 0);
+        mainModel.getFieldTour().setName("TestTour");
+        mainModel.getFieldTour().setDescription("Desc");
+        mainModel.getFieldTour().setFromLocation("From");
+        mainModel.getFieldTour().setToLocation("To");
+        mainModel.getFieldTour().setTransportType(TransportType.CAR);
 
-        mainModel.getFieldTour().setTransportType(testTour.getTransportType());
-        mainModel.getFieldTour().setRouteImage(testTour.getRouteImage());
-        mainModel.getFieldTour().setName(testTour.getName());
-        mainModel.getFieldTour().setDescription(testTour.getDescription());
-        mainModel.getFieldTour().setFromLocation(testTour.getFromLocation());
-        mainModel.getFieldTour().setToLocation(testTour.getToLocation());
+        when(tourService.addTour(any(Tour.class))).thenReturn(true);
+
+        // Act
+        boolean result = mainModel.addTour();
+
+        // Assert
+        assertTrue(result);
+        verify(tourService).addTour(any(Tour.class));
+    }
+
+    @Test
+    void testAddTour_invalidTour_missingName() {
+        mainModel.getFieldTour().setName("");
+        mainModel.getFieldTour().setDescription("Valid");
+        mainModel.getFieldTour().setFromLocation("From");
+        mainModel.getFieldTour().setToLocation("To");
+        mainModel.getFieldTour().setTransportType(TransportType.CAR);
 
         boolean result = mainModel.addTour();
-        var newSize = mainModel.getTours().size();
 
-        assertTrue(result,"Tour should be added successfully");
-        assertEquals(initialSize + 1, newSize, "Tour list size should increase by 1");
+        assertFalse(result);
+        verify(tourService, never()).addTour(any());
     }
 
-    /**
-     * Test adding a Tour with an existing name - should fail
-     */
     @Test
-    void test_add_tour_fail_for_name_already_exists(){
-        MainModel mainModel = new MainModel();
-        var initialSize = mainModel.getTours().size();
-        Tour testTour = new Tour(
-                TransportType.WALK,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
-                "Hiking Tour #1",
-                "Meet Fabio and Niki at the Museum",
-                "Start",
-                "End",
-                0,
-                0
-        );
+    void testAddTourLog_success() {
+        mainModel.getFieldTour().setName("MyTour");
 
-        mainModel.getFieldTour().setTransportType(testTour.getTransportType());
-        mainModel.getFieldTour().setRouteImage(testTour.getRouteImage());
-        mainModel.getFieldTour().setName(testTour.getName());
-        mainModel.getFieldTour().setDescription(testTour.getDescription());
-        mainModel.getFieldTour().setFromLocation(testTour.getFromLocation());
-        mainModel.getFieldTour().setToLocation(testTour.getToLocation());
+        TourLog log = new TourLog(-1, LocalDate.now().toString(), "Nice trip", 3, 100, 60, 5, "MyTour");        mainModel.getTourLogs().add(log);
+        setTourLogState(mainModel, log);
 
-        boolean result = mainModel.addTour();
-        var newSize = mainModel.getTours().size();
+        when(tourLogService.addTourLog(any())).thenReturn(true);
 
-        assertFalse(result,"Tour should not be added successfully (name already exists)");
-        assertEquals(initialSize, newSize, "Tour list size should stay the same");
+        boolean result = mainModel.addTourLog();
+
+        assertTrue(result);
+        verify(tourLogService).addTourLog(any());
     }
 
-    /**
-     * Test delete tour - should work
-     */
     @Test
-    void test_delete_tour(){
-        MainModel mainModel = new MainModel();
-        var initialSize = mainModel.getTours().size();
-        Tour testTour = new Tour(
-                TransportType.WALK,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
-                "Hiking Tour #1",
-                "Sunday Family Hiking Tour",
-                "Wien",
-                "Burgenland",
-                0,
-                0
-        );
+    void testDeleteTour_success() {
+        mainModel.getFieldTour().setName("Tour1");
 
-        mainModel.getFieldTour().setTransportType(testTour.getTransportType());
-        mainModel.getFieldTour().setRouteImage(testTour.getRouteImage());
-        mainModel.getFieldTour().setName(testTour.getName());
-        mainModel.getFieldTour().setDescription(testTour.getDescription());
-        mainModel.getFieldTour().setFromLocation(testTour.getFromLocation());
-        mainModel.getFieldTour().setToLocation(testTour.getToLocation());
+        when(tourService.deleteTour("Tour1")).thenReturn(true);
 
         boolean result = mainModel.deleteTour();
-        var newSize = mainModel.getTours().size();
 
-        assertTrue(result,"Tour should be deleted");
-        assertEquals(initialSize - 1, newSize, "Tour list size should decrease by 1");
+        assertTrue(result);
+        verify(tourService).deleteTour("Tour1");
     }
 
-    /**
-     * Test edit a tour - should work
-     */
     @Test
-    void test_edit_tour(){
-        MainModel mainModel = new MainModel();
-        Tour testTour = new Tour(
-                TransportType.CAR,
-                new Image(Objects.requireNonNull(getClass().getResource("/routeImages/placeholder_map.png")).toExternalForm()),
-                "Hiking Tour #1",
-                "Monday Family Hiking Tour",
-                "Burgenland",
-                "Wien",
-                0,
-                0
-        );
+    void testDeleteTour_failure() {
+        mainModel.getFieldTour().setName("Tour1");
 
-        mainModel.getFieldTour().setTransportType(testTour.getTransportType());
-        mainModel.getFieldTour().setRouteImage(testTour.getRouteImage());
-        mainModel.getFieldTour().setName(testTour.getName());
-        mainModel.getFieldTour().setDescription(testTour.getDescription());
-        mainModel.getFieldTour().setFromLocation(testTour.getFromLocation());
-        mainModel.getFieldTour().setToLocation(testTour.getToLocation());
+        when(tourService.deleteTour("Tour1")).thenReturn(false);
 
-        boolean result = mainModel.editTour(testTour.getName());
-        var tourListSize = mainModel.getTours().size();
+        boolean result = mainModel.deleteTour();
 
-        assertTrue(result, "Tour should be edited successfully");
-        assertEquals("Burgenland", mainModel.getTours().get(tourListSize - 1).getFromLocation(),  "From location should be equal to Burgenland");
-        assertEquals("Wien", mainModel.getTours().get(tourListSize - 1).getToLocation(),  "To location should be equal to Wien");
-        assertEquals("Monday Family Hiking Tour", mainModel.getTours().get(tourListSize - 1).getDescription(),  "Description should be equal to Monday Family Hiking Tour");
-        assertEquals(TransportType.CAR, mainModel.getTours().get(tourListSize - 1).getTransportType(),  "TransportType should be equal to Car");
+        assertFalse(result);
+    }
+
+    @Test
+    void testSetTourPopularity() {
+        Tour tour = new Tour();
+        tour.setName("Tour1");
+
+        TourLog log = new TourLog(1, "2024-01-01", "Good", 3, 100, 50, 5, "Tour1");
+        mainModel.getTourLogs().add(log);
+
+        boolean result = mainModel.setTourPopularity(tour);
+
+        assertTrue(result);
+        assertEquals(1, tour.getPopularity());
+    }
+
+    @Test
+    void testAddTourLogPreCheck_noTourSelected() {
+        mainModel.getFieldTour().setName("");
+        boolean result = mainModel.addTourLogPreCheck();
+        assertFalse(result);
+    }
+
+    @Test
+    void testAddTourLogPreCheck_success() {
+        mainModel.getFieldTour().setName("Tour1");
+
+        boolean result = mainModel.addTourLogPreCheck();
+
+        assertTrue(result);
+        assertEquals("Tour1", mainModel.getCurrentTourLog().getTourName());
+    }
+
+    // Helper
+    private void setTourLogState(MainModel model, TourLog log) {
+        try {
+            Field field = MainModel.class.getDeclaredField("currentTourLog");
+            field.setAccessible(true);
+            field.set(model, log);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
