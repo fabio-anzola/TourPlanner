@@ -2,11 +2,10 @@
 
 
 ToDo:
-* 1 Design Pattern
-* Logging calls (In den Klassen)
+* 1 Design Pattern - Is Tasks / Observer enough?
+* Logging calls (In den Klassen) - Auch im BE?
 * Unit Tests
 * Verbesserungen aus Intermediate
-* Image in Report
-* Protokoll
-* Unique Feature
-* Import / Export
+* Image in Report - Fast fertig macht fabio
+* Protokoll - Fast fertig macht niki
+* Import / Export - Auch tourlogs?
