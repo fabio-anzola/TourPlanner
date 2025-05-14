@@ -98,7 +98,7 @@ public class TourService {
     public boolean deleteTour(String name) {
         logger.debug("Entered function deleteTour (TourService) with parameter: " + name);
         try {
-            String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
+            String encodedName = UriUtils.encodePathSegment(name, StandardCharsets.UTF_8);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/" + encodedName))
