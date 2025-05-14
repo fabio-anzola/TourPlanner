@@ -7,27 +7,38 @@ import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
 import at.tw.tourplanner.service.RouteImageService;
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 public class MainController {
@@ -195,6 +206,7 @@ public class MainController {
     @FXML
     private StackPane mapStack;
 
+    PauseTransition pt = new PauseTransition();
 
     // log4j
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
@@ -312,7 +324,7 @@ public class MainController {
      *
      * @return true if no actions are ongoing
      */
-    private boolean noCurrentAction(){
+    private boolean noCurrentAction() {
         logger.debug("Entered function: noCurrentAction (MainController)");
         return addTourButton.getText().equals("Add") &&
                 editTourButton.getText().equals("Edit") &&
@@ -543,6 +555,29 @@ public class MainController {
                 logger.error("Error displaying route" + e);
             } finally {
                 spinnerOverlay.setVisible(false);
+
+                pt.setDuration(Duration.millis(5000));
+                File captureFile = new File("cap.png");
+                pt.setOnFinished(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+
+                        System.out.println("Taking screenshot");
+                        System.out.println(captureFile.getAbsolutePath());
+
+                        WritableImage wim = mapStack.getChildren().get(0).snapshot(null, null);
+                        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(wim, null);
+                        try {
+                            //System.out.println(bufferedImage);
+                            //ImageIO.write(bufferedImage, "png", captureFile);
+                            ImageIO.write(bufferedImage, "png", captureFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                pt.play();
             }
         });
 
