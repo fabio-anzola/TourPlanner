@@ -2,10 +2,9 @@
 
 
 ToDo:
-* 1 Design Pattern - Is Tasks / Observer enough?
-* Logging calls (In den Klassen) - Auch im BE?
-* Unit Tests
-* Verbesserungen aus Intermediate
-* Image in Report - Fast fertig macht fabio
-* Protokoll - Fast fertig macht niki
-* Import / Export - Auch tourlogs?
+* Logging nocheinmal durschauen (Fabio)
+* Javadoc nocheinmal durchschauen (Fabio)
+* Unit Tests (Niki)
+* Verbesserungen aus Intermediate / Rafcatoring (Fabio)
+* Image in Report (Fybio)
+* Protokoll (Niki)
