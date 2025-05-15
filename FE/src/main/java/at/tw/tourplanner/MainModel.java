@@ -409,7 +409,7 @@ public class MainModel {
      * @return true if the log was removed; false if not found or null
      */
     public boolean deleteTourLog() {
-        logger.debug("Entered function: deleteTourLog (MainModel) with current tour: " + currentTourLog);
+        logger.debug("Entered function: deleteTourLog (MainModel) with current tour log: " + currentTourLog);
         TourLog tourLog = currentTourLog;
         if (tourLog == null) {
             logger.error("no tour log selected");
@@ -542,6 +542,10 @@ public class MainModel {
         ObjectMapper mapper = new ObjectMapper();
         List<Tour> importedTours = Arrays.asList(mapper.readValue(file, Tour[].class));
 
+        if (importedTours.isEmpty()) {
+            logger.warn("No tours found for import. Skipping import.");
+        }
+
         for (Tour tour : importedTours) {
             boolean alreadyExists = tours.stream()
                     .anyMatch(existing -> existing.getName().equalsIgnoreCase(tour.getName()));
@@ -563,7 +567,7 @@ public class MainModel {
 
         for (TourLog tourLog : tourLogs) {
             if (!tourLogService.updateTourLog(tourLog.getId(), tourLog)) {
-                logger.debug("TourLog updated successfully with id: " + tourLog.getId());
+                logger.debug("TourLog unsuccessful edit with id: " + tourLog.getId());
                 return false;
             }
         }
