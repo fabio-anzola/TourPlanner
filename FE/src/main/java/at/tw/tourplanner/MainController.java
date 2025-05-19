@@ -571,6 +571,7 @@ public class MainController {
                             //System.out.println(bufferedImage);
                             //ImageIO.write(bufferedImage, "png", captureFile);
                             ImageIO.write(bufferedImage, "png", captureFile);
+                            model.getFieldTour().setRouteImage(bufferedImage);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
