@@ -6,12 +6,16 @@ import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.object.Tour;
 import at.tw.tourplanner.object.TourLog;
 import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.element.Image;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -44,6 +48,9 @@ public class PdfGenerationService {
                 .setFontSize(18)
                 .setFontColor(ColorConstants.BLUE);
         document.add(title);
+
+        ImageData imageData = ImageDataFactory.create(tour.getRouteImage(), Color.BLACK);
+        document.add(new Image(imageData));
 
         document.add(new Paragraph("Tour Name: " + tour.getName()));
         document.add(new Paragraph("Description: " + tour.getDescription()));
