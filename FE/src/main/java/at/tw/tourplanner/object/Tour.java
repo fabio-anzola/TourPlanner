@@ -2,7 +2,7 @@ package at.tw.tourplanner.object;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.beans.property.*;
-import javafx.scene.image.Image;
+import java.awt.Image;
 
 /**
  * The model object for the Tour
