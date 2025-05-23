@@ -14,12 +14,26 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
+/**
+ * Service responsible for fetching routing information from the OpenRouteService API.
+ */
 @Service
 public class RouteService {
 
     @Value("${openrouteservice.api-key}")
     private String apiKey;
 
+    /**
+     * Retrieves route summary (distance and duration) between two coordinates.
+     *
+     * @param startLon start longitude
+     * @param startLat start latitude
+     * @param endLon   end longitude
+     * @param endLat   end latitude
+     * @param profile  transport mode profile for OpenRouteService
+     * @return a RouteResultDTO containing distance (in meters) and duration (in seconds)
+     * @throws Exception if the HTTP request or JSON parsing fails
+     */
     public RouteResultDTO getRoute(double startLon, double startLat, double endLon, double endLat, String profile) throws Exception {
         URL url = new URL("https://api.openrouteservice.org/v2/directions/" + profile);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -54,6 +68,17 @@ public class RouteService {
         return new RouteResultDTO(summary.getDouble("distance"), summary.getDouble("duration"));
     }
 
+    /**
+     * Retrieves the GeoJSON route data between two coordinates.
+     *
+     * @param startLon start longitude
+     * @param startLat start latitude
+     * @param endLon   end longitude
+     * @param endLat   end latitude
+     * @param profile  transport mode profile for OpenRouteService
+     * @return a GeoJSON-formatted string of the route
+     * @throws Exception if the HTTP request fails
+     */
     public String getRouteGeoJson(double startLon, double startLat, double endLon, double endLat, String profile) throws Exception {
         URL url = new URL("https://api.openrouteservice.org/v2/directions/" + profile + "/geojson");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
