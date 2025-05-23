@@ -369,7 +369,6 @@ public class MainController {
         return false;
     }
 
-
     /**
      * Handles adding a new tour.
      *
@@ -385,7 +384,7 @@ public class MainController {
             // Disable choosing tours
             tourList.setDisable(true);
 
-            //Disable  text search for tours
+            //Disable text search for tours
             tourSearchField.setDisable(true);
             tourSearchButton.setDisable(true);
 
@@ -400,7 +399,7 @@ public class MainController {
 
             // Set cancel button as visible
             cancelTourButton.setVisible(true);
-        } else if (addTourButton.getText().equals("Confirm")) {
+        } else {
             logger.debug("Entered else if statement: onAddTour (MainController)");
 
             Task<Boolean> task = new Task<>() {
