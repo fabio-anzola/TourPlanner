@@ -84,7 +84,7 @@ public class RouteController {
                     .body(geoJson);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
-                    .body("{\"error\": \"Invalid transport mode. Use car, bicycle, walk, or public.\"}");
+                    .body("{\"error\": \"Invalid transport mode.\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"Failed to fetch GeoJSON route\"}");

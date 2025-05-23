@@ -76,7 +76,7 @@ public class TourLogController {
             TourLog _tourLog = this.tourLogRepository.save(tourLog);
             return new ResponseEntity<>(_tourLog, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
     }
 
@@ -92,7 +92,7 @@ public class TourLogController {
             this.tourLogRepository.deleteById(tourLogId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
