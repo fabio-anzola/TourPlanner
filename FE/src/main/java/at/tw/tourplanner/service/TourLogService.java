@@ -20,14 +20,25 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service for managing tour logs via backend API.
+ */
 public class TourLogService {
+    /** The base URL for the backend tour log API. */
     private static final String BASE_URL = AppConfig.getBackendApiUrl() + "/tourlog";
+
+    /** The HTTP client. */
     private final HttpClient httpClient = HttpClient.newHttpClient();
+
+    /** The JSON object mapper. */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // log4j
+    /** The logger instance. */
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
 
+    /**
+     * Loads all tour logs for a given tour name.
+     */
     public List<TourLog> getTourLogsByTourName(String tourName) {
         logger.debug("Entered function getTourLogsByTourName (TourLogService) with parameter: " + tourName);
         try {
@@ -58,6 +69,9 @@ public class TourLogService {
         }
     }
 
+    /**
+     * Adds a tour log via the backend API.
+     */
     public boolean addTourLog(TourLog log) {
         logger.debug("Entered function addTourLog (TourLogService) with parameter: " + log);
         try {
@@ -77,6 +91,9 @@ public class TourLogService {
         }
     }
 
+    /**
+     * Updates a tour log by id via the backend API.
+     */
     public boolean updateTourLog(int id, TourLog log) {
         logger.debug("Entered function updateTourLog (TourLogService) with parameter: " + id + " and " + log);
         try {
@@ -96,6 +113,9 @@ public class TourLogService {
         }
     }
 
+    /**
+     * Deletes a tour log by id via the backend API.
+     */
     public boolean deleteTourLog(int id) {
         logger.debug("Entered function deleteTourLog (TourLogService) with parameter: " + id);
         try {
@@ -113,6 +133,9 @@ public class TourLogService {
         }
     }
 
+    /**
+     * Converts a TourLog object to a DTO.
+     */
     private TourLogDto toDto(TourLog log) {
         logger.debug("Entered function toDto (TourLogService) with parameter: " + log);
         TourLogDto dto = new TourLogDto();
@@ -128,6 +151,9 @@ public class TourLogService {
         return dto;
     }
 
+    /**
+     * Converts a TourLogDto object to a TourLog.
+     */
     private TourLog fromDto(TourLogDto dto) {
         logger.debug("Entered function fromDto (TourLogService) with parameter: " + dto);
         return new TourLog(
