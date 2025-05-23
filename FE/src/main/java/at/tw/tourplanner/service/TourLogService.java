@@ -57,9 +57,7 @@ public class TourLogService {
             List<TourLogDto> dtos = objectMapper.readValue(response.body(), new TypeReference<>() {});
             List<TourLog> logs = new ArrayList<>();
 
-            for (TourLogDto dto : dtos) {
-                logs.add(fromDto(dto));
-            }
+            dtos.forEach(dto -> {logs.add(fromDto(dto));});
 
             return logs;
         } catch (Exception e) {
