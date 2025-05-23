@@ -8,13 +8,27 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
 
+/**
+ * Entry point for the TourPlanner Spring Boot application.
+ */
 @SpringBootApplication
 public class TourplannerApplication {
 
+	/**
+	 * Main method to run the Spring Boot application.
+	 *
+	 * @param args command line arguments
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(TourplannerApplication.class, args);
 	}
 
+	/**
+	 * Bean for printing all Spring Beans loaded in the application context.
+	 *
+	 * @param ctx the Spring application context
+	 * @return CommandLineRunner to be executed at startup
+	 */
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		return args -> {
