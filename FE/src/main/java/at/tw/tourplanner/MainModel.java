@@ -17,6 +17,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.Image;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -61,6 +62,13 @@ public class MainModel {
      */
     @Getter
     private TourLog currentTourLog = new TourLog(-1, LocalDate.now().toString(), "", 0, 0, 0, 0, "");
+
+    @Getter
+    BooleanProperty tourFieldsDisabled = new SimpleBooleanProperty(true);
+
+    @Getter
+    BooleanProperty ongoingAction = new SimpleBooleanProperty(false);
+
 
     // log4j
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
@@ -578,5 +586,13 @@ public class MainModel {
         });
 
         return true;
+    }
+
+    public void setTourFieldsDisabled(boolean tourFieldsDisabled) {
+        this.tourFieldsDisabled.set(tourFieldsDisabled);
+    }
+
+    public void setOngoingAction(boolean ongoingAction) {
+        this.ongoingAction.set(ongoingAction);
     }
 }

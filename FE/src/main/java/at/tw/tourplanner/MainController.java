@@ -10,6 +10,7 @@ import at.tw.tourplanner.object.TourLog;
 import at.tw.tourplanner.object.TransportType;
 import at.tw.tourplanner.service.RouteImageService;
 import javafx.animation.PauseTransition;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -36,11 +37,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 
 public class MainController {
@@ -122,32 +119,32 @@ public class MainController {
     /**
      * Table column for the date of the log.
      */
-    public TableColumn logDate;
+    public TableColumn<TourLog, String> logDate;
 
     /**
      * Table column for the comment in the log.
      */
-    public TableColumn logComment;
+    public TableColumn<TourLog, String> logComment;
 
     /**
      * Table column for the difficulty level of the tour.
      */
-    public TableColumn logDifficulty;
+    public TableColumn<TourLog, String> logDifficulty;
 
     /**
      * Table column for the total distance covered in the log.
      */
-    public TableColumn logDistance;
+    public TableColumn<TourLog, String> logDistance;
 
     /**
      * Table column for the total time taken in the log.
      */
-    public TableColumn logTime;
+    public TableColumn<TourLog, String> logTime;
 
     /**
      * Table column for the rating given in the log.
      */
-    public TableColumn logRating;
+    public TableColumn<TourLog, String> logRating;
 
     /**
      * Label for displaying error messages or validation feedback.
@@ -218,21 +215,26 @@ public class MainController {
      */
     @FXML
     public void initialize() {
+        // Set up spinner overlay
         spinnerGif.setImage(new Image(Objects.requireNonNull(getClass().getResource("/spinner.gif")).toExternalForm()));
         spinnerOverlay.setVisible(false);
         mapStack.getChildren().removeIf(node -> node instanceof WebView);
 
-        // Disable text fields by default
-        disableTourFields(true);
-
         // Bind error label
         errorLabel.textProperty().bind(model.errorFieldProperty());
 
-        // Bind the text fiends to a model class
+        // Bind the text fields to the model
         tourName.textProperty().bindBidirectional(model.getFieldTour().nameProperty());
         tourDescription.textProperty().bindBidirectional(model.getFieldTour().descriptionProperty());
         fromLocation.textProperty().bindBidirectional(model.getFieldTour().fromLocationProperty());
         toLocation.textProperty().bindBidirectional(model.getFieldTour().toLocationProperty());
+
+        // Populate the combo box with the enum values
+        transportType.getItems().addAll(TransportType.values());
+        transportType.getItems().remove(TransportType.DEFAULT);
+
+        // Bind the combo box value property to the model transportType property
+        transportType.valueProperty().bindBidirectional(model.getFieldTour().transportTypeProperty());
 
         // Bind observable list to model tour list
         // Step 1: Create FilteredList from the full model list
@@ -252,7 +254,7 @@ public class MainController {
             }
         });
 
-        // Bind observable list to model tour logs list
+        // Bind log observable list to model tour logs list
         logDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         logComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
         logDifficulty.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
@@ -260,6 +262,7 @@ public class MainController {
         logTime.setCellValueFactory(new PropertyValueFactory<>("totalTime"));
         logRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
 
+        // Set cell factories for editable columns (for double click to work!)
         logDate.setCellFactory(TextFieldTableCell.forTableColumn());
         logComment.setCellFactory(TextFieldTableCell.forTableColumn());
         logDifficulty.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -267,13 +270,19 @@ public class MainController {
         logTime.setCellFactory(TextFieldTableCell.forTableColumn());
         logRating.setCellFactory(TextFieldTableCell.forTableColumn());
 
+        // Listener for tour selection
         tourList.getSelectionModel().selectedItemProperty().addListener((obs, oldTour, newTour) -> {
-            if (newTour == null) {
+            if (newTour == null) { // if there is no tour currently selected
+                // Empty tour logs
                 tourLogs.setItems(FXCollections.observableArrayList());
 
+                // Clear properties of fields
                 model.getFieldTour().clearProperties();
+
+                // Clear tour name for new logs
                 model.getCurrentTourLog().setTourName("");
-            } else {
+            }
+            else { // if a tour is selected
                 // Update fieldTour and currentTourLog
                 model.getFieldTour().setName(newTour.getName());
                 model.getFieldTour().setDescription(newTour.getDescription());
@@ -286,39 +295,26 @@ public class MainController {
                 // Reload logs from backend
                 model.reloadTourLogs();
 
-                // Update UI table with filtered logs
+                // get the logs for the current tour (based on tour name)
                 tourLogs.setItems(new FilteredList<>(model.getTourLogs(), log -> log.getTourName().equalsIgnoreCase(newTour.getName())));
             }
         });
 
+        // Listener for tour log selection
         tourLogs.getSelectionModel().selectedItemProperty().addListener((obs, oldTourLog, newTourLog) -> {
-            if (newTourLog == null) {
+            if (newTourLog == null) { // if there is no log currently selected
                 model.getCurrentTourLog().setId(-1);
-            } else {
+            } else { // if a log is selected
                 model.getCurrentTourLog().setId(newTourLog.getId());
             }
         });
 
-        // Populate the combo box with the enum values
-        this.transportType.getItems().addAll(TransportType.values());
-        this.transportType.getItems().remove(TransportType.DEFAULT);
-
-        // Bind the combo box's value property to the model's transportType property
-        this.transportType.valueProperty().bindBidirectional(this.model.getFieldTour().transportTypeProperty());
-    }
-
-    /**
-     * Enables or disables tour input fields.
-     *
-     * @param b true to disable, false to enable
-     */
-    private void disableTourFields(boolean b) {
-        logger.debug("Entered function: disableTourFields (MainController) with parameter: " + b);
-        tourName.setDisable(b);
-        tourDescription.setDisable(b);
-        fromLocation.setDisable(b);
-        toLocation.setDisable(b);
-        transportType.setDisable(b);
+        // bind fields disable based on model state
+        tourName.disableProperty().bind(model.getTourFieldsDisabled());
+        tourDescription.disableProperty().bind(model.getTourFieldsDisabled());
+        fromLocation.disableProperty().bind(model.getTourFieldsDisabled());
+        toLocation.disableProperty().bind(model.getTourFieldsDisabled());
+        transportType.disableProperty().bind(model.getTourFieldsDisabled());
     }
 
     /**
@@ -328,10 +324,7 @@ public class MainController {
      */
     private boolean noCurrentAction() {
         logger.debug("Entered function: noCurrentAction (MainController)");
-        return addTourButton.getText().equals("Add") &&
-                editTourButton.getText().equals("Edit") &&
-                addLogButton.getText().equals("Add Log") &&
-                editLogButton.getText().equals("Edit Log");
+        return !model.getOngoingAction().get();
     }
 
     /**
@@ -397,10 +390,13 @@ public class MainController {
             tourSearchButton.setDisable(true);
 
             // Enable the fields for input
-            disableTourFields(false);
+            model.setTourFieldsDisabled(false);
 
             // Change button label to "Confirm"
             addTourButton.setText("Confirm");
+
+            // Set ongoing action
+            model.setOngoingAction(true);
 
             // Set cancel button as visible
             cancelTourButton.setVisible(true);
@@ -420,8 +416,9 @@ public class MainController {
                     tourList.setDisable(false);
                     tourSearchField.setDisable(false);
                     tourSearchButton.setDisable(false);
-                    disableTourFields(true);
+                    model.setTourFieldsDisabled(true);
                     addTourButton.setText("Add");
+                    model.setOngoingAction(false);
                     cancelTourButton.setVisible(false);
                 } else {
                     logger.error("Failed to add tour");
@@ -443,10 +440,7 @@ public class MainController {
         if (noCurrentAction() && tourList.getSelectionModel().getSelectedItem() != null) {
             logger.debug("Entered if statement: onEditTour (MainController)");
             // Enable the tour fields
-            disableTourFields(false);
-
-            // Disable the name field as this should not be changed
-            tourName.setDisable(true);
+            model.setTourFieldsDisabled(false);
 
             // Disable choosing tours
             tourList.setDisable(true);
@@ -457,6 +451,9 @@ public class MainController {
 
             // Change button text to apply
             editTourButton.setText("Apply");
+
+            // Set ongoing action
+            model.setOngoingAction(true);
 
             // Enable the cancel button
             cancelTourButton.setVisible(true);
@@ -485,10 +482,13 @@ public class MainController {
                     tourSearchButton.setDisable(false);
 
                     // Disable tour fields again
-                    disableTourFields(true);
+                    model.setTourFieldsDisabled(true);
 
                     // Set button text back to edit
                     editTourButton.setText("Edit");
+
+                    // Set ongoing action
+                    model.setOngoingAction(false);
 
                     // Disable cancel tour again
                     cancelTourButton.setVisible(false);
@@ -623,6 +623,9 @@ public class MainController {
                 // Change button label to "Confirm"
                 addLogButton.setText("Confirm");
 
+                // Set ongoing action
+                model.setOngoingAction(true);
+
                 // show cancel button
                 cancelLogButton.setVisible(true);
             }
@@ -656,6 +659,7 @@ public class MainController {
                     tourSearchButton.setDisable(false);
                     tourLogs.setEditable(false);
                     addLogButton.setText("Add Log");
+                    model.setOngoingAction(false);
                     cancelLogButton.setVisible(false);
                 }
             });
@@ -694,6 +698,9 @@ public class MainController {
             // Change button text
             editLogButton.setText("Confirm");
 
+            // Set ongoing action
+            model.setOngoingAction(true);
+
             // Show cancel button
             cancelLogButton.setVisible(true);
         } else if (editLogButton.getText().equals("Confirm")) {
@@ -724,6 +731,7 @@ public class MainController {
                 tourSearchButton.setDisable(false);
                 tourLogs.setEditable(false);
                 editLogButton.setText("Edit Log");
+                model.setOngoingAction(false);
                 cancelLogButton.setVisible(false);
             });
 
@@ -1004,7 +1012,7 @@ public class MainController {
         }
 
         // Disable the tour fields
-        disableTourFields(true);
+        model.setTourFieldsDisabled(true);
 
         // Clean error outputs
         model.setErrorField("");
