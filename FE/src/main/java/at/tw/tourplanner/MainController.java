@@ -1,5 +1,7 @@
 package at.tw.tourplanner;
 
+import at.tw.tourplanner.commands.Command;
+import at.tw.tourplanner.commands.ExitCommand;
 import at.tw.tourplanner.logger.ILoggerWrapper;
 import at.tw.tourplanner.logger.LoggerFactory;
 import at.tw.tourplanner.object.RouteData;
@@ -863,7 +865,8 @@ public class MainController {
      */
     public void onExitWindow(ActionEvent actionEvent) {
         logger.info("User clicked: " + actionEvent.getSource());
-        // TODO
+        Command exitCommand = new ExitCommand((Stage) ((Button) actionEvent.getSource()).getParent().getScene().getWindow());
+        exitCommand.execute();
     }
 
     /**
