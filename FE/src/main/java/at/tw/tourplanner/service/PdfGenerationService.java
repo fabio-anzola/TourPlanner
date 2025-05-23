@@ -18,18 +18,30 @@ import com.itextpdf.layout.element.Image;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-
 import java.util.List;
 
+/**
+ * Service for generating PDF reports.
+ */
 public class PdfGenerationService {
+    /** The output file for PDF data. */
     File file;
+
+    /** PDF writer. */
     PdfWriter writer;
+
+    /** PDF document. */
     PdfDocument pdf;
+
+    /** iText document. */
     Document document;
 
-    // log4j
+    /** The logger instance. */
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
 
+    /**
+     * Creates a PdfGenerationService for the given file.
+     */
     public PdfGenerationService(File file) {
         this.file = file;
         try{
@@ -41,6 +53,9 @@ public class PdfGenerationService {
         }
     }
 
+    /**
+     * Writes a tour report PDF file.
+     */
     public void generateTourPdf(Tour tour, List<TourLog> tourLogs) throws IOException {
         logger.debug("entered function: generateTourPdf (PdfGenerationService) with parameter: " + tour + " and " + tourLogs);
         Paragraph title = new Paragraph("Tour Report")
@@ -82,6 +97,9 @@ public class PdfGenerationService {
         document.close();
     }
 
+    /**
+     * Writes a summary PDF file for all tours.
+     */
     public void generateSummaryPdf(List<Tour> tours, List<TourLog> tourLogs) throws IOException {
         logger.debug("entered function: generateSummaryPdf (PdfGenerationService) with parameter: " + tours + " and " + tourLogs);
         if (tours.isEmpty()) {
