@@ -21,12 +21,19 @@ import javafx.scene.web.WebView;
 
 import java.io.FileWriter;
 
+/**
+ * Service for geocoding, routing, and displaying routes.
+ */
 public class RouteImageService {
+    /** The base backend API URL. */
     private static final String BASE_URL = AppConfig.getBackendApiUrl() + "/api";
 
-    // log4j
+    /** The logger instance. */
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
 
+    /**
+     * Geocodes an address and returns coordinates.
+     */
     public double[] geocode(String address) throws Exception {
         logger.debug("Entered function geocode (RouteImageService) with parameter: " + address);
         String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
@@ -55,6 +62,9 @@ public class RouteImageService {
         return new double[]{json.getDouble("lon"), json.getDouble("lat")};
     }
 
+    /**
+     * Gets route GeoJSON and summary data for a route.
+     */
     public String[] getRouteGeoJson(double[] start, double[] end, TransportType transportType) throws Exception {
         logger.debug("Entered function getRouteGeoJson (RouteImageService) with parameter: " + Arrays.toString(start) + ", " + Arrays.toString(end) + ", " + transportType);
         String urlStr = String.format(
@@ -91,6 +101,9 @@ public class RouteImageService {
         return new String[]{String.valueOf(duration / 60), String.valueOf(distance / 1000), response.toString()};
     }
 
+    /**
+     * Creates a WebView with a given GeoJSON.
+     */
     public WebView createWebViewWithGeoJson(JSONObject geoJson) throws IOException {
         logger.debug("Entered function createWebViewWithGeoJson (RouteImageService) with parameter: " + geoJson);
         String htmlTemplate = Files.readString(Paths.get("src/main/resources/map_template.html"));
@@ -107,6 +120,9 @@ public class RouteImageService {
         return webView;
     }
 
+    /**
+     * Returns route data for two addresses and transport type.
+     */
     public RouteData getRouteData(String startAddress, String endAddress, TransportType transportType) throws Exception {
         logger.debug("Entered function getRouteData (RouteImageService) with parameter: " + startAddress + ", " + endAddress + ", " + transportType);
         RouteImageService restClient = new RouteImageService();
