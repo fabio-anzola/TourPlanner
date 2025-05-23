@@ -88,7 +88,7 @@ public class MainModel {
     public MainModel(TourService tourService, TourLogService tourLogService) {
         this.tourService = tourService;
         this.tourLogService = tourLogService;
-        reloadTours();
+        Platform.runLater(this::reloadTours);
     }
 
     /**
@@ -248,42 +248,42 @@ public class MainModel {
     private boolean validateTourField(Tour tour, String... excludedTourName) {
         logger.debug("Entered function: validateTourField (MainModel) with parameter: " + tour + " and " + Arrays.toString(excludedTourName));
         if (tour.getName() == null || tour.getName().isBlank()) {
-            setErrorField("Please enter a valid tour name");
+            Platform.runLater(() -> setErrorField("Please enter a valid tour name"));
             logger.warn("User selected invalid tour name: " + tour.getName());
             return false;
         }
         if (tours.stream().anyMatch(t -> t.getName().equalsIgnoreCase(tour.getName()))) {
             if (excludedTourName.length > 0) { // exclude provided
                 if (!tour.getName().equalsIgnoreCase(excludedTourName[0])) { // check if match is equal to excluded - in not then enter
-                    setErrorField("Tour name already exists");
+                    Platform.runLater(() -> setErrorField("Tour name already exists"));
                     logger.warn("User selected already taken tour name: " + tour.getName());
                     return false;
                 }
             } else { // no exclude provided
-                setErrorField("Tour name already exists");
+                Platform.runLater(() -> setErrorField("Tour name already exists"));
                 logger.warn("User selected already taken tour name: " + tour.getName());
                 return false;
             }
         }
         if (tour.getDescription() == null || tour.getDescription().isBlank()) {
-            setErrorField("Please enter a valid tour description");
+            Platform.runLater(() -> setErrorField("Please enter a valid tour description"));
             logger.warn("User selected invalid tour description: " + tour.getDescription());
             return false;
         }
         if (tour.getFromLocation() == null || tour.getFromLocation().isBlank()) {
-            setErrorField("Please enter a valid fromLocation");
+            Platform.runLater(() -> setErrorField("Please enter a valid fromLocation"));
             logger.warn("User selected invalid fromLocation: " + tour.getFromLocation());
             return false;
         }
         if (tour.getToLocation() == null || tour.getToLocation().isBlank()) {
-            setErrorField("Please enter a valid toLocation");
+            Platform.runLater(() -> setErrorField("Please enter a valid toLocation"));
             logger.warn("User selected invalid toLocation: " + tour.getToLocation());
             return false;
         }
         if (tour.getTransportType() == null ||
                 (tour.getTransportType() instanceof TransportType && ((TransportType) tour.getTransportType()).equals(TransportType.DEFAULT))
         ) {
-            setErrorField("Please enter a valid transportType");
+            Platform.runLater(() -> setErrorField("Please enter a valid transportType"));
             logger.warn("User selected invalid transportType: " + tour.getTransportType());
             return false;
         }
@@ -299,93 +299,92 @@ public class MainModel {
         logger.debug("Entered function: validateTourLog (MainModel)");
         // Check date
         if (getCurrentTourLog().getDate() == null || getCurrentTourLog().getDate().isBlank()) {
-            setErrorField("Please enter a tour date");
+            Platform.runLater(() -> setErrorField("Please enter a tour date"));
             logger.warn("User selected empty tour date: " + getCurrentTourLog().getDate());
             return false;
         }
         try {
-            LocalDate ld = LocalDate.parse(getCurrentTourLog().getDate());
         } catch (DateTimeParseException e) {
-            setErrorField("Please enter a valid tour date (YYYY-MM-DD)");
+            Platform.runLater(() -> setErrorField("Please enter a valid tour date (YYYY-MM-DD)"));
             logger.warn("User selected invalid tour date: " + getCurrentTourLog().getDate());
             return false;
         }
 
         // Check Comment
         if (getCurrentTourLog().getComment() == null || getCurrentTourLog().getComment().isBlank()) {
-            setErrorField("Please enter a comment");
+            Platform.runLater(() -> setErrorField("Please enter a comment"));
             logger.warn("User selected empty comment: " + getCurrentTourLog().getComment());
             return false;
         }
 
         // Check difficulty
         if (getCurrentTourLog().getDifficulty() == null || getCurrentTourLog().getDifficulty().isBlank()) {
-            setErrorField("Please enter a difficulty");
+            Platform.runLater(() -> setErrorField("Please enter a difficulty"));
             logger.warn("User selected empty difficulty: " + getCurrentTourLog().getDifficulty());
             return false;
         }
         try {
             if (getCurrentTourLog().getParsedDifficulty() < 0 || getCurrentTourLog().getParsedDifficulty() > 5) {
-                setErrorField("Please enter a valid difficulty (range from 0 to 5 where 5 is the most difficult)");
+                Platform.runLater(() -> setErrorField("Please enter a valid difficulty (range from 0 to 5 where 5 is the most difficult)"));
                 logger.warn("User selected invalid difficulty range: " + getCurrentTourLog().getDifficulty());
                 return false;
             }
         } catch (NumberFormatException e) {
-            setErrorField("Difficulty must be an integer");
+            Platform.runLater(() -> setErrorField("Difficulty must be an integer"));
             logger.warn("User selected invalid difficulty data type: " + getCurrentTourLog().getDifficulty());
             return false;
         }
 
         // Check Total Distance
         if (getCurrentTourLog().getTotalDistance() == null || getCurrentTourLog().getTotalDistance().isBlank()) {
-            setErrorField("Please enter a total distance in meters");
+            Platform.runLater(() -> setErrorField("Please enter a total distance in meters"));
             logger.warn("User selected empty total distance");
             return false;
         }
         try {
             if (getCurrentTourLog().getParsedTotalDistance() < 0) {
-                setErrorField("Please enter a valid total distance (> 0m)");
+                Platform.runLater(() -> setErrorField("Please enter a valid total distance (> 0m)"));
                 logger.warn("User selected invalid total distance range: " + getCurrentTourLog().getTotalDistance());
                 return false;
             }
         } catch (NumberFormatException e) {
-            setErrorField("Total distance must be an integer");
+            Platform.runLater(() -> setErrorField("Total distance must be an integer"));
             logger.warn("User selected invalid total distance data type: " + getCurrentTourLog().getTotalDistance());
             return false;
         }
 
         // Check Total Time
         if (getCurrentTourLog().getTotalTime() == null || getCurrentTourLog().getTotalTime().isBlank()) {
-            setErrorField("Please enter a total time in minutes");
+            Platform.runLater(() -> setErrorField("Please enter a total time in minutes"));
             logger.warn("User selected empty total time");
             return false;
         }
         try {
             if (getCurrentTourLog().getParsedTotalTime() < 0) {
-                setErrorField("Please enter a valid total time (> 0 minutes)");
+                Platform.runLater(() -> setErrorField("Please enter a valid total time (> 0 minutes)"));
                 logger.warn("User selected invalid total time range: " + getCurrentTourLog().getTotalTime());
                 return false;
             }
         } catch (NumberFormatException e) {
-            setErrorField("Total Time must be an integer");
+            Platform.runLater(() -> setErrorField("Total Time must be an integer"));
             logger.warn("User selected invalid total time data type: " + getCurrentTourLog().getTotalTime());
             return false;
         }
 
         // Check Rating
         if (getCurrentTourLog().getRating() == null || getCurrentTourLog().getRating().isBlank()) {
-            setErrorField("Please enter a difficulty");
+            Platform.runLater(() -> setErrorField("Please enter a difficulty"));
             logger.warn("User selected empty difficulty: " + getCurrentTourLog().getDifficulty());
             return false;
         }
         try {
             if (getCurrentTourLog().getParsedRating() < 0 || getCurrentTourLog().getParsedRating() > 5) {
-                setErrorField("Please enter a valid difficulty (range from 0 to 5 where 5 is the most difficult)");
+                Platform.runLater(() -> setErrorField("Please enter a valid difficulty (range from 0 to 5 where 5 is the most difficult)"));
                 logger.warn("User selected invalid difficulty range: " + getCurrentTourLog().getDifficulty());
                 return false;
             }
         } catch (NumberFormatException e) {
-            setErrorField("Rating must be an integer");
+            Platform.runLater(() -> setErrorField("Rating must be an integer"));
             logger.warn("User selected invalid difficulty data type: " + getCurrentTourLog().getDifficulty());
             return false;
         }
