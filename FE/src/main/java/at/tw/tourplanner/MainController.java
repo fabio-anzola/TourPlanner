@@ -329,6 +329,8 @@ public class MainController {
 
     private boolean actionPermittedForMethod(String methodName) {
         logger.debug("Entered function: actionPermittedForMethod (MainController)");
+        logger.debug("Current ongoing action: " + model.getOngoingActionMethod());
+        logger.debug("Asking method name: " + methodName);
         if (model.getOngoingActionMethod().equals(methodName)) {
             logger.debug("Action permitted for method: " + methodName);
             return true;
@@ -543,8 +545,8 @@ public class MainController {
 
         task.setOnSucceeded(event -> {
             RouteData routeData = task.getValue();
-            estimatedTime.setText(String.format("%.2f h", routeData.duration / 60));
-            tourDistance.setText(String.format("%.2f km", routeData.distance / 100));
+            estimatedTime.setText(String.format("%.2f h", routeData.duration/60));
+            tourDistance.setText(String.format("%.2f km", routeData.distance));
 
             try {
                 JSONObject geoJson = new JSONObject(routeData.getGeoJson());
@@ -562,14 +564,11 @@ public class MainController {
                     @Override
                     public void handle(ActionEvent actionEvent) {
 
-                        System.out.println("Taking screenshot");
-                        System.out.println(captureFile.getAbsolutePath());
+                        logger.info("Capturing file: " + captureFile.getAbsolutePath());
 
                         WritableImage wim = mapStack.getChildren().get(0).snapshot(null, null);
                         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(wim, null);
                         try {
-                            //System.out.println(bufferedImage);
-                            //ImageIO.write(bufferedImage, "png", captureFile);
                             ImageIO.write(bufferedImage, "png", captureFile);
                             model.getFieldTour().setRouteImage(bufferedImage);
                         } catch (IOException e) {
@@ -608,6 +607,7 @@ public class MainController {
                 // Disable text search for tour logs
                 logSearchField.setDisable(true);
                 logSearchButton.setDisable(true);
+
                 // Disable text search for tours
                 tourSearchField.setDisable(true);
                 tourSearchButton.setDisable(true);
@@ -627,7 +627,10 @@ public class MainController {
                 // show cancel button
                 cancelLogButton.setVisible(true);
             }
-        } else if (addLogButton.getText().equals("Confirm")) {
+        } else if (tourList.getSelectionModel().getSelectedItem() == null) {
+            logger.debug("Entered second else if statement: onAddLog (MainController)");
+            tourList.getFocusModel().focus(0);
+        } else if (actionPermittedForMethod(Thread.currentThread().getStackTrace()[1].getMethodName())) {
             logger.debug("Entered first else if statement: onAddLog (MainController)");
             Task<Boolean> task = new Task<>() {
                 @Override
@@ -664,10 +667,6 @@ public class MainController {
 
             new Thread(task).start();
 
-        } else if (tourList.getSelectionModel().getSelectedItem() != null) {
-            logger.debug("Entered second else if statement: onAddLog (MainController)");
-            System.out.println("No tour selected for log");
-            tourList.getFocusModel().focus(0);
         }
     }
 
@@ -701,7 +700,7 @@ public class MainController {
 
             // Show cancel button
             cancelLogButton.setVisible(true);
-        } else if (editLogButton.getText().equals("Confirm")) {
+        } else if (actionPermittedForMethod(Thread.currentThread().getStackTrace()[1].getMethodName())) {
             logger.debug("Entered else if statement: onEditLog (MainController)");
 
             Task<Boolean> task = new Task<>() {
@@ -871,7 +870,7 @@ public class MainController {
      */
     public void onExitWindow(ActionEvent actionEvent) {
         logger.info("User clicked: " + actionEvent.getSource());
-        Command exitCommand = new ExitCommand((Stage) ((Button) actionEvent.getSource()).getParent().getScene().getWindow());
+        Command exitCommand = new ExitCommand((Stage) ((MenuItem) actionEvent.getSource()).getParentPopup().getOwnerWindow());
         exitCommand.execute();
     }
 
@@ -1024,6 +1023,8 @@ public class MainController {
 
         // Hide button
         cancelTourButton.setVisible(false);
+
+        model.setOngoingAction(false);
     }
 
     /**
@@ -1059,5 +1060,7 @@ public class MainController {
 
         // Hide button
         cancelLogButton.setVisible(false);
+
+        model.setOngoingAction(false);
     }
 }
