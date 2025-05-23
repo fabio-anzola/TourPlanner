@@ -32,6 +32,32 @@ public class RouteImageService {
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
 
     /**
+     * Helper to read HTTP response efficiently (buffer if length known, else line-by-line).
+     */
+    private String readResponse(HttpURLConnection con) throws IOException {
+        int length = con.getContentLength();
+        if (length > 0) {
+            char[] buf = new char[length];
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                int read = 0, n;
+                while (read < length && (n = reader.read(buf, read, length - read)) != -1) {
+                    read += n;
+                }
+                return new String(buf, 0, read);
+            }
+        } else {
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                String line;
+                while ((line = in.readLine()) != null) {
+                    response.append(line);
+                }
+            }
+            return response.toString();
+        }
+    }
+
+    /**
      * Geocodes an address and returns coordinates.
      */
     public double[] geocode(String address) throws Exception {
@@ -49,16 +75,9 @@ public class RouteImageService {
             return null;
         }
 
-        StringBuilder response;
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-            response = new StringBuilder();
-            String line;
-            while ((line = in.readLine()) != null) {
-                response.append(line);
-            }
-        }
+        String responseStr = readResponse(con);
 
-        JSONObject json = new JSONObject(response.toString());
+        JSONObject json = new JSONObject(responseStr);
         return new double[]{json.getDouble("lon"), json.getDouble("lat")};
     }
 
@@ -84,21 +103,18 @@ public class RouteImageService {
             return null;
         }
 
-        StringBuilder response = new StringBuilder();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-            String line;
-            while ((line = in.readLine()) != null) {
-                response.append(line);
-            }
-        }
+        String responseStr = readResponse(con);
 
-        JSONObject json = new JSONObject(response.toString());
-        JSONObject summary = json.getJSONArray("features").getJSONObject(0).getJSONObject("properties").getJSONObject("summary");
+        JSONObject json = new JSONObject(responseStr);
+        JSONObject summary = json.getJSONArray("features")
+                .getJSONObject(0)
+                .getJSONObject("properties")
+                .getJSONObject("summary");
 
         double duration = summary.getDouble("duration");
         double distance = summary.getDouble("distance");
 
-        return new String[]{String.valueOf(duration / 60), String.valueOf(distance / 1000), response.toString()};
+        return new String[]{String.valueOf(duration / 60), String.valueOf(distance / 1000), responseStr};
     }
 
     /**
