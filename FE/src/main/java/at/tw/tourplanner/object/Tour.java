@@ -5,63 +5,38 @@ import javafx.beans.property.*;
 import java.awt.Image;
 
 /**
- * The model object for the Tour
+ * Model object for a tour.
  */
 public class Tour {
-    /**
-     * Contains the name of the tour
-     */
+    /** Name of the tour. */
     private final StringProperty name;
 
-    /**
-     * Contains the description of the tour
-     */
+    /** Description of the tour. */
     private final StringProperty description;
 
-    /**
-     * Contains the starting location of the tour
-     */
+    /** Starting location of the tour. */
     private final StringProperty fromLocation;
 
-    /**
-     * Contains the end location of the tour
-     */
+    /** End location of the tour. */
     private final StringProperty toLocation;
 
-    /**
-     * Contains the transport type for the tour (enum!)
-     */
+    /** Transport type for the tour. */
     private final SimpleObjectProperty<TransportType> transportType;
 
-    /**
-     * Contains the route image for the tour
-     */
+    /** Route image for the tour. */
     @JsonIgnore
     private final SimpleObjectProperty<Image> routeImage;
 
-    /**
-     * Contains the popularity of the tour
-     */
+    /** Popularity of the tour. */
     @JsonIgnore
-    private final SimpleIntegerProperty popularity; // number of logs
+    private final SimpleIntegerProperty popularity;
+
+    /** Child friendliness of the tour. */
+    @JsonIgnore
+    private final SimpleIntegerProperty childFriendliness;
 
     /**
-     * Contains the child friendliness of the tour
-     */
-    @JsonIgnore
-    private final SimpleIntegerProperty childFriendliness; // 1-4 (4 = most child-friendly)
-
-    /**
-     * The constructor for the Tour object
-     *
-     * @param transportType     the Enum type
-     * @param routeImage        the Image
-     * @param name              Tour name
-     * @param description       tour description
-     * @param fromLocation      tour start location
-     * @param toLocation        tour end location
-     * @param popularity        tour popularity
-     * @param childFriendliness tour child friendliness
+     * Creates a Tour with all properties set.
      */
     public Tour(TransportType transportType, Image routeImage, String name, String description, String fromLocation, String toLocation, Integer popularity, Integer childFriendliness) {
         this.name = new SimpleStringProperty(name);
@@ -75,7 +50,7 @@ public class Tour {
     }
 
     /**
-     * The Tour default constructor
+     * Creates a Tour with default values.
      */
     public Tour() {
         this.name = new SimpleStringProperty("");
@@ -89,7 +64,7 @@ public class Tour {
     }
 
     /**
-     * A method to clean up a Tour object and set its default properties
+     * Resets all properties to default values.
      */
     public void clearProperties() {
         setName("");
@@ -102,205 +77,109 @@ public class Tour {
         setChildFriendliness(0);
     }
 
-    /**
-     * Name getter
-     *
-     * @return the name
-     */
+    /** Returns the name. */
     public String getName() {
         return name.get();
     }
 
-    /**
-     * Name property getter
-     *
-     * @return the name property
-     */
+    /** Returns the name property. */
     public StringProperty nameProperty() {
         return name;
     }
 
-    /**
-     * Name property setter
-     *
-     * @param value the name
-     */
+    /** Sets the name. */
     public void setName(String value) {
         name.set(value);
     }
 
-    /**
-     * Description getter
-     *
-     * @return the description
-     */
+    /** Returns the description. */
     public String getDescription() {
         return description.get();
     }
 
-    /**
-     * Description property getter
-     *
-     * @return the description property
-     */
+    /** Returns the description property. */
     public StringProperty descriptionProperty() {
         return description;
     }
 
-    /**
-     * Description property setter
-     *
-     * @param value the name
-     */
+    /** Sets the description. */
     public void setDescription(String value) {
         description.set(value);
     }
 
-    /**
-     * From Location getter
-     *
-     * @return the from location
-     */
+    /** Returns the starting location. */
     public String getFromLocation() {
         return fromLocation.get();
     }
 
-    /**
-     * From location property getter
-     *
-     * @return the from location property
-     */
+    /** Returns the from location property. */
     public StringProperty fromLocationProperty() {
         return fromLocation;
     }
 
-    /**
-     * From location property setter
-     *
-     * @param value the from location
-     */
+    /** Sets the starting location. */
     public void setFromLocation(String value) {
         fromLocation.set(value);
     }
 
-    /**
-     * To Location getter
-     *
-     * @return the to location
-     */
+    /** Returns the end location. */
     public String getToLocation() {
         return toLocation.get();
     }
 
-    /**
-     * To location property getter
-     *
-     * @return the to location property
-     */
+    /** Returns the to location property. */
     public StringProperty toLocationProperty() {
         return toLocation;
     }
 
-    /**
-     * To location property setter
-     *
-     * @param value the to location
-     */
+    /** Sets the end location. */
     public void setToLocation(String value) {
         toLocation.set(value);
     }
 
-    /**
-     * Transport type getter
-     *
-     * @return the transport type
-     */
+    /** Returns the transport type. */
     public TransportType getTransportType() {
         return this.transportType.get();
     }
 
-    /**
-     * Transport type property getter
-     *
-     * @return the transport type property
-     */
+    /** Returns the transport type property. */
     public Property<TransportType> transportTypeProperty() {
         return transportType;
     }
 
-    /**
-     * Transport type property setter
-     *
-     * @param transportType the transport type
-     */
+    /** Sets the transport type. */
     public void setTransportType(TransportType transportType) {
         this.transportType.set(transportType);
     }
 
-    /**
-     * Route Image getter
-     *
-     * @return the route image
-     */
+    /** Returns the route image. */
     public Image getRouteImage() {
         return this.routeImage.get();
     }
 
-    /**
-     * Route image property getter
-     *
-     * @return the route image property
-     */
+    /** Returns the route image property. */
     public Property<Image> routeImageProperty() {
         return routeImage;
     }
 
-    /**
-     * Route image property setter
-     *
-     * @param routeImage the Route Image
-     */
+    /** Sets the route image. */
     public void setRouteImage(Image routeImage) { this.routeImage.set(routeImage); }
 
-    /**
-     * Value getter
-     *
-     * @return the value
-     */
+    /** Returns the popularity value. */
     public Integer getPopularity() { return this.popularity.get(); }
 
-    /**
-     * Value property getter
-     *
-     * @return the value property
-     */
+    /** Returns the popularity property. */
     public SimpleIntegerProperty popularityProperty() { return popularity; }
 
-    /**
-     * Value property setter
-     *
-     * @param value the popularity
-     */
+    /** Sets the popularity value. */
     public void setPopularity(Integer value) { this.popularity.set(value); }
 
-    /**
-     * Child friendliness getter
-     *
-     * @return the child friendliness
-     */
+    /** Returns the child friendliness value. */
     public Integer getChildFriendliness() { return this.childFriendliness.get(); }
 
-    /**
-     * Child friendliness property getter
-     *
-     * @return the child friendliness property
-     */
+    /** Returns the child friendliness property. */
     public SimpleIntegerProperty childFriendlinessProperty() { return childFriendliness; }
 
-    /**
-     * Child friendliness property setter
-     *
-     * @param value the child friendliness
-     */
+    /** Sets the child friendliness value. */
     public void setChildFriendliness(Integer value) { this.childFriendliness.set(value); }
 }

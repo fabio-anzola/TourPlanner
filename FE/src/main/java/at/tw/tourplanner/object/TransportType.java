@@ -1,7 +1,7 @@
 package at.tw.tourplanner.object;
 
 /**
- * An enum for available transport types
+ * Enum for available transport types.
  */
 public enum TransportType {
     CAR,
