@@ -13,12 +13,22 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Service responsible for geocoding addresses using the OpenRouteService API.
+ */
 @Service
 public class GeocodeService {
 
     @Value("${openrouteservice.api-key}")
     private String apiKey;
 
+    /**
+     * Retrieves geographic coordinates (longitude and latitude) for a given address.
+     *
+     * @param address the address to geocode
+     * @return a CoordinateDTO containing longitude and latitude, or null if no result found
+     * @throws Exception if the HTTP request fails or response is invalid
+     */
     public CoordinateDTO geocode(String address) throws Exception {
         String encoded = URLEncoder.encode(address, StandardCharsets.UTF_8);
         URL url = new URL("https://api.openrouteservice.org/geocode/search?api_key=" + apiKey + "&text=" + encoded);
