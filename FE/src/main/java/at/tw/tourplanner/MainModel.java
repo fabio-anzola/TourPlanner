@@ -69,6 +69,9 @@ public class MainModel {
     @Getter
     BooleanProperty ongoingAction = new SimpleBooleanProperty(false);
 
+    @Getter
+    String ongoingActionMethod = "";
+
 
     // log4j
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
@@ -593,5 +596,14 @@ public class MainModel {
 
     public void setOngoingAction(boolean ongoingAction) {
         this.ongoingAction.set(ongoingAction);
+        if (!ongoingAction) {
+            ongoingActionMethod = "";
+        } else {
+            try {
+                this.ongoingActionMethod = Thread.currentThread().getStackTrace()[2].getMethodName();
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("Could not determine method name: " + e.getMessage());
+            }
+        }
     }
 }
