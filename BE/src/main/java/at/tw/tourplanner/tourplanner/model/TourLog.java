@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.sql.Date;
 
+/**
+ * Entity class representing a TourLog.
+ */
 @Entity
 @Table(name = "tourlog")
 public class TourLog {
@@ -51,6 +54,16 @@ public class TourLog {
     @Setter
     private Tour tour;
 
+    /**
+     * Constructs a TourLog with specified attributes.
+     *
+     * @param date the date of the log
+     * @param comment user comment
+     * @param difficulty difficulty rating
+     * @param totalDistance distance covered
+     * @param totalTime time taken
+     * @param rating overall experience rating
+     */
     public TourLog(Date date, String comment, int difficulty, int totalDistance, int totalTime, int rating) {
         this.date = date;
         this.comment = comment;
@@ -60,6 +73,9 @@ public class TourLog {
         this.rating = rating;
     }
 
+    /**
+     * Default constructor.
+     */
     public TourLog() {
     }
 }
