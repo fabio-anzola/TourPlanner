@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.util.UriUtils;
 
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -20,14 +19,25 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service for managing tours via backend API.
+ */
 public class TourService {
+    /** The base URL for the backend tour API. */
     private static final String BASE_URL = AppConfig.getBackendApiUrl() + "/tour";
+
+    /** The HTTP client. */
     private final HttpClient httpClient = HttpClient.newHttpClient();
+
+    /** The JSON object mapper. */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // log4j
+    /** The logger instance. */
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
 
+    /**
+     * Loads all tours from the backend.
+     */
     public List<Tour> getAllTours() {
         logger.debug("Entered function getAllTours (TourService)");
         try {
@@ -54,6 +64,9 @@ public class TourService {
         }
     }
 
+    /**
+     * Adds a new tour via the backend API.
+     */
     public boolean addTour(Tour tour) {
         logger.debug("Entered function addTour (TourService) with parameter: " + tour);
         try {
@@ -74,6 +87,9 @@ public class TourService {
         }
     }
 
+    /**
+     * Updates an existing tour by name via the backend API.
+     */
     public boolean updateTour(String name, Tour tour) {
         logger.debug("Entered function updateTour (TourService) with parameter: " + name + " and " + tour);
         try {
@@ -95,6 +111,9 @@ public class TourService {
         }
     }
 
+    /**
+     * Deletes a tour by name via the backend API.
+     */
     public boolean deleteTour(String name) {
         logger.debug("Entered function deleteTour (TourService) with parameter: " + name);
         try {
@@ -114,6 +133,9 @@ public class TourService {
         }
     }
 
+    /**
+     * Converts a Tour to a DTO.
+     */
     private TourDto toDto(Tour tour) {
         logger.debug("Entered function toDto (TourService) with parameter: " + tour);
         TourDto dto = new TourDto();
@@ -125,6 +147,9 @@ public class TourService {
         return dto;
     }
 
+    /**
+     * Converts a DTO to a Tour.
+     */
     private Tour fromDto(TourDto dto) {
         logger.debug("Entered function fromDto (TourService) with parameter: " + dto);
         return new Tour(
