@@ -327,6 +327,16 @@ public class MainController {
         return !model.getOngoingAction().get();
     }
 
+    private boolean actionPermittedForMethod(String methodName) {
+        logger.debug("Entered function: actionPermittedForMethod (MainController)");
+        if (model.getOngoingActionMethod().equals(methodName)) {
+            logger.debug("Action permitted for method: " + methodName);
+            return true;
+        }
+        logger.warn("Action not permitted for method: " + methodName);
+        return false;
+    }
+
     /**
      * Refreshes the tour list
      */
@@ -399,7 +409,7 @@ public class MainController {
 
             // Set cancel button as visible
             cancelTourButton.setVisible(true);
-        } else {
+        } else if (actionPermittedForMethod(Thread.currentThread().getStackTrace()[1].getMethodName())) {
             logger.debug("Entered else if statement: onAddTour (MainController)");
 
             Task<Boolean> task = new Task<>() {
@@ -435,9 +445,10 @@ public class MainController {
      */
     public void onEditTour(ActionEvent actionEvent) {
         logger.info("User clicked: " + actionEvent.getSource());
-        //ein item muss ausgewählt sein damit man edit verwenden kann
+        // ein item muss ausgewählt sein damit man edit verwenden kann
         if (noCurrentAction() && tourList.getSelectionModel().getSelectedItem() != null) {
             logger.debug("Entered if statement: onEditTour (MainController)");
+
             // Enable the tour fields
             model.setTourFieldsDisabled(false);
 
@@ -456,10 +467,11 @@ public class MainController {
 
             // Enable the cancel button
             cancelTourButton.setVisible(true);
-        } else if (editTourButton.getText().equals("Apply")) {
+        } else if (actionPermittedForMethod(Thread.currentThread().getStackTrace()[1].getMethodName())) {
             logger.debug("Entered else if statement: onEditTour (MainController)");
 
             String initialName = tourList.getSelectionModel().getSelectedItem().getName();
+
             Task<Boolean> task = new Task<>() {
                 @Override
                 protected Boolean call() {
@@ -471,25 +483,12 @@ public class MainController {
                 if (!task.getValue()) {
                     logger.error("Failed to edit tour");
                 } else {
-                    // Yuhu - confirm!
-
-                    // Enable choosing tours
                     tourList.setDisable(false);
-
-                    // Enable text search for tours
                     tourSearchField.setDisable(false);
                     tourSearchButton.setDisable(false);
-
-                    // Disable tour fields again
                     model.setTourFieldsDisabled(true);
-
-                    // Set button text back to edit
                     editTourButton.setText("Edit");
-
-                    // Set ongoing action
                     model.setOngoingAction(false);
-
-                    // Disable cancel tour again
                     cancelTourButton.setVisible(false);
                 }
             });
