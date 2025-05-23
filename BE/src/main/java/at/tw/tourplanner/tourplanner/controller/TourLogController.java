@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * REST controller for managing TourLog entities.
+ */
 @RestController
 @RequestMapping("/tourlog")
 public class TourLogController {
@@ -21,24 +24,47 @@ public class TourLogController {
     @Autowired
     TourRepository tourRepository;
 
+    /**
+     * Retrieves all tour logs.
+     *
+     * @return ResponseEntity with list of tour logs or no content status
+     */
     @GetMapping("/")
     public ResponseEntity<List<TourLog>> getTourLog() {
         List<TourLog> allTourLogs = this.tourLogRepository.findAll();
         return new ResponseEntity<>(allTourLogs, allTourLogs.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK );
     }
 
+    /**
+     * Retrieves a specific tour log by ID.
+     *
+     * @param tourLogId the ID of the tour log
+     * @return ResponseEntity with the tour log or not found status
+     */
     @GetMapping("{tourLogId}")
     public ResponseEntity<TourLog> getTourLog(@PathVariable Long tourLogId) {
         Optional<TourLog> tourLog = this.tourLogRepository.findById(tourLogId);
         return new ResponseEntity<>(tourLog.orElse(null), tourLog.isEmpty() ? HttpStatus.NOT_FOUND : HttpStatus.OK);
     }
 
+    /**
+     * Retrieves all tour logs for a specific tour.
+     *
+     * @param tourName the name of the tour
+     * @return ResponseEntity with list of logs or no content status
+     */
     @GetMapping("/tour/{tourName}")
     public ResponseEntity<List<TourLog>> getTourLog(@PathVariable String tourName) {
         List<TourLog> tourLogsByName = this.tourLogRepository.findByTourName(tourName);
         return new ResponseEntity<>(tourLogsByName, tourLogsByName.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK );
     }
 
+    /**
+     * Creates a new tour log.
+     *
+     * @param tourLog the tour log to create
+     * @return ResponseEntity with created tour log or error status
+     */
     @PostMapping("/")
     public ResponseEntity<TourLog> createTourLog(@RequestBody TourLog tourLog) {
         try {
@@ -54,6 +80,12 @@ public class TourLogController {
         }
     }
 
+    /**
+     * Deletes a tour log by ID.
+     *
+     * @param tourLogId the ID of the tour log
+     * @return ResponseEntity with no content status or error status
+     */
     @DeleteMapping("/{tourLogId}")
     public ResponseEntity<TourLog> deleteTourLog(@PathVariable Long tourLogId) {
         try {
@@ -64,6 +96,13 @@ public class TourLogController {
         }
     }
 
+    /**
+     * Updates an existing tour log.
+     *
+     * @param tourLogId the ID of the tour log to update
+     * @param updatedTourLog the tour log with updated data
+     * @return ResponseEntity with the updated tour log or not found status
+     */
     @PutMapping("/{tourLogId}")
     public ResponseEntity<TourLog> updateTourLog(@PathVariable Long tourLogId, @RequestBody TourLog updatedTourLog) {
         Optional<TourLog> existingTourLog = this.tourLogRepository.findById(tourLogId);
