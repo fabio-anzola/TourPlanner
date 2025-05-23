@@ -11,17 +11,14 @@ import javafx.stage.Stage;
 import java.util.Objects;
 
 /**
- * The Main Class to start the Application
+ * Main class to start the application.
  */
 public class MainApplication extends Application {
-    // log4j
+    /** Logger instance. */
     private static final ILoggerWrapper logger = LoggerFactory.getLogger(MainApplication.class);
 
     /**
-     * Method to start the app
-     *
-     * @param stage a stage
-     * @throws Exception passed exceptions
+     * Starts the application.
      */
     @Override
     public void start(Stage stage) throws Exception{
@@ -29,11 +26,7 @@ public class MainApplication extends Application {
     }
 
     /**
-     * Method to show initial stage
-     *
-     * @param stage a stage
-     * @return the root stage built form fxml
-     * @throws Exception passed exceptions
+     * Shows the initial stage.
      */
     public static Parent showStage(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(Objects.requireNonNull(MainApplication.class.getResource("main-view.fxml")));
@@ -42,14 +35,11 @@ public class MainApplication extends Application {
         stage.setMinWidth(700);
         stage.setMinHeight(700);
         stage.show();
-
         return root;
     }
 
     /**
-     * Main method
-     *
-     * @param args args passed from cli
+     * Main entry point.
      */
     public static void main(String[] args) {
         try {
